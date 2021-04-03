@@ -66,7 +66,7 @@ func getCursorStringValue(buf *strings.Builder, c store.Cursor) {
 }
 
 func getElementStringValue(buf *strings.Builder, c store.Cursor) {
-	children := c.Nodes()
+	children := c.Children()
 	pos := 0
 
 	for _, n := range children {

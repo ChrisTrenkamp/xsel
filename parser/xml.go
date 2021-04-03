@@ -78,6 +78,7 @@ func (x XmlProcInst) ProcInstValue() string {
 var emptyAttrs = make([]XmlAttribute, 0)
 var emptyNamespaces = make([]XmlNamespace, 0)
 
+// Creates a Parser that reads the given XML document.
 func ReadXml(in io.Reader) Parser {
 	xmlReader := xml.NewDecoder(in)
 

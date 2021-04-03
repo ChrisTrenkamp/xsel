@@ -58,7 +58,7 @@ func selectChild(nodeSet NodeSet) Result {
 	result := make([]store.Cursor, 0)
 
 	for _, i := range nodeSet {
-		for _, j := range i.Nodes() {
+		for _, j := range i.Children() {
 			result = append(result, j)
 		}
 	}
@@ -99,7 +99,7 @@ func selectAncestorOrSelf(nodeSet NodeSet) Result {
 }
 
 func appendAncestors(cursor store.Cursor, result []store.Cursor) []store.Cursor {
-	if cursor.Parent() == cursor {
+	if cursor.Pos() == 0 {
 		return result
 	}
 
@@ -129,7 +129,7 @@ func selectDescendantOrSelf(nodeSet NodeSet) Result {
 }
 
 func appendDescendant(cursor store.Cursor, result []store.Cursor) []store.Cursor {
-	for _, i := range cursor.Nodes() {
+	for _, i := range cursor.Children() {
 		result = append(result, i)
 		result = appendDescendant(i, result)
 	}
@@ -150,14 +150,14 @@ func selectFollowing(nodeSet NodeSet) Result {
 func appendFollowing(cursor store.Cursor, result []store.Cursor) []store.Cursor {
 	parent := cursor.Parent()
 
-	if parent == cursor {
+	if parent.Pos() == 0 {
 		return result
 	}
 
 	found := false
 
-	for _, i := range parent.Nodes() {
-		if i == cursor {
+	for _, i := range parent.Children() {
+		if i.Pos() == cursor.Pos() {
 			found = true
 			continue
 		}
@@ -184,15 +184,15 @@ func selectFollowingSibling(nodeSet NodeSet) Result {
 func appendFollowingSibling(cursor store.Cursor, result []store.Cursor) []store.Cursor {
 	parent := cursor.Parent()
 
-	if parent == cursor {
+	if parent.Pos() == 0 {
 		return result
 	}
 
-	children := parent.Nodes()
+	children := parent.Children()
 	start := 0
 
 	for i := range children {
-		if children[i] == cursor {
+		if children[i].Pos() == cursor.Pos() {
 			start = i
 			break
 		}
@@ -236,15 +236,15 @@ func selectPreceding(nodeSet NodeSet) Result {
 func appendPreceding(cursor store.Cursor, result []store.Cursor) []store.Cursor {
 	parent := cursor.Parent()
 
-	if parent == cursor {
+	if parent.Pos() == 0 {
 		return result
 	}
 
 	found := false
-	children := parent.Nodes()
+	children := parent.Children()
 
 	for i := len(children) - 1; i >= 0; i-- {
-		if children[i] == cursor {
+		if children[i].Pos() == cursor.Pos() {
 			found = true
 			continue
 		}
@@ -271,15 +271,15 @@ func selectPrecedingSibling(nodeSet NodeSet) Result {
 func appendPrecedingSibling(cursor store.Cursor, result []store.Cursor) []store.Cursor {
 	parent := cursor.Parent()
 
-	if parent == cursor {
+	if parent.Pos() == 0 {
 		return result
 	}
 
-	children := parent.Nodes()
+	children := parent.Children()
 	end := 0
 
 	for i := len(children) - 1; i >= 0; i-- {
-		if children[i] == cursor {
+		if children[i].Pos() == cursor.Pos() {
 			end = i
 			break
 		}

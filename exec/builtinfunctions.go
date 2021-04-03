@@ -377,7 +377,7 @@ func lang(context Context, args ...Result) (Result, error) {
 			n = i.Parent()
 		}
 
-		for n.Parent() != n {
+		for n.Pos() != 0 {
 			if attr, ok := store.GetAttribute(n, "http://www.w3.org/XML/1998/namespace", "lang"); ok {
 				return checkLang(lStr, attr.AttributeValue()), nil
 			}

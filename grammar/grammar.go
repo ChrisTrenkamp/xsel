@@ -24,6 +24,7 @@ func (g *Grammar) GetString() string {
 	return g.lex.GetString(g.BSR.LeftExtent(), g.BSR.RightExtent()-1)
 }
 
+// Creates an XPath query.
 func Build(xpath string) (Grammar, error) {
 	lex := lexer.New([]rune(xpath))
 	parse, err := parser.Parse(lex)

@@ -26,19 +26,25 @@ type XmlName struct {
 
 type Function func(context Context, args ...Result) (Result, error)
 
+// ContextSettings allows you to add namespace mappings, create new functions,
+// and add variable bindings to your XPath query.
 type ContextSettings struct {
-	Variables        map[XmlName]Result
-	FunctionLibrary  map[XmlName]Function
-	builtinFunctions map[XmlName]Function
-	NamespaceDecls   map[string]string
+	NamespaceDecls  map[string]string
+	FunctionLibrary map[XmlName]Function
+	Variables       map[XmlName]Result
+	// Context is the initial position to run XPath queries.  This is initialized to the root of
+	// the document.  This may be overridden to point to a different position in the document.
+	// When overriding the Context, it must be a Cursor contained within the root, or bad things can happen!
+	Context store.Cursor
 }
 
 type ContextApply func(c *ContextSettings)
 
 type exprContext struct {
-	root            store.Cursor
-	result          Result
-	contextPosition int
+	root             store.Cursor
+	result           Result
+	contextPosition  int
+	builtinFunctions map[XmlName]Function
 	ContextSettings
 }
 
@@ -57,10 +63,11 @@ func (c *exprContext) ContextPosition() int {
 
 func (e *exprContext) copy() exprContext {
 	return exprContext{
-		root:            e.root,
-		result:          e.result,
-		contextPosition: e.contextPosition,
-		ContextSettings: e.ContextSettings,
+		root:             e.root,
+		result:           e.result,
+		contextPosition:  e.contextPosition,
+		builtinFunctions: builtinFunctions,
+		ContextSettings:  e.ContextSettings,
 	}
 }
 
@@ -113,25 +120,26 @@ func init() {
 	execFunctions[symbols.NT_VariableReference] = execVariableReference
 }
 
+// Executes an XPath query against the given Cursor that is pointing to the node.Root.
 func Exec(cursor store.Cursor, expr *grammar.Grammar, settings ...ContextApply) (Result, error) {
-	context := &exprContext{
-		root:            cursor,
-		result:          NodeSet{cursor},
-		contextPosition: 0,
-	}
-
 	contextSettings := ContextSettings{
-		Variables:        make(map[XmlName]Result),
-		FunctionLibrary:  make(map[XmlName]Function),
-		builtinFunctions: builtinFunctions,
-		NamespaceDecls:   make(map[string]string),
+		Variables:       make(map[XmlName]Result),
+		FunctionLibrary: make(map[XmlName]Function),
+		NamespaceDecls:  make(map[string]string),
+		Context:         cursor,
 	}
 
 	for _, i := range settings {
 		i(&contextSettings)
 	}
 
-	context.ContextSettings = contextSettings
+	context := &exprContext{
+		root:             cursor,
+		result:           Result(NodeSet{contextSettings.Context}),
+		contextPosition:  0,
+		builtinFunctions: builtinFunctions,
+		ContextSettings:  contextSettings,
+	}
 
 	err := execContext(context, expr)
 

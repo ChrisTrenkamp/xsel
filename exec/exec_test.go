@@ -1235,3 +1235,34 @@ func TestVariableReference(t *testing.T) {
 		t.Error("Node not 'b'")
 	}
 }
+
+func TestNewContext(t *testing.T) {
+	xml := `<root><a>5</a><b>2.5</b><c>6</c></root>`
+
+	xpath, err := grammar.Build("a[1]")
+
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	parser := parser.ReadXml(bytes.NewBufferString(xml))
+	cursor, err := store.CreateInMemory(parser)
+
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	result, err := Exec(cursor, &xpath, func(c *ContextSettings) {
+		c.Context = cursor.Children()[0]
+	})
+
+	if err != nil {
+		t.Error(err)
+	}
+
+	if result.String() != "5" {
+		t.Errorf("Result != '5'")
+	}
+}

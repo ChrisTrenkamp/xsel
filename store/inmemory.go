@@ -37,6 +37,7 @@ func initNonElement() InMemory {
 	}
 }
 
+// Gathers and stores node.Node's in memory.
 func CreateInMemory(parse parser.Parser) (*InMemory, error) {
 	root := initElement()
 	root.node = rootInMemoryNode{}
@@ -146,7 +147,7 @@ func (c *InMemory) Attributes() []Cursor {
 	return c.attributes
 }
 
-func (c *InMemory) Nodes() []Cursor {
+func (c *InMemory) Children() []Cursor {
 	return c.nodes
 }
 
