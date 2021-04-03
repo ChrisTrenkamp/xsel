@@ -24,6 +24,13 @@ type XmlName struct {
 	Local string
 }
 
+func Name(space, local string) XmlName {
+	return XmlName{
+		Space: space,
+		Local: local,
+	}
+}
+
 type Function func(context Context, args ...Result) (Result, error)
 
 // ContextSettings allows you to add namespace mappings, create new functions,

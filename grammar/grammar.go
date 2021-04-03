@@ -47,3 +47,14 @@ func Build(xpath string) (Grammar, error) {
 
 	return Grammar{&roots[0], lex}, nil
 }
+
+// Like Build, but panics if an error is thrown.
+func MustBuild(xpath string) Grammar {
+	grammar, err := Build(xpath)
+
+	if err != nil {
+		panic(err)
+	}
+
+	return grammar
+}

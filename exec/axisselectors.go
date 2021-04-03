@@ -32,25 +32,25 @@ slice:
 	return s
 }
 
-type ForwardSort []store.Cursor
+type forwardSort []store.Cursor
 
-func (a ForwardSort) Len() int           { return len(a) }
-func (a ForwardSort) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
-func (a ForwardSort) Less(i, j int) bool { return a[i].Pos() < a[j].Pos() }
+func (a forwardSort) Len() int           { return len(a) }
+func (a forwardSort) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
+func (a forwardSort) Less(i, j int) bool { return a[i].Pos() < a[j].Pos() }
 
-type BackwardSort []store.Cursor
+type backwardSort []store.Cursor
 
-func (a BackwardSort) Len() int           { return len(a) }
-func (a BackwardSort) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
-func (a BackwardSort) Less(i, j int) bool { return a[i].Pos() > a[j].Pos() }
+func (a backwardSort) Len() int           { return len(a) }
+func (a backwardSort) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
+func (a backwardSort) Less(i, j int) bool { return a[i].Pos() > a[j].Pos() }
 
 func cleanupForwardAxis(nextResult NodeSet) NodeSet {
-	sort.Sort(ForwardSort(nextResult))
+	sort.Sort(forwardSort(nextResult))
 	return unique(nextResult)
 }
 
 func cleanupBackwardAxis(nextResult NodeSet) NodeSet {
-	sort.Sort(BackwardSort(nextResult))
+	sort.Sort(backwardSort(nextResult))
 	return unique(nextResult)
 }
 

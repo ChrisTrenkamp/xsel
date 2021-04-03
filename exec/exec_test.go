@@ -12,13 +12,7 @@ import (
 )
 
 func exec(t *testing.T, expr, xml string, expected Result) {
-	xpath, err := grammar.Build(expr)
-
-	if err != nil {
-		t.Error(err)
-		return
-	}
-
+	xpath := grammar.MustBuild(expr)
 	parser := parser.ReadXml(bytes.NewBufferString(xml))
 	cursor, err := store.CreateInMemory(parser)
 
@@ -39,13 +33,7 @@ func exec(t *testing.T, expr, xml string, expected Result) {
 }
 
 func execNodesToString(t *testing.T, expr, xml string, expected string) {
-	xpath, err := grammar.Build(expr)
-
-	if err != nil {
-		t.Error(err)
-		return
-	}
-
+	xpath := grammar.MustBuild(expr)
 	parser := parser.ReadXml(bytes.NewBufferString(xml))
 	cursor, err := store.CreateInMemory(parser)
 
@@ -68,13 +56,7 @@ func execNodesToString(t *testing.T, expr, xml string, expected string) {
 }
 
 func execNodes(t *testing.T, expr, xml string, settings ...ContextApply) NodeSet {
-	xpath, err := grammar.Build(expr)
-
-	if err != nil {
-		t.Error(err)
-		return nil
-	}
-
+	xpath := grammar.MustBuild(expr)
 	parser := parser.ReadXml(bytes.NewBufferString(xml))
 	cursor, err := store.CreateInMemory(parser)
 
