@@ -1,6 +1,6 @@
 # xsel
 
-[![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/donate?business=PJDCE35ARU76Q&currency_code=USD)
+[![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/donate?business=PJDCE35ARU76Q&currency_code=USD) [![Go Reference](https://pkg.go.dev/badge/github.com/ChrisTrenkamp/xsel.svg)](https://pkg.go.dev/github.com/ChrisTrenkamp/xsel)
 
 
 `xsel` is a library that (almost) implements the XPath 1.0 specification.  The non-compliant bits are:
