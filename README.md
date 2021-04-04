@@ -40,8 +40,6 @@ func main() {
 }
 ```
 
-`xsel` lets you define your own namespaces, methods, functions for use in your expressions:
-
 ## Binding variables and namespaces
 
 ```go
@@ -80,7 +78,7 @@ func main() {
 }
 ```
 
-## Binding functions
+## Binding custom functions
 
 ```go
 package main
