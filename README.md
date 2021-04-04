@@ -207,6 +207,6 @@ test.xml: <a xmlns="http://a">Element a</a>
 
 Bind a variable (variables are bound as strings):
 ```
-$ ./xsel -x '//a:*[. = $textval]' -v textval="Element b" test.xml
+$ ./xsel -x '//*[. = $textval]' -v textval="Element b" test.xml
 test.xml: Element b
 ```
