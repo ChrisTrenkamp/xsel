@@ -1063,7 +1063,12 @@ func execNameTestAnyElement(context *exprContext, expr *grammar.Grammar) error {
 
 func execNameTestNamespaceAnyLocal(context *exprContext, expr *grammar.Grammar) error {
 	namespaceLookup := expr.BSR.GetTChildI(0).LiteralString()
-	namespaceValue := context.NamespaceDecls[namespaceLookup]
+	namespaceValue, ok := context.NamespaceDecls[namespaceLookup]
+
+	if !ok {
+		return fmt.Errorf("unknown namespace binding '%s'", namespaceLookup)
+	}
+
 	nodeSet, ok := context.result.(NodeSet)
 
 	if !ok {
