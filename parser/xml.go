@@ -5,6 +5,7 @@ import (
 	"io"
 
 	"github.com/ChrisTrenkamp/xsel/node"
+	"golang.org/x/net/html/charset"
 )
 
 type XmlElement struct {
@@ -78,9 +79,16 @@ func (x XmlProcInst) ProcInstValue() string {
 var emptyAttrs = make([]XmlAttribute, 0)
 var emptyNamespaces = make([]XmlNamespace, 0)
 
+type ParseOptions func(d *xml.Decoder)
+
 // Creates a Parser that reads the given XML document.
-func ReadXml(in io.Reader) Parser {
+func ReadXml(in io.Reader, opts ...ParseOptions) Parser {
 	xmlReader := xml.NewDecoder(in)
+	xmlReader.CharsetReader = charset.NewReaderLabel
+
+	for _, i := range opts {
+		i(xmlReader)
+	}
 
 	namespaces := emptyNamespaces
 	nsPos := 0

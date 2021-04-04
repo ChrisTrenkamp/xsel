@@ -131,3 +131,82 @@ func main() {
 `xsel` supplies an XML parser (using the `encoding/xml` package) out of the box, but the XPath logic does not depend directly on XML.  It instead depends on the interfaces defined in the [node](https://pkg.go.dev/github.com/ChrisTrenkamp/xsel/node) and [store](https://pkg.go.dev/github.com/ChrisTrenkamp/xsel/store) packages.  This means it's possible to use `xsel` for querying against non-XML documents, such as JSON.
 
 To build a custom document, implement your own [Parser](https://pkg.go.dev/github.com/ChrisTrenkamp/xsel/parser#Parser) method, and build [Element](https://pkg.go.dev/github.com/ChrisTrenkamp/xsel/node#Element)'s, [Attribute](https://pkg.go.dev/github.com/ChrisTrenkamp/xsel/node#Attribute)'s [Character Data](https://pkg.go.dev/github.com/ChrisTrenkamp/xsel/node#CharData), [Comment](https://pkg.go.dev/github.com/ChrisTrenkamp/xsel/node#Comment)'s, [Processing Instruction](https://pkg.go.dev/github.com/ChrisTrenkamp/xsel/node#ProcInst)'s, and [Namespace](https://pkg.go.dev/github.com/ChrisTrenkamp/xsel/node#Namespace)'s.
+
+## Commandline Utility
+
+`xsel` supplies a grep-like commandline utility for querying XML documents:
+
+```
+$ ./xsel -h
+Usage of ./xsel:
+  -a    If the result is a NodeSet, print the string value of all the nodes instead of just the first
+  -c    Execute XPath queries concurrently on files (beware that results will have no predictable order)
+  -e value
+        Bind an entity value e.g. entityname=entityval
+  -m    If the result is a NodeSet, print all the results as XML
+  -n    Suppress filenames
+  -r    Recursively traverse directories
+  -s value
+        Namespace mapping. e.g. -ns companyns=http://company.com
+  -u    Turns off strict XML decoding
+  -v value
+        Bind a variable (all variables are bound as string types) e.g. -v var=value or -v companyns:var=value
+  -x string
+        XPath expression to execute (required)
+```
+
+## CLI examples
+
+```
+$ cat test.xml
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+  <a xmlns="http://a">Element a</a>
+  <b>Element b</b>
+</root>
+```
+
+This is a basic query:
+```
+$ ./xsel -x '/root/b' test.xml
+test.xml: Element b
+```
+
+This query has multiple results, but only the first value is printed:
+```
+$ ./xsel -x '/root/*' test.xml
+test.xml: Element a
+```
+
+This query has multiple results, and all values are printed:
+```
+$ ./xsel -x '/root/*' -a test.xml
+test.xml: Element a
+test.xml: Element b
+```
+
+Print all results as XML:
+```
+$ ./xsel -x '/root/*' -m test.xml
+test.xml: <a xmlns="http://a">Element a</a>
+test.xml: <b>Element b</b>
+```
+
+Suppress the filename when printing results:
+```
+$ ./xsel -x '/root/*' -m -n test.xml
+<a xmlns="http://a">Element a</a>
+<b>Element b</b>
+```
+
+Bind a namespace:
+```
+$ ./xsel -x '//a:*' -s a='http://a' -m test.xml
+test.xml: <a xmlns="http://a">Element a</a>
+```
+
+Bind a variable (variables are bound as strings):
+```
+$ ./xsel -x '//a:*[. = $textval]' -v textval="Element b" test.xml
+test.xml: Element b
+```

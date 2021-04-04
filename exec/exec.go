@@ -31,6 +31,27 @@ func Name(space, local string) XmlName {
 	}
 }
 
+func GetQName(input string, namespaces map[string]string) (XmlName, error) {
+	spl := strings.Split(input, ":")
+	ret := XmlName{}
+
+	if len(spl) == 1 {
+		ret.Local = spl[0]
+	} else {
+		ns, ok := namespaces[strings.TrimSpace(spl[0])]
+
+		if !ok {
+			return XmlName{}, fmt.Errorf("unknown namespace binding '%s'", spl[0])
+		}
+
+		ret.Space = ns
+		ret.Local = spl[1]
+	}
+
+	ret.Local = strings.TrimSpace(ret.Local)
+	return ret, nil
+}
+
 type Function func(context Context, args ...Result) (Result, error)
 
 // ContextSettings allows you to add namespace mappings, create new functions,
@@ -1275,7 +1296,7 @@ func execFunctionCall(context *exprContext, expr *grammar.Grammar) error {
 		args = append(args, nextContext.result)
 	}
 
-	qname, err := getQName(expr.Next(children[0]).GetString(), context.NamespaceDecls)
+	qname, err := GetQName(expr.Next(children[0]).GetString(), context.NamespaceDecls)
 
 	if err != nil {
 		return err
@@ -1328,7 +1349,14 @@ func gatherFunctionArgs(b *bsr.BSR, args *[]*bsr.BSR) {
 }
 
 func execVariableReference(context *exprContext, expr *grammar.Grammar) error {
-	qname, err := getQName(expr.Next(expr.BSR).GetString(), context.NamespaceDecls)
+	variableStr := expr.Next(expr.BSR).GetString()
+	variableStr = strings.TrimSpace(variableStr)
+
+	if strings.HasPrefix(variableStr, "$") {
+		variableStr = variableStr[1:]
+	}
+
+	qname, err := GetQName(variableStr, context.NamespaceDecls)
 
 	if err != nil {
 		return err
@@ -1342,30 +1370,4 @@ func execVariableReference(context *exprContext, expr *grammar.Grammar) error {
 
 	context.result = variable
 	return nil
-}
-
-func getQName(input string, namespaces map[string]string) (XmlName, error) {
-	if strings.HasPrefix(input, "$") {
-		input = input[1:]
-	}
-
-	spl := strings.Split(input, ":")
-	ret := XmlName{}
-
-	if len(spl) == 1 {
-		ret.Local = spl[0]
-	} else {
-		ns, ok := namespaces[spl[0]]
-
-		if !ok {
-			return XmlName{}, fmt.Errorf("unknown namespace binding '%s'", spl[0])
-		}
-
-		ret.Space = ns
-		ret.Local = spl[1]
-	}
-
-	ret.Space = strings.TrimSpace(ret.Space)
-	ret.Local = strings.TrimSpace(ret.Local)
-	return ret, nil
 }
