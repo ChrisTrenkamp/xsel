@@ -137,8 +137,9 @@ To build a custom document, implement your own [Parser](https://pkg.go.dev/githu
 `xsel` supplies a grep-like commandline utility for querying XML documents:
 
 ```
-$ ./xsel -h
-Usage of ./xsel:
+$ go get github.com/ChrisTrenkamp/xsel
+$ xsel -h
+Usage of xsel:
   -a    If the result is a NodeSet, print the string value of all the nodes instead of just the first
   -c    Execute XPath queries concurrently on files (beware that results will have no predictable order)
   -e value
@@ -168,45 +169,45 @@ $ cat test.xml
 
 This is a basic query:
 ```
-$ ./xsel -x '/root/b' test.xml
+$ xsel -x '/root/b' test.xml
 test.xml: Element b
 ```
 
 This query has multiple results, but only the first value is printed:
 ```
-$ ./xsel -x '/root/*' test.xml
+$ xsel -x '/root/*' test.xml
 test.xml: Element a
 ```
 
 This query has multiple results, and all values are printed:
 ```
-$ ./xsel -x '/root/*' -a test.xml
+$ xsel -x '/root/*' -a test.xml
 test.xml: Element a
 test.xml: Element b
 ```
 
 Print all results as XML:
 ```
-$ ./xsel -x '/root/*' -m test.xml
+$ xsel -x '/root/*' -m test.xml
 test.xml: <a xmlns="http://a">Element a</a>
 test.xml: <b>Element b</b>
 ```
 
 Suppress the filename when printing results:
 ```
-$ ./xsel -x '/root/*' -m -n test.xml
+$ xsel -x '/root/*' -m -n test.xml
 <a xmlns="http://a">Element a</a>
 <b>Element b</b>
 ```
 
 Bind a namespace:
 ```
-$ ./xsel -x '//a:*' -s a='http://a' -m test.xml
+$ xsel -x '//a:*' -s a='http://a' -m test.xml
 test.xml: <a xmlns="http://a">Element a</a>
 ```
 
 Bind a variable (variables are bound as strings):
 ```
-$ ./xsel -x '//*[. = $textval]' -v textval="Element b" test.xml
+$ xsel -x '//*[. = $textval]' -v textval="Element b" test.xml
 test.xml: Element b
 ```
