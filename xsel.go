@@ -5,6 +5,7 @@ import (
 	"encoding/xml"
 	"flag"
 	"fmt"
+	"io"
 	"io/fs"
 	"io/ioutil"
 	"os"
@@ -95,7 +96,13 @@ func main() {
 	}
 
 	for _, file := range args {
-		filepath.WalkDir(file, walker)
+		if file == "-" {
+			fileSync.Add(1)
+
+			go runXpathOnStdin()
+		} else {
+			filepath.WalkDir(file, walker)
+		}
 	}
 
 	fileSync.Wait()
@@ -111,9 +118,9 @@ func walker(path string, d fs.DirEntry, err error) error {
 		fileSync.Add(1)
 
 		if *concurrent {
-			go runXpathExpr(path)
+			go runXpathOnFile(path)
 		} else {
-			runXpathExpr(path)
+			runXpathOnFile(path)
 		}
 
 		return nil
@@ -127,8 +134,9 @@ func walker(path string, d fs.DirEntry, err error) error {
 	return fs.SkipDir
 }
 
-func runXpathExpr(path string) {
+func runXpathOnFile(path string) {
 	defer fileSync.Done()
+
 	fileBytes, err := ioutil.ReadFile(path)
 
 	if err != nil {
@@ -136,6 +144,24 @@ func runXpathExpr(path string) {
 		return
 	}
 
+	executeXpath(fileBytes, path)
+}
+
+func runXpathOnStdin() {
+	defer fileSync.Done()
+
+	buf := bytes.Buffer{}
+	_, err := io.Copy(&buf, os.Stdin)
+
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		return
+	}
+
+	executeXpath(buf.Bytes(), "-")
+}
+
+func executeXpath(fileBytes []byte, path string) {
 	parser := parser.ReadXml(bytes.NewBuffer(fileBytes), buildParserSettings)
 	cursor, err := store.CreateInMemory(parser)
 
@@ -178,7 +204,7 @@ func buildContextSettings(c *exec.ContextSettings) {
 }
 
 func writeResult(buffer *bytes.Buffer, path string, result exec.Result) {
-	if *suppressFileNames {
+	if *suppressFileNames || path == "-" {
 		fmt.Fprintf(buffer, "%s\n", result.String())
 	} else {
 		fmt.Fprintf(buffer, "%s: %s\n", path, result.String())
@@ -189,7 +215,7 @@ func writeXmlResult(buffer *bytes.Buffer, path string, result exec.NodeSet) {
 	for _, i := range result {
 		nextResult := bytes.Buffer{}
 
-		if !*suppressFileNames {
+		if !*suppressFileNames && path != "-" {
 			fmt.Fprintf(&nextResult, "%s: ", path)
 		}
 

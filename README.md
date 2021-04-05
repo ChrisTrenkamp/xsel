@@ -173,6 +173,12 @@ $ xsel -x '/root/b' test.xml
 test.xml: Element b
 ```
 
+This is a basic query on stdin:
+```
+$ cat foo.xml | xsel -x '/root/b' -
+Element b
+```
+
 This query has multiple results, but only the first value is printed:
 ```
 $ xsel -x '/root/*' test.xml

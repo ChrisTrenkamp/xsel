@@ -79,10 +79,10 @@ func (x XmlProcInst) ProcInstValue() string {
 var emptyAttrs = make([]XmlAttribute, 0)
 var emptyNamespaces = make([]XmlNamespace, 0)
 
-type ParseOptions func(d *xml.Decoder)
+type XmlParseOptions func(d *xml.Decoder)
 
 // Creates a Parser that reads the given XML document.
-func ReadXml(in io.Reader, opts ...ParseOptions) Parser {
+func ReadXml(in io.Reader, opts ...XmlParseOptions) Parser {
 	xmlReader := xml.NewDecoder(in)
 	xmlReader.CharsetReader = charset.NewReaderLabel
 
