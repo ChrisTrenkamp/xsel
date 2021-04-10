@@ -1,28 +1,34 @@
 package exec
 
 import (
-	"fmt"
-
 	"github.com/ChrisTrenkamp/xsel/grammar"
 	"github.com/ChrisTrenkamp/xsel/grammar/parser/bsr"
 )
 
+func execContext(context *exprContext, expr *grammar.Grammar) error {
+	name := expr.BSR.Label.Slot().NT
+	exec := contextFunctions[name]
+
+	if exec != nil {
+		return exec(context, expr)
+	}
+
+	return execChildren(context, expr)
+}
+
 func leftOnlyIndependentResult(context *exprContext, expr *grammar.Grammar) (Result, error) {
-	children := make([]*bsr.BSR, 0, 1)
+	var execNext *bsr.BSR
 
 	for _, cn := range expr.BSR.GetAllNTChildren() {
 		for _, c := range cn {
-			children = append(children, &c)
+			execNext = &c
+			break
 		}
-	}
-
-	if len(children) != 1 {
-		return nil, fmt.Errorf("BSR list size not one: %+v", children)
 	}
 
 	left := context.copy()
 
-	if err := execContext(&left, expr.Next(children[0])); err != nil {
+	if err := execContext(&left, expr.Next(execNext)); err != nil {
 		return nil, err
 	}
 
@@ -36,10 +42,6 @@ func leftRightIndependentResult(context *exprContext, expr *grammar.Grammar) (Re
 		for _, c := range cn {
 			children = append(children, &c)
 		}
-	}
-
-	if len(children) != 2 {
-		return nil, nil, fmt.Errorf("BSR list size not two: %+v", children)
 	}
 
 	left := context.copy()
@@ -69,6 +71,16 @@ func leftRightIndependentNumber(context *exprContext, expr *grammar.Grammar) (fl
 	return leftNum, rightNum, nil
 }
 
+func execChildren(context *exprContext, expr *grammar.Grammar) error {
+	for _, cn := range expr.BSR.GetAllNTChildren() {
+		for _, c := range cn {
+			return execContext(context, expr.Next(&c))
+		}
+	}
+
+	return nil
+}
+
 func leftRightDependentResult(context *exprContext, expr *grammar.Grammar) error {
 	children := make([]*bsr.BSR, 0, 2)
 
@@ -76,10 +88,6 @@ func leftRightDependentResult(context *exprContext, expr *grammar.Grammar) error
 		for _, c := range cn {
 			children = append(children, &c)
 		}
-	}
-
-	if len(children) != 2 {
-		return fmt.Errorf("BSR list size not two: %+v", children)
 	}
 
 	if err := execContext(context, expr.Next(children[0])); err != nil {

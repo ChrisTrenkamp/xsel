@@ -9,6 +9,76 @@ import (
 	"github.com/ChrisTrenkamp/xsel/store"
 )
 
+type Result interface {
+	String() string
+	Number() float64
+	Bool() bool
+}
+
+type Bool bool
+
+func (b Bool) String() string {
+	if b {
+		return "true"
+	}
+
+	return "false"
+}
+
+func (b Bool) Number() float64 {
+	if b {
+		return 1.0
+	}
+
+	return 0.0
+}
+
+func (b Bool) Bool() bool {
+	return bool(b)
+}
+
+type Number float64
+
+func (n Number) String() string {
+	if math.IsInf(float64(n), 1) {
+		return "Infinity"
+	}
+
+	if math.IsInf(float64(n), -1) {
+		return "-Infinity"
+	}
+
+	return strconv.FormatFloat(float64(n), 'f', -1, 64)
+}
+
+func (n Number) Number() float64 {
+	return float64(n)
+}
+
+func (n Number) Bool() bool {
+	return n != 0
+}
+
+type String string
+
+func (n String) String() string {
+	return string(n)
+}
+
+func (n String) Number() float64 {
+	ret, err := strconv.ParseFloat(string(n), 64)
+
+	if err != nil {
+		return math.NaN()
+	}
+
+	return ret
+}
+
+func (n String) Bool() bool {
+	return len(n) > 0
+}
+
 type NodeSet []store.Cursor
 
 func (n NodeSet) String() string {

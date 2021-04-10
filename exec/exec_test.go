@@ -109,6 +109,7 @@ func TestDivide(t *testing.T) {
 
 func TestMod(t *testing.T) {
 	exec(t, "4 mod 3", `<root/>`, Number(1))
+	execNodesToString(t, "4 mod 0", `<root/>`, Number(math.NaN()).String())
 }
 
 func TestString(t *testing.T) {

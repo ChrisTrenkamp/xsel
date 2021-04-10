@@ -10,13 +10,17 @@ import (
 	"golang.org/x/text/language"
 )
 
+type Function func(context Context, args ...Result) (Result, error)
+
 type overloadHelper map[int]Function
+
+var errBadArgs = fmt.Errorf("incorrect number of arguments")
 
 func (o overloadHelper) dispatch(context Context, args ...Result) (Result, error) {
 	fn := o[len(args)]
 
 	if fn == nil {
-		return nil, fmt.Errorf("incorrect number of arguments")
+		return nil, errBadArgs
 	}
 
 	return fn(context, args...)
@@ -26,10 +30,6 @@ func (o overloadHelper) build() Function {
 	return func(context Context, args ...Result) (Result, error) {
 		return o.dispatch(context, args...)
 	}
-}
-
-var countDispatch = overloadHelper{
-	1: count1,
 }
 
 var localNameDispatch = overloadHelper{
@@ -52,22 +52,6 @@ var stringDispatch = overloadHelper{
 	1: string1,
 }
 
-var startsWithDispatch = overloadHelper{
-	2: startsWith2,
-}
-
-var containsDispatch = overloadHelper{
-	2: contains2,
-}
-
-var substringBeforeDispatch = overloadHelper{
-	2: substringBefore2,
-}
-
-var substringAfterDispatch = overloadHelper{
-	2: substringAfter2,
-}
-
 var stringLengthDispatch = overloadHelper{
 	0: stringLength0,
 	1: stringLength1,
@@ -86,16 +70,16 @@ var numberDispatch = overloadHelper{
 var builtinFunctions = map[XmlName]Function{
 	{"", "last"}:             last,
 	{"", "position"}:         position,
-	{"", "count"}:            countDispatch.build(),
+	{"", "count"}:            count,
 	{"", "local-name"}:       localNameDispatch.build(),
 	{"", "namespace-uri"}:    namespaceUriDispatch.build(),
 	{"", "name"}:             nameDispatch.build(),
 	{"", "string"}:           stringDispatch.build(),
 	{"", "concat"}:           concat,
-	{"", "starts-with"}:      startsWithDispatch.build(),
-	{"", "contains"}:         containsDispatch.build(),
-	{"", "substring-before"}: substringBeforeDispatch.build(),
-	{"", "substring-after"}:  substringAfterDispatch.build(),
+	{"", "starts-with"}:      startsWith,
+	{"", "contains"}:         contains,
+	{"", "substring-before"}: substringBefore,
+	{"", "substring-after"}:  substringAfter,
 	{"", "substring"}:        substring,
 	{"", "string-length"}:    stringLengthDispatch.build(),
 	{"", "normalize-space"}:  normalizeSpaceDispatch.build(),
@@ -115,7 +99,7 @@ func last(context Context, args ...Result) (Result, error) {
 	nodeSet, ok := context.Result().(NodeSet)
 
 	if !ok {
-		return nil, fmt.Errorf("cannot query nodes on non-NodeSet's")
+		return nil, errQueryNonNodeset
 	}
 
 	return Number(len(nodeSet)) + 1, nil
@@ -125,11 +109,15 @@ func position(context Context, args ...Result) (Result, error) {
 	return Number(context.ContextPosition() + 1), nil
 }
 
-func count1(context Context, args ...Result) (Result, error) {
+func count(context Context, args ...Result) (Result, error) {
+	if len(args) != 1 {
+		return nil, errBadArgs
+	}
+
 	nodeSet, ok := args[0].(NodeSet)
 
 	if !ok {
-		return nil, fmt.Errorf("cannot query nodes on non-NodeSet's")
+		return nil, errQueryNonNodeset
 	}
 
 	return Number(len(nodeSet)), nil
@@ -181,7 +169,7 @@ func name1(context Context, args ...Result) (Result, error) {
 
 func getName(nodeSet NodeSet, ok bool, nameType nameType) (Result, error) {
 	if !ok {
-		return nil, fmt.Errorf("cannot query nodes on non-NodeSet's")
+		return nil, errQueryNonNodeset
 	}
 
 	if len(nodeSet) == 0 {
@@ -223,21 +211,33 @@ func concat(context Context, args ...Result) (Result, error) {
 	return String(ret.String()), nil
 }
 
-func startsWith2(context Context, args ...Result) (Result, error) {
+func startsWith(context Context, args ...Result) (Result, error) {
+	if len(args) != 2 {
+		return nil, errBadArgs
+	}
+
 	str := args[0].String()
 	prefix := args[1].String()
 
 	return Bool(strings.HasPrefix(str, prefix)), nil
 }
 
-func contains2(context Context, args ...Result) (Result, error) {
+func contains(context Context, args ...Result) (Result, error) {
+	if len(args) != 2 {
+		return nil, errBadArgs
+	}
+
 	str := args[0].String()
 	substr := args[1].String()
 
 	return Bool(strings.Contains(str, substr)), nil
 }
 
-func substringBefore2(context Context, args ...Result) (Result, error) {
+func substringBefore(context Context, args ...Result) (Result, error) {
+	if len(args) != 2 {
+		return nil, errBadArgs
+	}
+
 	str := args[0].String()
 	substr := args[1].String()
 
@@ -250,7 +250,11 @@ func substringBefore2(context Context, args ...Result) (Result, error) {
 	return String(str[:ind]), nil
 }
 
-func substringAfter2(context Context, args ...Result) (Result, error) {
+func substringAfter(context Context, args ...Result) (Result, error) {
+	if len(args) != 2 {
+		return nil, errBadArgs
+	}
+
 	str := args[0].String()
 	substr := args[1].String()
 
@@ -265,7 +269,7 @@ func substringAfter2(context Context, args ...Result) (Result, error) {
 
 func substring(context Context, args ...Result) (Result, error) {
 	if len(args) != 2 && len(args) != 3 {
-		return nil, fmt.Errorf("incorrect number of arguments")
+		return nil, errBadArgs
 	}
 
 	str := args[0].String()
@@ -319,7 +323,7 @@ func normalizeSpace1(context Context, args ...Result) (Result, error) {
 
 func translate(context Context, args ...Result) (Result, error) {
 	if len(args) != 3 {
-		return nil, fmt.Errorf("incorrect number of arguments")
+		return nil, errBadArgs
 	}
 
 	src := args[0].String()
@@ -341,29 +345,37 @@ func translate(context Context, args ...Result) (Result, error) {
 
 func not(context Context, args ...Result) (Result, error) {
 	if len(args) != 1 {
-		return nil, fmt.Errorf("incorrect number of arguments")
+		return nil, errBadArgs
 	}
 
 	return Bool(!args[0].Bool()), nil
 }
 
 func true0(context Context, args ...Result) (Result, error) {
+	if len(args) != 0 {
+		return nil, errBadArgs
+	}
+
 	return Bool(true), nil
 }
 
 func false0(context Context, args ...Result) (Result, error) {
+	if len(args) != 0 {
+		return nil, errBadArgs
+	}
+
 	return Bool(false), nil
 }
 
 func lang(context Context, args ...Result) (Result, error) {
 	if len(args) != 1 {
-		return nil, fmt.Errorf("incorrect number of arguments")
+		return nil, errBadArgs
 	}
 
 	nodeSet, ok := context.Result().(NodeSet)
 
 	if !ok {
-		return nil, fmt.Errorf("cannot query nodes on non-NodeSet's")
+		return nil, errQueryNonNodeset
 	}
 
 	lStr := args[0].String()
@@ -418,13 +430,13 @@ func number1(context Context, args ...Result) (Result, error) {
 
 func sum(context Context, args ...Result) (Result, error) {
 	if len(args) != 1 {
-		return nil, fmt.Errorf("incorrect number of arguments")
+		return nil, errBadArgs
 	}
 
 	nodeSet, ok := args[0].(NodeSet)
 
 	if !ok {
-		return nil, fmt.Errorf("cannot query nodes on non-NodeSet's")
+		return nil, errQueryNonNodeset
 	}
 
 	sum := 0
@@ -438,7 +450,7 @@ func sum(context Context, args ...Result) (Result, error) {
 
 func floor(context Context, args ...Result) (Result, error) {
 	if len(args) != 1 {
-		return nil, fmt.Errorf("incorrect number of arguments")
+		return nil, errBadArgs
 	}
 
 	return Number(math.Floor(float64(args[0].Number()))), nil
@@ -446,7 +458,7 @@ func floor(context Context, args ...Result) (Result, error) {
 
 func ceiling(context Context, args ...Result) (Result, error) {
 	if len(args) != 1 {
-		return nil, fmt.Errorf("incorrect number of arguments")
+		return nil, errQueryNonNodeset
 	}
 
 	return Number(math.Ceil(float64(args[0].Number()))), nil
@@ -454,7 +466,7 @@ func ceiling(context Context, args ...Result) (Result, error) {
 
 func round(context Context, args ...Result) (Result, error) {
 	if len(args) != 1 {
-		return nil, fmt.Errorf("incorrect number of arguments")
+		return nil, errBadArgs
 	}
 
 	return Number(getRound(float64(args[0].Number()))), nil
