@@ -1,7 +1,9 @@
 package grammar
 
 import (
+	"bytes"
 	"fmt"
+	"strings"
 
 	"github.com/ChrisTrenkamp/xsel/grammar/lexer"
 	"github.com/ChrisTrenkamp/xsel/grammar/parser"
@@ -30,13 +32,13 @@ func Build(xpath string) (Grammar, error) {
 	parse, err := parser.Parse(lex)
 
 	if err != nil {
-		errStr := ""
+		errBuf := bytes.Buffer{}
 
 		for _, e := range err {
-			errStr += e.String()
+			printError(&errBuf, e)
 		}
 
-		return Grammar{}, fmt.Errorf(errStr)
+		return Grammar{}, fmt.Errorf(errBuf.String())
 	}
 
 	roots := parse.GetRoots()
@@ -57,4 +59,25 @@ func MustBuild(xpath string) Grammar {
 	}
 
 	return grammar
+}
+
+func printError(buf *bytes.Buffer, err *parser.Error) {
+	if strings.HasPrefix(err.Token.Type().String(), "T_") {
+		// This error message isn't useful
+		return
+	}
+
+	buf.WriteString(fmt.Sprintf("Error on column %d, ", err.Column))
+	buf.WriteString(fmt.Sprintf("on token type '%s' - ", err.Slot.Index().NT))
+	buf.WriteString(fmt.Sprintf("received %s - ", err.Token.Type()))
+	buf.WriteString("Expected: ")
+
+	expected := make([]string, 0, len(err.Expected))
+
+	for _, i := range err.Expected {
+		expected = append(expected, i)
+	}
+
+	buf.WriteString(strings.Join(expected, ", "))
+	buf.WriteString("\n")
 }
