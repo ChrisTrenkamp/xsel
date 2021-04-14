@@ -50,13 +50,18 @@ const(
 	NT_MultiplicativeExprMultiply 
 	NT_NameTestAnyElement 
 	NT_NameTestLocalAnyNamespace 
+	NT_NameTestLocalAnyNamespaceReservedNameConflict 
 	NT_NameTestNamespaceAnyLocal 
+	NT_NameTestNamespaceAnyLocalReservedNameConflict 
 	NT_NameTestQNameLocalOnly 
+	NT_NameTestQNameLocalOnlyReservedNameConflict 
 	NT_NameTestQNameNamespaceWithLocal 
+	NT_NameTestQNameNamespaceWithLocalReservedNameConflictBoth 
+	NT_NameTestQNameNamespaceWithLocalReservedNameConflictLocal 
+	NT_NameTestQNameNamespaceWithLocalReservedNameConflictNamespace 
 	NT_NodeTest 
 	NT_NodeTestAndPredicate 
 	NT_NodeTestNodeTypeNoArgTest 
-	NT_NodeTestNodeTypeNoArgTestNodeTestConflictResolver 
 	NT_NodeTestProcInstTargetTest 
 	NT_NodeType 
 	NT_Number 
@@ -78,6 +83,7 @@ const(
 	NT_RelationalExprLessThanOrEqual 
 	NT_RelativeLocationPath 
 	NT_RelativeLocationPathWithStep 
+	NT_ReservedNameConflictResolver 
 	NT_Step 
 	NT_StepWithAxisAndNodeTest 
 	NT_StepWithAxisAndNodeTestAndPredicate 
@@ -206,13 +212,18 @@ var ntToString = []string {
 	"MultiplicativeExprMultiply", /* NT_MultiplicativeExprMultiply */
 	"NameTestAnyElement", /* NT_NameTestAnyElement */
 	"NameTestLocalAnyNamespace", /* NT_NameTestLocalAnyNamespace */
+	"NameTestLocalAnyNamespaceReservedNameConflict", /* NT_NameTestLocalAnyNamespaceReservedNameConflict */
 	"NameTestNamespaceAnyLocal", /* NT_NameTestNamespaceAnyLocal */
+	"NameTestNamespaceAnyLocalReservedNameConflict", /* NT_NameTestNamespaceAnyLocalReservedNameConflict */
 	"NameTestQNameLocalOnly", /* NT_NameTestQNameLocalOnly */
+	"NameTestQNameLocalOnlyReservedNameConflict", /* NT_NameTestQNameLocalOnlyReservedNameConflict */
 	"NameTestQNameNamespaceWithLocal", /* NT_NameTestQNameNamespaceWithLocal */
+	"NameTestQNameNamespaceWithLocalReservedNameConflictBoth", /* NT_NameTestQNameNamespaceWithLocalReservedNameConflictBoth */
+	"NameTestQNameNamespaceWithLocalReservedNameConflictLocal", /* NT_NameTestQNameNamespaceWithLocalReservedNameConflictLocal */
+	"NameTestQNameNamespaceWithLocalReservedNameConflictNamespace", /* NT_NameTestQNameNamespaceWithLocalReservedNameConflictNamespace */
 	"NodeTest", /* NT_NodeTest */
 	"NodeTestAndPredicate", /* NT_NodeTestAndPredicate */
 	"NodeTestNodeTypeNoArgTest", /* NT_NodeTestNodeTypeNoArgTest */
-	"NodeTestNodeTypeNoArgTestNodeTestConflictResolver", /* NT_NodeTestNodeTypeNoArgTestNodeTestConflictResolver */
 	"NodeTestProcInstTargetTest", /* NT_NodeTestProcInstTargetTest */
 	"NodeType", /* NT_NodeType */
 	"Number", /* NT_Number */
@@ -234,6 +245,7 @@ var ntToString = []string {
 	"RelationalExprLessThanOrEqual", /* NT_RelationalExprLessThanOrEqual */
 	"RelativeLocationPath", /* NT_RelativeLocationPath */
 	"RelativeLocationPathWithStep", /* NT_RelativeLocationPathWithStep */
+	"ReservedNameConflictResolver", /* NT_ReservedNameConflictResolver */
 	"Step", /* NT_Step */
 	"StepWithAxisAndNodeTest", /* NT_StepWithAxisAndNodeTest */
 	"StepWithAxisAndNodeTestAndPredicate", /* NT_StepWithAxisAndNodeTestAndPredicate */
@@ -334,13 +346,18 @@ var stringNT = map[string]NT{
 	"MultiplicativeExprMultiply":NT_MultiplicativeExprMultiply,
 	"NameTestAnyElement":NT_NameTestAnyElement,
 	"NameTestLocalAnyNamespace":NT_NameTestLocalAnyNamespace,
+	"NameTestLocalAnyNamespaceReservedNameConflict":NT_NameTestLocalAnyNamespaceReservedNameConflict,
 	"NameTestNamespaceAnyLocal":NT_NameTestNamespaceAnyLocal,
+	"NameTestNamespaceAnyLocalReservedNameConflict":NT_NameTestNamespaceAnyLocalReservedNameConflict,
 	"NameTestQNameLocalOnly":NT_NameTestQNameLocalOnly,
+	"NameTestQNameLocalOnlyReservedNameConflict":NT_NameTestQNameLocalOnlyReservedNameConflict,
 	"NameTestQNameNamespaceWithLocal":NT_NameTestQNameNamespaceWithLocal,
+	"NameTestQNameNamespaceWithLocalReservedNameConflictBoth":NT_NameTestQNameNamespaceWithLocalReservedNameConflictBoth,
+	"NameTestQNameNamespaceWithLocalReservedNameConflictLocal":NT_NameTestQNameNamespaceWithLocalReservedNameConflictLocal,
+	"NameTestQNameNamespaceWithLocalReservedNameConflictNamespace":NT_NameTestQNameNamespaceWithLocalReservedNameConflictNamespace,
 	"NodeTest":NT_NodeTest,
 	"NodeTestAndPredicate":NT_NodeTestAndPredicate,
 	"NodeTestNodeTypeNoArgTest":NT_NodeTestNodeTypeNoArgTest,
-	"NodeTestNodeTypeNoArgTestNodeTestConflictResolver":NT_NodeTestNodeTypeNoArgTestNodeTestConflictResolver,
 	"NodeTestProcInstTargetTest":NT_NodeTestProcInstTargetTest,
 	"NodeType":NT_NodeType,
 	"Number":NT_Number,
@@ -362,6 +379,7 @@ var stringNT = map[string]NT{
 	"RelationalExprLessThanOrEqual":NT_RelationalExprLessThanOrEqual,
 	"RelativeLocationPath":NT_RelativeLocationPath,
 	"RelativeLocationPathWithStep":NT_RelativeLocationPathWithStep,
+	"ReservedNameConflictResolver":NT_ReservedNameConflictResolver,
 	"Step":NT_Step,
 	"StepWithAxisAndNodeTest":NT_StepWithAxisAndNodeTest,
 	"StepWithAxisAndNodeTestAndPredicate":NT_StepWithAxisAndNodeTestAndPredicate,

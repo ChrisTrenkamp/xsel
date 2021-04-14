@@ -32,7 +32,7 @@ func exec(t *testing.T, expr, xml string, expected Result) {
 	}
 }
 
-func execNodesToString(t *testing.T, expr, xml string, expected string) {
+func execNodesToString(t *testing.T, expr, xml string, expected string, settings ...ContextApply) {
 	xpath := grammar.MustBuild(expr)
 	parser := parser.ReadXml(bytes.NewBufferString(xml))
 	cursor, err := store.CreateInMemory(parser)
@@ -42,7 +42,7 @@ func execNodesToString(t *testing.T, expr, xml string, expected string) {
 		return
 	}
 
-	result, err := Exec(cursor, &xpath)
+	result, err := Exec(cursor, &xpath, settings...)
 
 	if err != nil {
 		t.Error(err)
@@ -329,11 +329,13 @@ text
 <Root>text2
 <node>a</node>
 <node>b</node>
+<attribute>c</attribute>
 text3
 </Root>
 text4
 `
 	execNodesToString(t, "/Root/node", xml, "a")
+	execNodesToString(t, "/Root/attribute", xml, "c")
 }
 
 func TestPredicate(t *testing.T) {
@@ -950,6 +952,80 @@ func TestNamespaceAnyLocal(t *testing.T) {
 	}
 }
 
+func TestNamespaceAnyLocalConflict(t *testing.T) {
+	xml := `
+<root xmlns="http://root">
+	<a xmlns="http://a"/>
+	<b xmlns="http://b"/>
+	<c xmlns="http://c">c</c>
+	<d xmlns="http://c">d</d>
+</root>`
+
+	namespaces := func(c *ContextSettings) {
+		c.NamespaceDecls["attribute"] = "http://b"
+	}
+
+	nodes := execNodes(t, "//attribute:*", xml, namespaces)
+
+	if len(nodes) != 1 {
+		t.Error("Size is not 1")
+	}
+
+	b := nodes[0]
+
+	if (store.Cursor)(b).Node().(node.Element).Local() != "b" {
+		t.Error("Node not 'b'")
+	}
+}
+
+func TestNameTestQNameNamespaceWithLocalReservedNameConflictNamespace(t *testing.T) {
+	xml := `
+<root xmlns="http://root">
+	<a xmlns="http://a"/>
+	<b xmlns="http://b"/>
+	<c xmlns="http://c">c</c>
+	<d xmlns="http://c">d</d>
+</root>`
+
+	namespaces := func(c *ContextSettings) {
+		c.NamespaceDecls["descendant"] = "http://c"
+	}
+
+	execNodesToString(t, "//descendant:c", xml, "c", namespaces)
+}
+
+func TestNameTestQNameNamespaceWithLocalReservedNameConflictLocal(t *testing.T) {
+	xml := `
+<root xmlns="http://root">
+	<a xmlns="http://a"/>
+	<b xmlns="http://b"/>
+	<descendant xmlns="http://c">c</descendant>
+	<descendant xmlns="http://c">d</descendant>
+</root>`
+
+	namespaces := func(c *ContextSettings) {
+		c.NamespaceDecls["a"] = "http://c"
+	}
+
+	execNodesToString(t, "//a:descendant", xml, "c", namespaces)
+}
+
+func TestNameTestQNameNamespaceWithLocalReservedNameConflictBoth(t *testing.T) {
+	xml := `
+<root xmlns="http://root">
+	<a xmlns="http://a"/>
+	<b xmlns="http://b"/>
+	<descendant xmlns="http://c">c</descendant>
+	<descendant xmlns="http://c">d</descendant>
+</root>`
+
+	namespaces := func(c *ContextSettings) {
+		c.NamespaceDecls["descendant"] = "http://c"
+	}
+
+	execNodesToString(t, "//descendant:descendant", xml, "c", namespaces)
+}
+
 func TestLocalAnyNamespace(t *testing.T) {
 	xml := `
 <root>
@@ -957,6 +1033,30 @@ func TestLocalAnyNamespace(t *testing.T) {
 	<a xmlns="http://b"/>
 </root>`
 	nodes := execNodes(t, "//*:a", xml)
+
+	if len(nodes) != 2 {
+		t.Error("Size is not 2")
+	}
+
+	a := nodes[0]
+	b := nodes[1]
+
+	if (store.Cursor)(a).Node().(node.Element).Space() != "http://a" {
+		t.Error("Node not 'http://a'")
+	}
+
+	if (store.Cursor)(b).Node().(node.Element).Space() != "http://b" {
+		t.Error("Node not 'http://b'")
+	}
+}
+
+func TestLocalAxisConflict(t *testing.T) {
+	xml := `
+<root>
+	<attribute xmlns="http://a"/>
+	<attribute xmlns="http://b"/>
+</root>`
+	nodes := execNodes(t, "//*: attribute ", xml)
 
 	if len(nodes) != 2 {
 		t.Error("Size is not 2")

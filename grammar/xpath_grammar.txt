@@ -171,23 +171,53 @@ AbbreviatedStepParent : "..";
 
 NodeTest :
 	NodeTestNodeTypeNoArgTest
-	| NodeTestNodeTypeNoArgTestNodeTestConflictResolver
 	| NodeTestProcInstTargetTest
 	| NameTestAnyElement
 	| NameTestNamespaceAnyLocal
+	| NameTestNamespaceAnyLocalReservedNameConflict
 	| NameTestLocalAnyNamespace
+	| NameTestLocalAnyNamespaceReservedNameConflict
 	| NameTestQNameNamespaceWithLocal
+	| NameTestQNameNamespaceWithLocalReservedNameConflictNamespace
+	| NameTestQNameNamespaceWithLocalReservedNameConflictLocal
+	| NameTestQNameNamespaceWithLocalReservedNameConflictBoth
 	| NameTestQNameLocalOnly
+	| NameTestQNameLocalOnlyReservedNameConflict
 	;
 
 NodeTestNodeTypeNoArgTest : NodeType "(" ")";
-NodeTestNodeTypeNoArgTestNodeTestConflictResolver : NodeType;
 NodeTestProcInstTargetTest : "processing-instruction" "(" Literal ")";
 NameTestAnyElement : "*";
 NameTestNamespaceAnyLocal : ncname ":" "*";
+NameTestNamespaceAnyLocalReservedNameConflict : ReservedNameConflictResolver ":" "*";
 NameTestLocalAnyNamespace : "*" ":" ncname;
+NameTestLocalAnyNamespaceReservedNameConflict : "*" ":" ReservedNameConflictResolver;
 NameTestQNameNamespaceWithLocal : ncname ":" ncname;
+NameTestQNameNamespaceWithLocalReservedNameConflictNamespace : ReservedNameConflictResolver ":" ncname;
+NameTestQNameNamespaceWithLocalReservedNameConflictLocal : ncname ":" ReservedNameConflictResolver;
+NameTestQNameNamespaceWithLocalReservedNameConflictBoth : ReservedNameConflictResolver ":" ReservedNameConflictResolver;
 NameTestQNameLocalOnly : ncname;
+NameTestQNameLocalOnlyReservedNameConflict : ReservedNameConflictResolver;
+
+ReservedNameConflictResolver : 
+	"ancestor"
+	| "ancestor-or-self"
+	| "attribute"
+	| "child"
+	| "descendant"
+	| "descendant-or-self"
+	| "following"
+	| "following-sibling"
+	| "namespace"
+	| "parent"
+	| "preceding"
+	| "preceding-sibling"
+	| "self"
+	| "comment"
+	| "text"
+	| "processing-instruction"
+	| "node"
+	;
 
 ncname :
 	<letter> { <letter> | any "_℮ↀↁↂ〇〡〢〣〤〥〦〧〨〩-.0123456789·̴̵̶̷̸̡̢̧̨̛̖̗̘̙̜̝̞̟̠̣̤̥̦̩̪̫̬̭̮̯̰̱̲̳̹̺̻̼̀́̂̃̄̅̆̇̈̉̊̋̌̍̎̏̐̑̒̓̔̽̾̿̀́͂̓̈́̕̚͠͡ͅ·ְֱֲֳִֵֶַָֹֻּֽֿׁׂًٌٍَُِّْ֑֖֛֣֤֥֦֧֪֚֭֮҃҄҅҆֒֓֔֕֗֘֙֜֝֞֟֠֡֨֩֫֬֯ׄ٠١٢٣٤٥٦٧٨٩ٰۖۗۘۙۚۛۜ۝۞ۣ۪ۭ۟۠ۡۢۤۧۨ۫۬۰۱۲۳۴۵۶۷۸۹ँंः़ािीुूृॄॅॆेैॉॊोौ्॒॑॓॔ॢॣ०१२३४५६७८९ঁংঃ়ািীুূৃৄেৈোৌ্ৗৢৣ০১২৩৪৫৬৭৮৯ਂ਼ਾਿੀੁੂੇੈੋੌ੍੦੧੨੩੪੫੬੭੮੯ੰੱઁંઃ઼ાિીુૂૃૄૅેૈૉોૌ્૦૧૨૩૪૫૬૭૮૯ଁଂଃ଼ାିୀୁୂୃେୈୋୌ୍ୖୗ୦୧୨୩୪୫୬୭୮୯ஂாிீுூெேைொோௌ்ௗ௧௨௩௪௫௬௭௮௯ఁంఃాిీుూృౄెేైొోౌ్ౕౖ౦౧౨౩౪౫౬౭౮౯ಂಃಾಿೀುೂೃೄೆೇೈೊೋೌ್ೕೖ೦೧೨೩೪೫೬೭೮೯ംഃാിീുൂൃെേൈൊോൌ്ൗ൦൧൨൩൪൫൬൭൮൯ัิีึืฺุู็่้๊๋์ํ๎๐๑๒๓๔๕๖๗๘๙ັິີຶືຸູົຼ່້໊໋໌ໍ໐໑໒໓໔໕໖໗໘໙༘༙༠༡༢༣༤༥༦༧༨༩༹༵༷༾༿ཱཱཱིིུུྲྀཷླྀཹེཻོཽཾཿ྄ཱྀྀྂྃ྆྇ྐྑྒྒྷྔྕྗྙྚྛྜྜྷྞྟྠྡྡྷྣྤྥྦྦྷྨྩྪྫྫྷྭྱྲླྴྵྶྷྐྵ⃒⃓⃘⃙⃚゙゚〪〭〮〯〫⃐⃑⃔⃕⃖⃗⃛⃜⃡〬" }

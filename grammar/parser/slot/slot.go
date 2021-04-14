@@ -171,16 +171,38 @@ const(
 	NameTestLocalAnyNamespace0R1
 	NameTestLocalAnyNamespace0R2
 	NameTestLocalAnyNamespace0R3
+	NameTestLocalAnyNamespaceReservedNameConflict0R0
+	NameTestLocalAnyNamespaceReservedNameConflict0R1
+	NameTestLocalAnyNamespaceReservedNameConflict0R2
+	NameTestLocalAnyNamespaceReservedNameConflict0R3
 	NameTestNamespaceAnyLocal0R0
 	NameTestNamespaceAnyLocal0R1
 	NameTestNamespaceAnyLocal0R2
 	NameTestNamespaceAnyLocal0R3
+	NameTestNamespaceAnyLocalReservedNameConflict0R0
+	NameTestNamespaceAnyLocalReservedNameConflict0R1
+	NameTestNamespaceAnyLocalReservedNameConflict0R2
+	NameTestNamespaceAnyLocalReservedNameConflict0R3
 	NameTestQNameLocalOnly0R0
 	NameTestQNameLocalOnly0R1
+	NameTestQNameLocalOnlyReservedNameConflict0R0
+	NameTestQNameLocalOnlyReservedNameConflict0R1
 	NameTestQNameNamespaceWithLocal0R0
 	NameTestQNameNamespaceWithLocal0R1
 	NameTestQNameNamespaceWithLocal0R2
 	NameTestQNameNamespaceWithLocal0R3
+	NameTestQNameNamespaceWithLocalReservedNameConflictBoth0R0
+	NameTestQNameNamespaceWithLocalReservedNameConflictBoth0R1
+	NameTestQNameNamespaceWithLocalReservedNameConflictBoth0R2
+	NameTestQNameNamespaceWithLocalReservedNameConflictBoth0R3
+	NameTestQNameNamespaceWithLocalReservedNameConflictLocal0R0
+	NameTestQNameNamespaceWithLocalReservedNameConflictLocal0R1
+	NameTestQNameNamespaceWithLocalReservedNameConflictLocal0R2
+	NameTestQNameNamespaceWithLocalReservedNameConflictLocal0R3
+	NameTestQNameNamespaceWithLocalReservedNameConflictNamespace0R0
+	NameTestQNameNamespaceWithLocalReservedNameConflictNamespace0R1
+	NameTestQNameNamespaceWithLocalReservedNameConflictNamespace0R2
+	NameTestQNameNamespaceWithLocalReservedNameConflictNamespace0R3
 	NodeTest0R0
 	NodeTest0R1
 	NodeTest1R0
@@ -197,6 +219,16 @@ const(
 	NodeTest6R1
 	NodeTest7R0
 	NodeTest7R1
+	NodeTest8R0
+	NodeTest8R1
+	NodeTest9R0
+	NodeTest9R1
+	NodeTest10R0
+	NodeTest10R1
+	NodeTest11R0
+	NodeTest11R1
+	NodeTest12R0
+	NodeTest12R1
 	NodeTestAndPredicate0R0
 	NodeTestAndPredicate0R1
 	NodeTestAndPredicate0R2
@@ -204,8 +236,6 @@ const(
 	NodeTestNodeTypeNoArgTest0R1
 	NodeTestNodeTypeNoArgTest0R2
 	NodeTestNodeTypeNoArgTest0R3
-	NodeTestNodeTypeNoArgTestNodeTestConflictResolver0R0
-	NodeTestNodeTypeNoArgTestNodeTestConflictResolver0R1
 	NodeTestProcInstTargetTest0R0
 	NodeTestProcInstTargetTest0R1
 	NodeTestProcInstTargetTest0R2
@@ -316,6 +346,40 @@ const(
 	RelativeLocationPathWithStep0R1
 	RelativeLocationPathWithStep0R2
 	RelativeLocationPathWithStep0R3
+	ReservedNameConflictResolver0R0
+	ReservedNameConflictResolver0R1
+	ReservedNameConflictResolver1R0
+	ReservedNameConflictResolver1R1
+	ReservedNameConflictResolver2R0
+	ReservedNameConflictResolver2R1
+	ReservedNameConflictResolver3R0
+	ReservedNameConflictResolver3R1
+	ReservedNameConflictResolver4R0
+	ReservedNameConflictResolver4R1
+	ReservedNameConflictResolver5R0
+	ReservedNameConflictResolver5R1
+	ReservedNameConflictResolver6R0
+	ReservedNameConflictResolver6R1
+	ReservedNameConflictResolver7R0
+	ReservedNameConflictResolver7R1
+	ReservedNameConflictResolver8R0
+	ReservedNameConflictResolver8R1
+	ReservedNameConflictResolver9R0
+	ReservedNameConflictResolver9R1
+	ReservedNameConflictResolver10R0
+	ReservedNameConflictResolver10R1
+	ReservedNameConflictResolver11R0
+	ReservedNameConflictResolver11R1
+	ReservedNameConflictResolver12R0
+	ReservedNameConflictResolver12R1
+	ReservedNameConflictResolver13R0
+	ReservedNameConflictResolver13R1
+	ReservedNameConflictResolver14R0
+	ReservedNameConflictResolver14R1
+	ReservedNameConflictResolver15R0
+	ReservedNameConflictResolver15R1
+	ReservedNameConflictResolver16R0
+	ReservedNameConflictResolver16R1
 	Step0R0
 	Step0R1
 	Step1R0
@@ -1671,6 +1735,42 @@ var slots = map[Label]*Slot{
 		}, 
 		NameTestLocalAnyNamespace0R3, 
 	},
+	NameTestLocalAnyNamespaceReservedNameConflict0R0: {
+		symbols.NT_NameTestLocalAnyNamespaceReservedNameConflict, 0, 0, 
+		symbols.Symbols{  
+			symbols.T_3, 
+			symbols.T_11, 
+			symbols.NT_ReservedNameConflictResolver,
+		}, 
+		NameTestLocalAnyNamespaceReservedNameConflict0R0, 
+	},
+	NameTestLocalAnyNamespaceReservedNameConflict0R1: {
+		symbols.NT_NameTestLocalAnyNamespaceReservedNameConflict, 0, 1, 
+		symbols.Symbols{  
+			symbols.T_3, 
+			symbols.T_11, 
+			symbols.NT_ReservedNameConflictResolver,
+		}, 
+		NameTestLocalAnyNamespaceReservedNameConflict0R1, 
+	},
+	NameTestLocalAnyNamespaceReservedNameConflict0R2: {
+		symbols.NT_NameTestLocalAnyNamespaceReservedNameConflict, 0, 2, 
+		symbols.Symbols{  
+			symbols.T_3, 
+			symbols.T_11, 
+			symbols.NT_ReservedNameConflictResolver,
+		}, 
+		NameTestLocalAnyNamespaceReservedNameConflict0R2, 
+	},
+	NameTestLocalAnyNamespaceReservedNameConflict0R3: {
+		symbols.NT_NameTestLocalAnyNamespaceReservedNameConflict, 0, 3, 
+		symbols.Symbols{  
+			symbols.T_3, 
+			symbols.T_11, 
+			symbols.NT_ReservedNameConflictResolver,
+		}, 
+		NameTestLocalAnyNamespaceReservedNameConflict0R3, 
+	},
 	NameTestNamespaceAnyLocal0R0: {
 		symbols.NT_NameTestNamespaceAnyLocal, 0, 0, 
 		symbols.Symbols{  
@@ -1707,6 +1807,42 @@ var slots = map[Label]*Slot{
 		}, 
 		NameTestNamespaceAnyLocal0R3, 
 	},
+	NameTestNamespaceAnyLocalReservedNameConflict0R0: {
+		symbols.NT_NameTestNamespaceAnyLocalReservedNameConflict, 0, 0, 
+		symbols.Symbols{  
+			symbols.NT_ReservedNameConflictResolver, 
+			symbols.T_11, 
+			symbols.T_3,
+		}, 
+		NameTestNamespaceAnyLocalReservedNameConflict0R0, 
+	},
+	NameTestNamespaceAnyLocalReservedNameConflict0R1: {
+		symbols.NT_NameTestNamespaceAnyLocalReservedNameConflict, 0, 1, 
+		symbols.Symbols{  
+			symbols.NT_ReservedNameConflictResolver, 
+			symbols.T_11, 
+			symbols.T_3,
+		}, 
+		NameTestNamespaceAnyLocalReservedNameConflict0R1, 
+	},
+	NameTestNamespaceAnyLocalReservedNameConflict0R2: {
+		symbols.NT_NameTestNamespaceAnyLocalReservedNameConflict, 0, 2, 
+		symbols.Symbols{  
+			symbols.NT_ReservedNameConflictResolver, 
+			symbols.T_11, 
+			symbols.T_3,
+		}, 
+		NameTestNamespaceAnyLocalReservedNameConflict0R2, 
+	},
+	NameTestNamespaceAnyLocalReservedNameConflict0R3: {
+		symbols.NT_NameTestNamespaceAnyLocalReservedNameConflict, 0, 3, 
+		symbols.Symbols{  
+			symbols.NT_ReservedNameConflictResolver, 
+			symbols.T_11, 
+			symbols.T_3,
+		}, 
+		NameTestNamespaceAnyLocalReservedNameConflict0R3, 
+	},
 	NameTestQNameLocalOnly0R0: {
 		symbols.NT_NameTestQNameLocalOnly, 0, 0, 
 		symbols.Symbols{  
@@ -1720,6 +1856,20 @@ var slots = map[Label]*Slot{
 			symbols.T_36,
 		}, 
 		NameTestQNameLocalOnly0R1, 
+	},
+	NameTestQNameLocalOnlyReservedNameConflict0R0: {
+		symbols.NT_NameTestQNameLocalOnlyReservedNameConflict, 0, 0, 
+		symbols.Symbols{  
+			symbols.NT_ReservedNameConflictResolver,
+		}, 
+		NameTestQNameLocalOnlyReservedNameConflict0R0, 
+	},
+	NameTestQNameLocalOnlyReservedNameConflict0R1: {
+		symbols.NT_NameTestQNameLocalOnlyReservedNameConflict, 0, 1, 
+		symbols.Symbols{  
+			symbols.NT_ReservedNameConflictResolver,
+		}, 
+		NameTestQNameLocalOnlyReservedNameConflict0R1, 
 	},
 	NameTestQNameNamespaceWithLocal0R0: {
 		symbols.NT_NameTestQNameNamespaceWithLocal, 0, 0, 
@@ -1757,6 +1907,114 @@ var slots = map[Label]*Slot{
 		}, 
 		NameTestQNameNamespaceWithLocal0R3, 
 	},
+	NameTestQNameNamespaceWithLocalReservedNameConflictBoth0R0: {
+		symbols.NT_NameTestQNameNamespaceWithLocalReservedNameConflictBoth, 0, 0, 
+		symbols.Symbols{  
+			symbols.NT_ReservedNameConflictResolver, 
+			symbols.T_11, 
+			symbols.NT_ReservedNameConflictResolver,
+		}, 
+		NameTestQNameNamespaceWithLocalReservedNameConflictBoth0R0, 
+	},
+	NameTestQNameNamespaceWithLocalReservedNameConflictBoth0R1: {
+		symbols.NT_NameTestQNameNamespaceWithLocalReservedNameConflictBoth, 0, 1, 
+		symbols.Symbols{  
+			symbols.NT_ReservedNameConflictResolver, 
+			symbols.T_11, 
+			symbols.NT_ReservedNameConflictResolver,
+		}, 
+		NameTestQNameNamespaceWithLocalReservedNameConflictBoth0R1, 
+	},
+	NameTestQNameNamespaceWithLocalReservedNameConflictBoth0R2: {
+		symbols.NT_NameTestQNameNamespaceWithLocalReservedNameConflictBoth, 0, 2, 
+		symbols.Symbols{  
+			symbols.NT_ReservedNameConflictResolver, 
+			symbols.T_11, 
+			symbols.NT_ReservedNameConflictResolver,
+		}, 
+		NameTestQNameNamespaceWithLocalReservedNameConflictBoth0R2, 
+	},
+	NameTestQNameNamespaceWithLocalReservedNameConflictBoth0R3: {
+		symbols.NT_NameTestQNameNamespaceWithLocalReservedNameConflictBoth, 0, 3, 
+		symbols.Symbols{  
+			symbols.NT_ReservedNameConflictResolver, 
+			symbols.T_11, 
+			symbols.NT_ReservedNameConflictResolver,
+		}, 
+		NameTestQNameNamespaceWithLocalReservedNameConflictBoth0R3, 
+	},
+	NameTestQNameNamespaceWithLocalReservedNameConflictLocal0R0: {
+		symbols.NT_NameTestQNameNamespaceWithLocalReservedNameConflictLocal, 0, 0, 
+		symbols.Symbols{  
+			symbols.T_36, 
+			symbols.T_11, 
+			symbols.NT_ReservedNameConflictResolver,
+		}, 
+		NameTestQNameNamespaceWithLocalReservedNameConflictLocal0R0, 
+	},
+	NameTestQNameNamespaceWithLocalReservedNameConflictLocal0R1: {
+		symbols.NT_NameTestQNameNamespaceWithLocalReservedNameConflictLocal, 0, 1, 
+		symbols.Symbols{  
+			symbols.T_36, 
+			symbols.T_11, 
+			symbols.NT_ReservedNameConflictResolver,
+		}, 
+		NameTestQNameNamespaceWithLocalReservedNameConflictLocal0R1, 
+	},
+	NameTestQNameNamespaceWithLocalReservedNameConflictLocal0R2: {
+		symbols.NT_NameTestQNameNamespaceWithLocalReservedNameConflictLocal, 0, 2, 
+		symbols.Symbols{  
+			symbols.T_36, 
+			symbols.T_11, 
+			symbols.NT_ReservedNameConflictResolver,
+		}, 
+		NameTestQNameNamespaceWithLocalReservedNameConflictLocal0R2, 
+	},
+	NameTestQNameNamespaceWithLocalReservedNameConflictLocal0R3: {
+		symbols.NT_NameTestQNameNamespaceWithLocalReservedNameConflictLocal, 0, 3, 
+		symbols.Symbols{  
+			symbols.T_36, 
+			symbols.T_11, 
+			symbols.NT_ReservedNameConflictResolver,
+		}, 
+		NameTestQNameNamespaceWithLocalReservedNameConflictLocal0R3, 
+	},
+	NameTestQNameNamespaceWithLocalReservedNameConflictNamespace0R0: {
+		symbols.NT_NameTestQNameNamespaceWithLocalReservedNameConflictNamespace, 0, 0, 
+		symbols.Symbols{  
+			symbols.NT_ReservedNameConflictResolver, 
+			symbols.T_11, 
+			symbols.T_36,
+		}, 
+		NameTestQNameNamespaceWithLocalReservedNameConflictNamespace0R0, 
+	},
+	NameTestQNameNamespaceWithLocalReservedNameConflictNamespace0R1: {
+		symbols.NT_NameTestQNameNamespaceWithLocalReservedNameConflictNamespace, 0, 1, 
+		symbols.Symbols{  
+			symbols.NT_ReservedNameConflictResolver, 
+			symbols.T_11, 
+			symbols.T_36,
+		}, 
+		NameTestQNameNamespaceWithLocalReservedNameConflictNamespace0R1, 
+	},
+	NameTestQNameNamespaceWithLocalReservedNameConflictNamespace0R2: {
+		symbols.NT_NameTestQNameNamespaceWithLocalReservedNameConflictNamespace, 0, 2, 
+		symbols.Symbols{  
+			symbols.NT_ReservedNameConflictResolver, 
+			symbols.T_11, 
+			symbols.T_36,
+		}, 
+		NameTestQNameNamespaceWithLocalReservedNameConflictNamespace0R2, 
+	},
+	NameTestQNameNamespaceWithLocalReservedNameConflictNamespace0R3: {
+		symbols.NT_NameTestQNameNamespaceWithLocalReservedNameConflictNamespace, 0, 3, 
+		symbols.Symbols{  
+			symbols.NT_ReservedNameConflictResolver, 
+			symbols.T_11, 
+			symbols.T_36,
+		}, 
+		NameTestQNameNamespaceWithLocalReservedNameConflictNamespace0R3, 
+	},
 	NodeTest0R0: {
 		symbols.NT_NodeTest, 0, 0, 
 		symbols.Symbols{  
@@ -1774,56 +2032,56 @@ var slots = map[Label]*Slot{
 	NodeTest1R0: {
 		symbols.NT_NodeTest, 1, 0, 
 		symbols.Symbols{  
-			symbols.NT_NodeTestNodeTypeNoArgTestNodeTestConflictResolver,
+			symbols.NT_NodeTestProcInstTargetTest,
 		}, 
 		NodeTest1R0, 
 	},
 	NodeTest1R1: {
 		symbols.NT_NodeTest, 1, 1, 
 		symbols.Symbols{  
-			symbols.NT_NodeTestNodeTypeNoArgTestNodeTestConflictResolver,
+			symbols.NT_NodeTestProcInstTargetTest,
 		}, 
 		NodeTest1R1, 
 	},
 	NodeTest2R0: {
 		symbols.NT_NodeTest, 2, 0, 
 		symbols.Symbols{  
-			symbols.NT_NodeTestProcInstTargetTest,
+			symbols.NT_NameTestAnyElement,
 		}, 
 		NodeTest2R0, 
 	},
 	NodeTest2R1: {
 		symbols.NT_NodeTest, 2, 1, 
 		symbols.Symbols{  
-			symbols.NT_NodeTestProcInstTargetTest,
+			symbols.NT_NameTestAnyElement,
 		}, 
 		NodeTest2R1, 
 	},
 	NodeTest3R0: {
 		symbols.NT_NodeTest, 3, 0, 
 		symbols.Symbols{  
-			symbols.NT_NameTestAnyElement,
+			symbols.NT_NameTestNamespaceAnyLocal,
 		}, 
 		NodeTest3R0, 
 	},
 	NodeTest3R1: {
 		symbols.NT_NodeTest, 3, 1, 
 		symbols.Symbols{  
-			symbols.NT_NameTestAnyElement,
+			symbols.NT_NameTestNamespaceAnyLocal,
 		}, 
 		NodeTest3R1, 
 	},
 	NodeTest4R0: {
 		symbols.NT_NodeTest, 4, 0, 
 		symbols.Symbols{  
-			symbols.NT_NameTestNamespaceAnyLocal,
+			symbols.NT_NameTestNamespaceAnyLocalReservedNameConflict,
 		}, 
 		NodeTest4R0, 
 	},
 	NodeTest4R1: {
 		symbols.NT_NodeTest, 4, 1, 
 		symbols.Symbols{  
-			symbols.NT_NameTestNamespaceAnyLocal,
+			symbols.NT_NameTestNamespaceAnyLocalReservedNameConflict,
 		}, 
 		NodeTest4R1, 
 	},
@@ -1844,30 +2102,100 @@ var slots = map[Label]*Slot{
 	NodeTest6R0: {
 		symbols.NT_NodeTest, 6, 0, 
 		symbols.Symbols{  
-			symbols.NT_NameTestQNameNamespaceWithLocal,
+			symbols.NT_NameTestLocalAnyNamespaceReservedNameConflict,
 		}, 
 		NodeTest6R0, 
 	},
 	NodeTest6R1: {
 		symbols.NT_NodeTest, 6, 1, 
 		symbols.Symbols{  
-			symbols.NT_NameTestQNameNamespaceWithLocal,
+			symbols.NT_NameTestLocalAnyNamespaceReservedNameConflict,
 		}, 
 		NodeTest6R1, 
 	},
 	NodeTest7R0: {
 		symbols.NT_NodeTest, 7, 0, 
 		symbols.Symbols{  
-			symbols.NT_NameTestQNameLocalOnly,
+			symbols.NT_NameTestQNameNamespaceWithLocal,
 		}, 
 		NodeTest7R0, 
 	},
 	NodeTest7R1: {
 		symbols.NT_NodeTest, 7, 1, 
 		symbols.Symbols{  
-			symbols.NT_NameTestQNameLocalOnly,
+			symbols.NT_NameTestQNameNamespaceWithLocal,
 		}, 
 		NodeTest7R1, 
+	},
+	NodeTest8R0: {
+		symbols.NT_NodeTest, 8, 0, 
+		symbols.Symbols{  
+			symbols.NT_NameTestQNameNamespaceWithLocalReservedNameConflictNamespace,
+		}, 
+		NodeTest8R0, 
+	},
+	NodeTest8R1: {
+		symbols.NT_NodeTest, 8, 1, 
+		symbols.Symbols{  
+			symbols.NT_NameTestQNameNamespaceWithLocalReservedNameConflictNamespace,
+		}, 
+		NodeTest8R1, 
+	},
+	NodeTest9R0: {
+		symbols.NT_NodeTest, 9, 0, 
+		symbols.Symbols{  
+			symbols.NT_NameTestQNameNamespaceWithLocalReservedNameConflictLocal,
+		}, 
+		NodeTest9R0, 
+	},
+	NodeTest9R1: {
+		symbols.NT_NodeTest, 9, 1, 
+		symbols.Symbols{  
+			symbols.NT_NameTestQNameNamespaceWithLocalReservedNameConflictLocal,
+		}, 
+		NodeTest9R1, 
+	},
+	NodeTest10R0: {
+		symbols.NT_NodeTest, 10, 0, 
+		symbols.Symbols{  
+			symbols.NT_NameTestQNameNamespaceWithLocalReservedNameConflictBoth,
+		}, 
+		NodeTest10R0, 
+	},
+	NodeTest10R1: {
+		symbols.NT_NodeTest, 10, 1, 
+		symbols.Symbols{  
+			symbols.NT_NameTestQNameNamespaceWithLocalReservedNameConflictBoth,
+		}, 
+		NodeTest10R1, 
+	},
+	NodeTest11R0: {
+		symbols.NT_NodeTest, 11, 0, 
+		symbols.Symbols{  
+			symbols.NT_NameTestQNameLocalOnly,
+		}, 
+		NodeTest11R0, 
+	},
+	NodeTest11R1: {
+		symbols.NT_NodeTest, 11, 1, 
+		symbols.Symbols{  
+			symbols.NT_NameTestQNameLocalOnly,
+		}, 
+		NodeTest11R1, 
+	},
+	NodeTest12R0: {
+		symbols.NT_NodeTest, 12, 0, 
+		symbols.Symbols{  
+			symbols.NT_NameTestQNameLocalOnlyReservedNameConflict,
+		}, 
+		NodeTest12R0, 
+	},
+	NodeTest12R1: {
+		symbols.NT_NodeTest, 12, 1, 
+		symbols.Symbols{  
+			symbols.NT_NameTestQNameLocalOnlyReservedNameConflict,
+		}, 
+		NodeTest12R1, 
 	},
 	NodeTestAndPredicate0R0: {
 		symbols.NT_NodeTestAndPredicate, 0, 0, 
@@ -1928,20 +2256,6 @@ var slots = map[Label]*Slot{
 			symbols.T_2,
 		}, 
 		NodeTestNodeTypeNoArgTest0R3, 
-	},
-	NodeTestNodeTypeNoArgTestNodeTestConflictResolver0R0: {
-		symbols.NT_NodeTestNodeTypeNoArgTestNodeTestConflictResolver, 0, 0, 
-		symbols.Symbols{  
-			symbols.NT_NodeType,
-		}, 
-		NodeTestNodeTypeNoArgTestNodeTestConflictResolver0R0, 
-	},
-	NodeTestNodeTypeNoArgTestNodeTestConflictResolver0R1: {
-		symbols.NT_NodeTestNodeTypeNoArgTestNodeTestConflictResolver, 0, 1, 
-		symbols.Symbols{  
-			symbols.NT_NodeType,
-		}, 
-		NodeTestNodeTypeNoArgTestNodeTestConflictResolver0R1, 
 	},
 	NodeTestProcInstTargetTest0R0: {
 		symbols.NT_NodeTestProcInstTargetTest, 0, 0, 
@@ -2827,6 +3141,244 @@ var slots = map[Label]*Slot{
 		}, 
 		RelativeLocationPathWithStep0R3, 
 	},
+	ReservedNameConflictResolver0R0: {
+		symbols.NT_ReservedNameConflictResolver, 0, 0, 
+		symbols.Symbols{  
+			symbols.T_21,
+		}, 
+		ReservedNameConflictResolver0R0, 
+	},
+	ReservedNameConflictResolver0R1: {
+		symbols.NT_ReservedNameConflictResolver, 0, 1, 
+		symbols.Symbols{  
+			symbols.T_21,
+		}, 
+		ReservedNameConflictResolver0R1, 
+	},
+	ReservedNameConflictResolver1R0: {
+		symbols.NT_ReservedNameConflictResolver, 1, 0, 
+		symbols.Symbols{  
+			symbols.T_22,
+		}, 
+		ReservedNameConflictResolver1R0, 
+	},
+	ReservedNameConflictResolver1R1: {
+		symbols.NT_ReservedNameConflictResolver, 1, 1, 
+		symbols.Symbols{  
+			symbols.T_22,
+		}, 
+		ReservedNameConflictResolver1R1, 
+	},
+	ReservedNameConflictResolver2R0: {
+		symbols.NT_ReservedNameConflictResolver, 2, 0, 
+		symbols.Symbols{  
+			symbols.T_24,
+		}, 
+		ReservedNameConflictResolver2R0, 
+	},
+	ReservedNameConflictResolver2R1: {
+		symbols.NT_ReservedNameConflictResolver, 2, 1, 
+		symbols.Symbols{  
+			symbols.T_24,
+		}, 
+		ReservedNameConflictResolver2R1, 
+	},
+	ReservedNameConflictResolver3R0: {
+		symbols.NT_ReservedNameConflictResolver, 3, 0, 
+		symbols.Symbols{  
+			symbols.T_25,
+		}, 
+		ReservedNameConflictResolver3R0, 
+	},
+	ReservedNameConflictResolver3R1: {
+		symbols.NT_ReservedNameConflictResolver, 3, 1, 
+		symbols.Symbols{  
+			symbols.T_25,
+		}, 
+		ReservedNameConflictResolver3R1, 
+	},
+	ReservedNameConflictResolver4R0: {
+		symbols.NT_ReservedNameConflictResolver, 4, 0, 
+		symbols.Symbols{  
+			symbols.T_27,
+		}, 
+		ReservedNameConflictResolver4R0, 
+	},
+	ReservedNameConflictResolver4R1: {
+		symbols.NT_ReservedNameConflictResolver, 4, 1, 
+		symbols.Symbols{  
+			symbols.T_27,
+		}, 
+		ReservedNameConflictResolver4R1, 
+	},
+	ReservedNameConflictResolver5R0: {
+		symbols.NT_ReservedNameConflictResolver, 5, 0, 
+		symbols.Symbols{  
+			symbols.T_28,
+		}, 
+		ReservedNameConflictResolver5R0, 
+	},
+	ReservedNameConflictResolver5R1: {
+		symbols.NT_ReservedNameConflictResolver, 5, 1, 
+		symbols.Symbols{  
+			symbols.T_28,
+		}, 
+		ReservedNameConflictResolver5R1, 
+	},
+	ReservedNameConflictResolver6R0: {
+		symbols.NT_ReservedNameConflictResolver, 6, 0, 
+		symbols.Symbols{  
+			symbols.T_32,
+		}, 
+		ReservedNameConflictResolver6R0, 
+	},
+	ReservedNameConflictResolver6R1: {
+		symbols.NT_ReservedNameConflictResolver, 6, 1, 
+		symbols.Symbols{  
+			symbols.T_32,
+		}, 
+		ReservedNameConflictResolver6R1, 
+	},
+	ReservedNameConflictResolver7R0: {
+		symbols.NT_ReservedNameConflictResolver, 7, 0, 
+		symbols.Symbols{  
+			symbols.T_33,
+		}, 
+		ReservedNameConflictResolver7R0, 
+	},
+	ReservedNameConflictResolver7R1: {
+		symbols.NT_ReservedNameConflictResolver, 7, 1, 
+		symbols.Symbols{  
+			symbols.T_33,
+		}, 
+		ReservedNameConflictResolver7R1, 
+	},
+	ReservedNameConflictResolver8R0: {
+		symbols.NT_ReservedNameConflictResolver, 8, 0, 
+		symbols.Symbols{  
+			symbols.T_35,
+		}, 
+		ReservedNameConflictResolver8R0, 
+	},
+	ReservedNameConflictResolver8R1: {
+		symbols.NT_ReservedNameConflictResolver, 8, 1, 
+		symbols.Symbols{  
+			symbols.T_35,
+		}, 
+		ReservedNameConflictResolver8R1, 
+	},
+	ReservedNameConflictResolver9R0: {
+		symbols.NT_ReservedNameConflictResolver, 9, 0, 
+		symbols.Symbols{  
+			symbols.T_39,
+		}, 
+		ReservedNameConflictResolver9R0, 
+	},
+	ReservedNameConflictResolver9R1: {
+		symbols.NT_ReservedNameConflictResolver, 9, 1, 
+		symbols.Symbols{  
+			symbols.T_39,
+		}, 
+		ReservedNameConflictResolver9R1, 
+	},
+	ReservedNameConflictResolver10R0: {
+		symbols.NT_ReservedNameConflictResolver, 10, 0, 
+		symbols.Symbols{  
+			symbols.T_40,
+		}, 
+		ReservedNameConflictResolver10R0, 
+	},
+	ReservedNameConflictResolver10R1: {
+		symbols.NT_ReservedNameConflictResolver, 10, 1, 
+		symbols.Symbols{  
+			symbols.T_40,
+		}, 
+		ReservedNameConflictResolver10R1, 
+	},
+	ReservedNameConflictResolver11R0: {
+		symbols.NT_ReservedNameConflictResolver, 11, 0, 
+		symbols.Symbols{  
+			symbols.T_41,
+		}, 
+		ReservedNameConflictResolver11R0, 
+	},
+	ReservedNameConflictResolver11R1: {
+		symbols.NT_ReservedNameConflictResolver, 11, 1, 
+		symbols.Symbols{  
+			symbols.T_41,
+		}, 
+		ReservedNameConflictResolver11R1, 
+	},
+	ReservedNameConflictResolver12R0: {
+		symbols.NT_ReservedNameConflictResolver, 12, 0, 
+		symbols.Symbols{  
+			symbols.T_43,
+		}, 
+		ReservedNameConflictResolver12R0, 
+	},
+	ReservedNameConflictResolver12R1: {
+		symbols.NT_ReservedNameConflictResolver, 12, 1, 
+		symbols.Symbols{  
+			symbols.T_43,
+		}, 
+		ReservedNameConflictResolver12R1, 
+	},
+	ReservedNameConflictResolver13R0: {
+		symbols.NT_ReservedNameConflictResolver, 13, 0, 
+		symbols.Symbols{  
+			symbols.T_26,
+		}, 
+		ReservedNameConflictResolver13R0, 
+	},
+	ReservedNameConflictResolver13R1: {
+		symbols.NT_ReservedNameConflictResolver, 13, 1, 
+		symbols.Symbols{  
+			symbols.T_26,
+		}, 
+		ReservedNameConflictResolver13R1, 
+	},
+	ReservedNameConflictResolver14R0: {
+		symbols.NT_ReservedNameConflictResolver, 14, 0, 
+		symbols.Symbols{  
+			symbols.T_45,
+		}, 
+		ReservedNameConflictResolver14R0, 
+	},
+	ReservedNameConflictResolver14R1: {
+		symbols.NT_ReservedNameConflictResolver, 14, 1, 
+		symbols.Symbols{  
+			symbols.T_45,
+		}, 
+		ReservedNameConflictResolver14R1, 
+	},
+	ReservedNameConflictResolver15R0: {
+		symbols.NT_ReservedNameConflictResolver, 15, 0, 
+		symbols.Symbols{  
+			symbols.T_42,
+		}, 
+		ReservedNameConflictResolver15R0, 
+	},
+	ReservedNameConflictResolver15R1: {
+		symbols.NT_ReservedNameConflictResolver, 15, 1, 
+		symbols.Symbols{  
+			symbols.T_42,
+		}, 
+		ReservedNameConflictResolver15R1, 
+	},
+	ReservedNameConflictResolver16R0: {
+		symbols.NT_ReservedNameConflictResolver, 16, 0, 
+		symbols.Symbols{  
+			symbols.T_37,
+		}, 
+		ReservedNameConflictResolver16R0, 
+	},
+	ReservedNameConflictResolver16R1: {
+		symbols.NT_ReservedNameConflictResolver, 16, 1, 
+		symbols.Symbols{  
+			symbols.T_37,
+		}, 
+		ReservedNameConflictResolver16R1, 
+	},
 	Step0R0: {
 		symbols.NT_Step, 0, 0, 
 		symbols.Symbols{  
@@ -3303,16 +3855,38 @@ var slotIndex = map[Index]Label {
 	Index{ symbols.NT_NameTestLocalAnyNamespace,0,1 }: NameTestLocalAnyNamespace0R1,
 	Index{ symbols.NT_NameTestLocalAnyNamespace,0,2 }: NameTestLocalAnyNamespace0R2,
 	Index{ symbols.NT_NameTestLocalAnyNamespace,0,3 }: NameTestLocalAnyNamespace0R3,
+	Index{ symbols.NT_NameTestLocalAnyNamespaceReservedNameConflict,0,0 }: NameTestLocalAnyNamespaceReservedNameConflict0R0,
+	Index{ symbols.NT_NameTestLocalAnyNamespaceReservedNameConflict,0,1 }: NameTestLocalAnyNamespaceReservedNameConflict0R1,
+	Index{ symbols.NT_NameTestLocalAnyNamespaceReservedNameConflict,0,2 }: NameTestLocalAnyNamespaceReservedNameConflict0R2,
+	Index{ symbols.NT_NameTestLocalAnyNamespaceReservedNameConflict,0,3 }: NameTestLocalAnyNamespaceReservedNameConflict0R3,
 	Index{ symbols.NT_NameTestNamespaceAnyLocal,0,0 }: NameTestNamespaceAnyLocal0R0,
 	Index{ symbols.NT_NameTestNamespaceAnyLocal,0,1 }: NameTestNamespaceAnyLocal0R1,
 	Index{ symbols.NT_NameTestNamespaceAnyLocal,0,2 }: NameTestNamespaceAnyLocal0R2,
 	Index{ symbols.NT_NameTestNamespaceAnyLocal,0,3 }: NameTestNamespaceAnyLocal0R3,
+	Index{ symbols.NT_NameTestNamespaceAnyLocalReservedNameConflict,0,0 }: NameTestNamespaceAnyLocalReservedNameConflict0R0,
+	Index{ symbols.NT_NameTestNamespaceAnyLocalReservedNameConflict,0,1 }: NameTestNamespaceAnyLocalReservedNameConflict0R1,
+	Index{ symbols.NT_NameTestNamespaceAnyLocalReservedNameConflict,0,2 }: NameTestNamespaceAnyLocalReservedNameConflict0R2,
+	Index{ symbols.NT_NameTestNamespaceAnyLocalReservedNameConflict,0,3 }: NameTestNamespaceAnyLocalReservedNameConflict0R3,
 	Index{ symbols.NT_NameTestQNameLocalOnly,0,0 }: NameTestQNameLocalOnly0R0,
 	Index{ symbols.NT_NameTestQNameLocalOnly,0,1 }: NameTestQNameLocalOnly0R1,
+	Index{ symbols.NT_NameTestQNameLocalOnlyReservedNameConflict,0,0 }: NameTestQNameLocalOnlyReservedNameConflict0R0,
+	Index{ symbols.NT_NameTestQNameLocalOnlyReservedNameConflict,0,1 }: NameTestQNameLocalOnlyReservedNameConflict0R1,
 	Index{ symbols.NT_NameTestQNameNamespaceWithLocal,0,0 }: NameTestQNameNamespaceWithLocal0R0,
 	Index{ symbols.NT_NameTestQNameNamespaceWithLocal,0,1 }: NameTestQNameNamespaceWithLocal0R1,
 	Index{ symbols.NT_NameTestQNameNamespaceWithLocal,0,2 }: NameTestQNameNamespaceWithLocal0R2,
 	Index{ symbols.NT_NameTestQNameNamespaceWithLocal,0,3 }: NameTestQNameNamespaceWithLocal0R3,
+	Index{ symbols.NT_NameTestQNameNamespaceWithLocalReservedNameConflictBoth,0,0 }: NameTestQNameNamespaceWithLocalReservedNameConflictBoth0R0,
+	Index{ symbols.NT_NameTestQNameNamespaceWithLocalReservedNameConflictBoth,0,1 }: NameTestQNameNamespaceWithLocalReservedNameConflictBoth0R1,
+	Index{ symbols.NT_NameTestQNameNamespaceWithLocalReservedNameConflictBoth,0,2 }: NameTestQNameNamespaceWithLocalReservedNameConflictBoth0R2,
+	Index{ symbols.NT_NameTestQNameNamespaceWithLocalReservedNameConflictBoth,0,3 }: NameTestQNameNamespaceWithLocalReservedNameConflictBoth0R3,
+	Index{ symbols.NT_NameTestQNameNamespaceWithLocalReservedNameConflictLocal,0,0 }: NameTestQNameNamespaceWithLocalReservedNameConflictLocal0R0,
+	Index{ symbols.NT_NameTestQNameNamespaceWithLocalReservedNameConflictLocal,0,1 }: NameTestQNameNamespaceWithLocalReservedNameConflictLocal0R1,
+	Index{ symbols.NT_NameTestQNameNamespaceWithLocalReservedNameConflictLocal,0,2 }: NameTestQNameNamespaceWithLocalReservedNameConflictLocal0R2,
+	Index{ symbols.NT_NameTestQNameNamespaceWithLocalReservedNameConflictLocal,0,3 }: NameTestQNameNamespaceWithLocalReservedNameConflictLocal0R3,
+	Index{ symbols.NT_NameTestQNameNamespaceWithLocalReservedNameConflictNamespace,0,0 }: NameTestQNameNamespaceWithLocalReservedNameConflictNamespace0R0,
+	Index{ symbols.NT_NameTestQNameNamespaceWithLocalReservedNameConflictNamespace,0,1 }: NameTestQNameNamespaceWithLocalReservedNameConflictNamespace0R1,
+	Index{ symbols.NT_NameTestQNameNamespaceWithLocalReservedNameConflictNamespace,0,2 }: NameTestQNameNamespaceWithLocalReservedNameConflictNamespace0R2,
+	Index{ symbols.NT_NameTestQNameNamespaceWithLocalReservedNameConflictNamespace,0,3 }: NameTestQNameNamespaceWithLocalReservedNameConflictNamespace0R3,
 	Index{ symbols.NT_NodeTest,0,0 }: NodeTest0R0,
 	Index{ symbols.NT_NodeTest,0,1 }: NodeTest0R1,
 	Index{ symbols.NT_NodeTest,1,0 }: NodeTest1R0,
@@ -3329,6 +3903,16 @@ var slotIndex = map[Index]Label {
 	Index{ symbols.NT_NodeTest,6,1 }: NodeTest6R1,
 	Index{ symbols.NT_NodeTest,7,0 }: NodeTest7R0,
 	Index{ symbols.NT_NodeTest,7,1 }: NodeTest7R1,
+	Index{ symbols.NT_NodeTest,8,0 }: NodeTest8R0,
+	Index{ symbols.NT_NodeTest,8,1 }: NodeTest8R1,
+	Index{ symbols.NT_NodeTest,9,0 }: NodeTest9R0,
+	Index{ symbols.NT_NodeTest,9,1 }: NodeTest9R1,
+	Index{ symbols.NT_NodeTest,10,0 }: NodeTest10R0,
+	Index{ symbols.NT_NodeTest,10,1 }: NodeTest10R1,
+	Index{ symbols.NT_NodeTest,11,0 }: NodeTest11R0,
+	Index{ symbols.NT_NodeTest,11,1 }: NodeTest11R1,
+	Index{ symbols.NT_NodeTest,12,0 }: NodeTest12R0,
+	Index{ symbols.NT_NodeTest,12,1 }: NodeTest12R1,
 	Index{ symbols.NT_NodeTestAndPredicate,0,0 }: NodeTestAndPredicate0R0,
 	Index{ symbols.NT_NodeTestAndPredicate,0,1 }: NodeTestAndPredicate0R1,
 	Index{ symbols.NT_NodeTestAndPredicate,0,2 }: NodeTestAndPredicate0R2,
@@ -3336,8 +3920,6 @@ var slotIndex = map[Index]Label {
 	Index{ symbols.NT_NodeTestNodeTypeNoArgTest,0,1 }: NodeTestNodeTypeNoArgTest0R1,
 	Index{ symbols.NT_NodeTestNodeTypeNoArgTest,0,2 }: NodeTestNodeTypeNoArgTest0R2,
 	Index{ symbols.NT_NodeTestNodeTypeNoArgTest,0,3 }: NodeTestNodeTypeNoArgTest0R3,
-	Index{ symbols.NT_NodeTestNodeTypeNoArgTestNodeTestConflictResolver,0,0 }: NodeTestNodeTypeNoArgTestNodeTestConflictResolver0R0,
-	Index{ symbols.NT_NodeTestNodeTypeNoArgTestNodeTestConflictResolver,0,1 }: NodeTestNodeTypeNoArgTestNodeTestConflictResolver0R1,
 	Index{ symbols.NT_NodeTestProcInstTargetTest,0,0 }: NodeTestProcInstTargetTest0R0,
 	Index{ symbols.NT_NodeTestProcInstTargetTest,0,1 }: NodeTestProcInstTargetTest0R1,
 	Index{ symbols.NT_NodeTestProcInstTargetTest,0,2 }: NodeTestProcInstTargetTest0R2,
@@ -3448,6 +4030,40 @@ var slotIndex = map[Index]Label {
 	Index{ symbols.NT_RelativeLocationPathWithStep,0,1 }: RelativeLocationPathWithStep0R1,
 	Index{ symbols.NT_RelativeLocationPathWithStep,0,2 }: RelativeLocationPathWithStep0R2,
 	Index{ symbols.NT_RelativeLocationPathWithStep,0,3 }: RelativeLocationPathWithStep0R3,
+	Index{ symbols.NT_ReservedNameConflictResolver,0,0 }: ReservedNameConflictResolver0R0,
+	Index{ symbols.NT_ReservedNameConflictResolver,0,1 }: ReservedNameConflictResolver0R1,
+	Index{ symbols.NT_ReservedNameConflictResolver,1,0 }: ReservedNameConflictResolver1R0,
+	Index{ symbols.NT_ReservedNameConflictResolver,1,1 }: ReservedNameConflictResolver1R1,
+	Index{ symbols.NT_ReservedNameConflictResolver,2,0 }: ReservedNameConflictResolver2R0,
+	Index{ symbols.NT_ReservedNameConflictResolver,2,1 }: ReservedNameConflictResolver2R1,
+	Index{ symbols.NT_ReservedNameConflictResolver,3,0 }: ReservedNameConflictResolver3R0,
+	Index{ symbols.NT_ReservedNameConflictResolver,3,1 }: ReservedNameConflictResolver3R1,
+	Index{ symbols.NT_ReservedNameConflictResolver,4,0 }: ReservedNameConflictResolver4R0,
+	Index{ symbols.NT_ReservedNameConflictResolver,4,1 }: ReservedNameConflictResolver4R1,
+	Index{ symbols.NT_ReservedNameConflictResolver,5,0 }: ReservedNameConflictResolver5R0,
+	Index{ symbols.NT_ReservedNameConflictResolver,5,1 }: ReservedNameConflictResolver5R1,
+	Index{ symbols.NT_ReservedNameConflictResolver,6,0 }: ReservedNameConflictResolver6R0,
+	Index{ symbols.NT_ReservedNameConflictResolver,6,1 }: ReservedNameConflictResolver6R1,
+	Index{ symbols.NT_ReservedNameConflictResolver,7,0 }: ReservedNameConflictResolver7R0,
+	Index{ symbols.NT_ReservedNameConflictResolver,7,1 }: ReservedNameConflictResolver7R1,
+	Index{ symbols.NT_ReservedNameConflictResolver,8,0 }: ReservedNameConflictResolver8R0,
+	Index{ symbols.NT_ReservedNameConflictResolver,8,1 }: ReservedNameConflictResolver8R1,
+	Index{ symbols.NT_ReservedNameConflictResolver,9,0 }: ReservedNameConflictResolver9R0,
+	Index{ symbols.NT_ReservedNameConflictResolver,9,1 }: ReservedNameConflictResolver9R1,
+	Index{ symbols.NT_ReservedNameConflictResolver,10,0 }: ReservedNameConflictResolver10R0,
+	Index{ symbols.NT_ReservedNameConflictResolver,10,1 }: ReservedNameConflictResolver10R1,
+	Index{ symbols.NT_ReservedNameConflictResolver,11,0 }: ReservedNameConflictResolver11R0,
+	Index{ symbols.NT_ReservedNameConflictResolver,11,1 }: ReservedNameConflictResolver11R1,
+	Index{ symbols.NT_ReservedNameConflictResolver,12,0 }: ReservedNameConflictResolver12R0,
+	Index{ symbols.NT_ReservedNameConflictResolver,12,1 }: ReservedNameConflictResolver12R1,
+	Index{ symbols.NT_ReservedNameConflictResolver,13,0 }: ReservedNameConflictResolver13R0,
+	Index{ symbols.NT_ReservedNameConflictResolver,13,1 }: ReservedNameConflictResolver13R1,
+	Index{ symbols.NT_ReservedNameConflictResolver,14,0 }: ReservedNameConflictResolver14R0,
+	Index{ symbols.NT_ReservedNameConflictResolver,14,1 }: ReservedNameConflictResolver14R1,
+	Index{ symbols.NT_ReservedNameConflictResolver,15,0 }: ReservedNameConflictResolver15R0,
+	Index{ symbols.NT_ReservedNameConflictResolver,15,1 }: ReservedNameConflictResolver15R1,
+	Index{ symbols.NT_ReservedNameConflictResolver,16,0 }: ReservedNameConflictResolver16R0,
+	Index{ symbols.NT_ReservedNameConflictResolver,16,1 }: ReservedNameConflictResolver16R1,
 	Index{ symbols.NT_Step,0,0 }: Step0R0,
 	Index{ symbols.NT_Step,0,1 }: Step0R1,
 	Index{ symbols.NT_Step,1,0 }: Step1R0,
@@ -3541,15 +4157,21 @@ var alternates = map[symbols.NT][]Label{
 	symbols.NT_AbbreviatedStep:[]Label{ AbbreviatedStep0R0,AbbreviatedStep1R0 },
 	symbols.NT_AbbreviatedStepSelf:[]Label{ AbbreviatedStepSelf0R0 },
 	symbols.NT_AbbreviatedStepParent:[]Label{ AbbreviatedStepParent0R0 },
-	symbols.NT_NodeTest:[]Label{ NodeTest0R0,NodeTest1R0,NodeTest2R0,NodeTest3R0,NodeTest4R0,NodeTest5R0,NodeTest6R0,NodeTest7R0 },
+	symbols.NT_NodeTest:[]Label{ NodeTest0R0,NodeTest1R0,NodeTest2R0,NodeTest3R0,NodeTest4R0,NodeTest5R0,NodeTest6R0,NodeTest7R0,NodeTest8R0,NodeTest9R0,NodeTest10R0,NodeTest11R0,NodeTest12R0 },
 	symbols.NT_NodeTestNodeTypeNoArgTest:[]Label{ NodeTestNodeTypeNoArgTest0R0 },
-	symbols.NT_NodeTestNodeTypeNoArgTestNodeTestConflictResolver:[]Label{ NodeTestNodeTypeNoArgTestNodeTestConflictResolver0R0 },
 	symbols.NT_NodeTestProcInstTargetTest:[]Label{ NodeTestProcInstTargetTest0R0 },
 	symbols.NT_NameTestAnyElement:[]Label{ NameTestAnyElement0R0 },
 	symbols.NT_NameTestNamespaceAnyLocal:[]Label{ NameTestNamespaceAnyLocal0R0 },
+	symbols.NT_NameTestNamespaceAnyLocalReservedNameConflict:[]Label{ NameTestNamespaceAnyLocalReservedNameConflict0R0 },
 	symbols.NT_NameTestLocalAnyNamespace:[]Label{ NameTestLocalAnyNamespace0R0 },
+	symbols.NT_NameTestLocalAnyNamespaceReservedNameConflict:[]Label{ NameTestLocalAnyNamespaceReservedNameConflict0R0 },
 	symbols.NT_NameTestQNameNamespaceWithLocal:[]Label{ NameTestQNameNamespaceWithLocal0R0 },
+	symbols.NT_NameTestQNameNamespaceWithLocalReservedNameConflictNamespace:[]Label{ NameTestQNameNamespaceWithLocalReservedNameConflictNamespace0R0 },
+	symbols.NT_NameTestQNameNamespaceWithLocalReservedNameConflictLocal:[]Label{ NameTestQNameNamespaceWithLocalReservedNameConflictLocal0R0 },
+	symbols.NT_NameTestQNameNamespaceWithLocalReservedNameConflictBoth:[]Label{ NameTestQNameNamespaceWithLocalReservedNameConflictBoth0R0 },
 	symbols.NT_NameTestQNameLocalOnly:[]Label{ NameTestQNameLocalOnly0R0 },
+	symbols.NT_NameTestQNameLocalOnlyReservedNameConflict:[]Label{ NameTestQNameLocalOnlyReservedNameConflict0R0 },
+	symbols.NT_ReservedNameConflictResolver:[]Label{ ReservedNameConflictResolver0R0,ReservedNameConflictResolver1R0,ReservedNameConflictResolver2R0,ReservedNameConflictResolver3R0,ReservedNameConflictResolver4R0,ReservedNameConflictResolver5R0,ReservedNameConflictResolver6R0,ReservedNameConflictResolver7R0,ReservedNameConflictResolver8R0,ReservedNameConflictResolver9R0,ReservedNameConflictResolver10R0,ReservedNameConflictResolver11R0,ReservedNameConflictResolver12R0,ReservedNameConflictResolver13R0,ReservedNameConflictResolver14R0,ReservedNameConflictResolver15R0,ReservedNameConflictResolver16R0 },
 	symbols.NT_NodeType:[]Label{ NodeType0R0,NodeType1R0,NodeType2R0,NodeType3R0 },
 	symbols.NT_Literal:[]Label{ Literal0R0,Literal1R0 },
 	symbols.NT_FilterExpr:[]Label{ FilterExpr0R0,FilterExpr1R0 },

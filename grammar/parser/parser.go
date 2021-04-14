@@ -908,6 +908,30 @@ func (p *parser) parse() (*bsr.Set, []*Error) {
 			} else {
 				p.parseError(slot.NameTestLocalAnyNamespace0R0, p.cI, followSets[symbols.NT_NameTestLocalAnyNamespace])
 			}
+		case slot.NameTestLocalAnyNamespaceReservedNameConflict0R0: // NameTestLocalAnyNamespaceReservedNameConflict : ∙* : ReservedNameConflictResolver
+
+			p.bsrSet.Add(slot.NameTestLocalAnyNamespaceReservedNameConflict0R1, cU, p.cI, p.cI+1)
+			p.cI++
+			if !p.testSelect(slot.NameTestLocalAnyNamespaceReservedNameConflict0R1) {
+				p.parseError(slot.NameTestLocalAnyNamespaceReservedNameConflict0R1, p.cI, first[slot.NameTestLocalAnyNamespaceReservedNameConflict0R1])
+				break
+			}
+
+			p.bsrSet.Add(slot.NameTestLocalAnyNamespaceReservedNameConflict0R2, cU, p.cI, p.cI+1)
+			p.cI++
+			if !p.testSelect(slot.NameTestLocalAnyNamespaceReservedNameConflict0R2) {
+				p.parseError(slot.NameTestLocalAnyNamespaceReservedNameConflict0R2, p.cI, first[slot.NameTestLocalAnyNamespaceReservedNameConflict0R2])
+				break
+			}
+
+			p.call(slot.NameTestLocalAnyNamespaceReservedNameConflict0R3, cU, p.cI)
+		case slot.NameTestLocalAnyNamespaceReservedNameConflict0R3: // NameTestLocalAnyNamespaceReservedNameConflict : * : ReservedNameConflictResolver ∙
+
+			if p.follow(symbols.NT_NameTestLocalAnyNamespaceReservedNameConflict) {
+				p.rtn(symbols.NT_NameTestLocalAnyNamespaceReservedNameConflict, cU, p.cI)
+			} else {
+				p.parseError(slot.NameTestLocalAnyNamespaceReservedNameConflict0R0, p.cI, followSets[symbols.NT_NameTestLocalAnyNamespaceReservedNameConflict])
+			}
 		case slot.NameTestNamespaceAnyLocal0R0: // NameTestNamespaceAnyLocal : ∙ncname : *
 
 			p.bsrSet.Add(slot.NameTestNamespaceAnyLocal0R1, cU, p.cI, p.cI+1)
@@ -931,6 +955,30 @@ func (p *parser) parse() (*bsr.Set, []*Error) {
 			} else {
 				p.parseError(slot.NameTestNamespaceAnyLocal0R0, p.cI, followSets[symbols.NT_NameTestNamespaceAnyLocal])
 			}
+		case slot.NameTestNamespaceAnyLocalReservedNameConflict0R0: // NameTestNamespaceAnyLocalReservedNameConflict : ∙ReservedNameConflictResolver : *
+
+			p.call(slot.NameTestNamespaceAnyLocalReservedNameConflict0R1, cU, p.cI)
+		case slot.NameTestNamespaceAnyLocalReservedNameConflict0R1: // NameTestNamespaceAnyLocalReservedNameConflict : ReservedNameConflictResolver ∙: *
+
+			if !p.testSelect(slot.NameTestNamespaceAnyLocalReservedNameConflict0R1) {
+				p.parseError(slot.NameTestNamespaceAnyLocalReservedNameConflict0R1, p.cI, first[slot.NameTestNamespaceAnyLocalReservedNameConflict0R1])
+				break
+			}
+
+			p.bsrSet.Add(slot.NameTestNamespaceAnyLocalReservedNameConflict0R2, cU, p.cI, p.cI+1)
+			p.cI++
+			if !p.testSelect(slot.NameTestNamespaceAnyLocalReservedNameConflict0R2) {
+				p.parseError(slot.NameTestNamespaceAnyLocalReservedNameConflict0R2, p.cI, first[slot.NameTestNamespaceAnyLocalReservedNameConflict0R2])
+				break
+			}
+
+			p.bsrSet.Add(slot.NameTestNamespaceAnyLocalReservedNameConflict0R3, cU, p.cI, p.cI+1)
+			p.cI++
+			if p.follow(symbols.NT_NameTestNamespaceAnyLocalReservedNameConflict) {
+				p.rtn(symbols.NT_NameTestNamespaceAnyLocalReservedNameConflict, cU, p.cI)
+			} else {
+				p.parseError(slot.NameTestNamespaceAnyLocalReservedNameConflict0R0, p.cI, followSets[symbols.NT_NameTestNamespaceAnyLocalReservedNameConflict])
+			}
 		case slot.NameTestQNameLocalOnly0R0: // NameTestQNameLocalOnly : ∙ncname
 
 			p.bsrSet.Add(slot.NameTestQNameLocalOnly0R1, cU, p.cI, p.cI+1)
@@ -939,6 +987,16 @@ func (p *parser) parse() (*bsr.Set, []*Error) {
 				p.rtn(symbols.NT_NameTestQNameLocalOnly, cU, p.cI)
 			} else {
 				p.parseError(slot.NameTestQNameLocalOnly0R0, p.cI, followSets[symbols.NT_NameTestQNameLocalOnly])
+			}
+		case slot.NameTestQNameLocalOnlyReservedNameConflict0R0: // NameTestQNameLocalOnlyReservedNameConflict : ∙ReservedNameConflictResolver
+
+			p.call(slot.NameTestQNameLocalOnlyReservedNameConflict0R1, cU, p.cI)
+		case slot.NameTestQNameLocalOnlyReservedNameConflict0R1: // NameTestQNameLocalOnlyReservedNameConflict : ReservedNameConflictResolver ∙
+
+			if p.follow(symbols.NT_NameTestQNameLocalOnlyReservedNameConflict) {
+				p.rtn(symbols.NT_NameTestQNameLocalOnlyReservedNameConflict, cU, p.cI)
+			} else {
+				p.parseError(slot.NameTestQNameLocalOnlyReservedNameConflict0R0, p.cI, followSets[symbols.NT_NameTestQNameLocalOnlyReservedNameConflict])
 			}
 		case slot.NameTestQNameNamespaceWithLocal0R0: // NameTestQNameNamespaceWithLocal : ∙ncname : ncname
 
@@ -963,6 +1021,79 @@ func (p *parser) parse() (*bsr.Set, []*Error) {
 			} else {
 				p.parseError(slot.NameTestQNameNamespaceWithLocal0R0, p.cI, followSets[symbols.NT_NameTestQNameNamespaceWithLocal])
 			}
+		case slot.NameTestQNameNamespaceWithLocalReservedNameConflictBoth0R0: // NameTestQNameNamespaceWithLocalReservedNameConflictBoth : ∙ReservedNameConflictResolver : ReservedNameConflictResolver
+
+			p.call(slot.NameTestQNameNamespaceWithLocalReservedNameConflictBoth0R1, cU, p.cI)
+		case slot.NameTestQNameNamespaceWithLocalReservedNameConflictBoth0R1: // NameTestQNameNamespaceWithLocalReservedNameConflictBoth : ReservedNameConflictResolver ∙: ReservedNameConflictResolver
+
+			if !p.testSelect(slot.NameTestQNameNamespaceWithLocalReservedNameConflictBoth0R1) {
+				p.parseError(slot.NameTestQNameNamespaceWithLocalReservedNameConflictBoth0R1, p.cI, first[slot.NameTestQNameNamespaceWithLocalReservedNameConflictBoth0R1])
+				break
+			}
+
+			p.bsrSet.Add(slot.NameTestQNameNamespaceWithLocalReservedNameConflictBoth0R2, cU, p.cI, p.cI+1)
+			p.cI++
+			if !p.testSelect(slot.NameTestQNameNamespaceWithLocalReservedNameConflictBoth0R2) {
+				p.parseError(slot.NameTestQNameNamespaceWithLocalReservedNameConflictBoth0R2, p.cI, first[slot.NameTestQNameNamespaceWithLocalReservedNameConflictBoth0R2])
+				break
+			}
+
+			p.call(slot.NameTestQNameNamespaceWithLocalReservedNameConflictBoth0R3, cU, p.cI)
+		case slot.NameTestQNameNamespaceWithLocalReservedNameConflictBoth0R3: // NameTestQNameNamespaceWithLocalReservedNameConflictBoth : ReservedNameConflictResolver : ReservedNameConflictResolver ∙
+
+			if p.follow(symbols.NT_NameTestQNameNamespaceWithLocalReservedNameConflictBoth) {
+				p.rtn(symbols.NT_NameTestQNameNamespaceWithLocalReservedNameConflictBoth, cU, p.cI)
+			} else {
+				p.parseError(slot.NameTestQNameNamespaceWithLocalReservedNameConflictBoth0R0, p.cI, followSets[symbols.NT_NameTestQNameNamespaceWithLocalReservedNameConflictBoth])
+			}
+		case slot.NameTestQNameNamespaceWithLocalReservedNameConflictLocal0R0: // NameTestQNameNamespaceWithLocalReservedNameConflictLocal : ∙ncname : ReservedNameConflictResolver
+
+			p.bsrSet.Add(slot.NameTestQNameNamespaceWithLocalReservedNameConflictLocal0R1, cU, p.cI, p.cI+1)
+			p.cI++
+			if !p.testSelect(slot.NameTestQNameNamespaceWithLocalReservedNameConflictLocal0R1) {
+				p.parseError(slot.NameTestQNameNamespaceWithLocalReservedNameConflictLocal0R1, p.cI, first[slot.NameTestQNameNamespaceWithLocalReservedNameConflictLocal0R1])
+				break
+			}
+
+			p.bsrSet.Add(slot.NameTestQNameNamespaceWithLocalReservedNameConflictLocal0R2, cU, p.cI, p.cI+1)
+			p.cI++
+			if !p.testSelect(slot.NameTestQNameNamespaceWithLocalReservedNameConflictLocal0R2) {
+				p.parseError(slot.NameTestQNameNamespaceWithLocalReservedNameConflictLocal0R2, p.cI, first[slot.NameTestQNameNamespaceWithLocalReservedNameConflictLocal0R2])
+				break
+			}
+
+			p.call(slot.NameTestQNameNamespaceWithLocalReservedNameConflictLocal0R3, cU, p.cI)
+		case slot.NameTestQNameNamespaceWithLocalReservedNameConflictLocal0R3: // NameTestQNameNamespaceWithLocalReservedNameConflictLocal : ncname : ReservedNameConflictResolver ∙
+
+			if p.follow(symbols.NT_NameTestQNameNamespaceWithLocalReservedNameConflictLocal) {
+				p.rtn(symbols.NT_NameTestQNameNamespaceWithLocalReservedNameConflictLocal, cU, p.cI)
+			} else {
+				p.parseError(slot.NameTestQNameNamespaceWithLocalReservedNameConflictLocal0R0, p.cI, followSets[symbols.NT_NameTestQNameNamespaceWithLocalReservedNameConflictLocal])
+			}
+		case slot.NameTestQNameNamespaceWithLocalReservedNameConflictNamespace0R0: // NameTestQNameNamespaceWithLocalReservedNameConflictNamespace : ∙ReservedNameConflictResolver : ncname
+
+			p.call(slot.NameTestQNameNamespaceWithLocalReservedNameConflictNamespace0R1, cU, p.cI)
+		case slot.NameTestQNameNamespaceWithLocalReservedNameConflictNamespace0R1: // NameTestQNameNamespaceWithLocalReservedNameConflictNamespace : ReservedNameConflictResolver ∙: ncname
+
+			if !p.testSelect(slot.NameTestQNameNamespaceWithLocalReservedNameConflictNamespace0R1) {
+				p.parseError(slot.NameTestQNameNamespaceWithLocalReservedNameConflictNamespace0R1, p.cI, first[slot.NameTestQNameNamespaceWithLocalReservedNameConflictNamespace0R1])
+				break
+			}
+
+			p.bsrSet.Add(slot.NameTestQNameNamespaceWithLocalReservedNameConflictNamespace0R2, cU, p.cI, p.cI+1)
+			p.cI++
+			if !p.testSelect(slot.NameTestQNameNamespaceWithLocalReservedNameConflictNamespace0R2) {
+				p.parseError(slot.NameTestQNameNamespaceWithLocalReservedNameConflictNamespace0R2, p.cI, first[slot.NameTestQNameNamespaceWithLocalReservedNameConflictNamespace0R2])
+				break
+			}
+
+			p.bsrSet.Add(slot.NameTestQNameNamespaceWithLocalReservedNameConflictNamespace0R3, cU, p.cI, p.cI+1)
+			p.cI++
+			if p.follow(symbols.NT_NameTestQNameNamespaceWithLocalReservedNameConflictNamespace) {
+				p.rtn(symbols.NT_NameTestQNameNamespaceWithLocalReservedNameConflictNamespace, cU, p.cI)
+			} else {
+				p.parseError(slot.NameTestQNameNamespaceWithLocalReservedNameConflictNamespace0R0, p.cI, followSets[symbols.NT_NameTestQNameNamespaceWithLocalReservedNameConflictNamespace])
+			}
 		case slot.NodeTest0R0: // NodeTest : ∙NodeTestNodeTypeNoArgTest
 
 			p.call(slot.NodeTest0R1, cU, p.cI)
@@ -973,40 +1104,40 @@ func (p *parser) parse() (*bsr.Set, []*Error) {
 			} else {
 				p.parseError(slot.NodeTest0R0, p.cI, followSets[symbols.NT_NodeTest])
 			}
-		case slot.NodeTest1R0: // NodeTest : ∙NodeTestNodeTypeNoArgTestNodeTestConflictResolver
+		case slot.NodeTest1R0: // NodeTest : ∙NodeTestProcInstTargetTest
 
 			p.call(slot.NodeTest1R1, cU, p.cI)
-		case slot.NodeTest1R1: // NodeTest : NodeTestNodeTypeNoArgTestNodeTestConflictResolver ∙
+		case slot.NodeTest1R1: // NodeTest : NodeTestProcInstTargetTest ∙
 
 			if p.follow(symbols.NT_NodeTest) {
 				p.rtn(symbols.NT_NodeTest, cU, p.cI)
 			} else {
 				p.parseError(slot.NodeTest1R0, p.cI, followSets[symbols.NT_NodeTest])
 			}
-		case slot.NodeTest2R0: // NodeTest : ∙NodeTestProcInstTargetTest
+		case slot.NodeTest2R0: // NodeTest : ∙NameTestAnyElement
 
 			p.call(slot.NodeTest2R1, cU, p.cI)
-		case slot.NodeTest2R1: // NodeTest : NodeTestProcInstTargetTest ∙
+		case slot.NodeTest2R1: // NodeTest : NameTestAnyElement ∙
 
 			if p.follow(symbols.NT_NodeTest) {
 				p.rtn(symbols.NT_NodeTest, cU, p.cI)
 			} else {
 				p.parseError(slot.NodeTest2R0, p.cI, followSets[symbols.NT_NodeTest])
 			}
-		case slot.NodeTest3R0: // NodeTest : ∙NameTestAnyElement
+		case slot.NodeTest3R0: // NodeTest : ∙NameTestNamespaceAnyLocal
 
 			p.call(slot.NodeTest3R1, cU, p.cI)
-		case slot.NodeTest3R1: // NodeTest : NameTestAnyElement ∙
+		case slot.NodeTest3R1: // NodeTest : NameTestNamespaceAnyLocal ∙
 
 			if p.follow(symbols.NT_NodeTest) {
 				p.rtn(symbols.NT_NodeTest, cU, p.cI)
 			} else {
 				p.parseError(slot.NodeTest3R0, p.cI, followSets[symbols.NT_NodeTest])
 			}
-		case slot.NodeTest4R0: // NodeTest : ∙NameTestNamespaceAnyLocal
+		case slot.NodeTest4R0: // NodeTest : ∙NameTestNamespaceAnyLocalReservedNameConflict
 
 			p.call(slot.NodeTest4R1, cU, p.cI)
-		case slot.NodeTest4R1: // NodeTest : NameTestNamespaceAnyLocal ∙
+		case slot.NodeTest4R1: // NodeTest : NameTestNamespaceAnyLocalReservedNameConflict ∙
 
 			if p.follow(symbols.NT_NodeTest) {
 				p.rtn(symbols.NT_NodeTest, cU, p.cI)
@@ -1023,25 +1154,75 @@ func (p *parser) parse() (*bsr.Set, []*Error) {
 			} else {
 				p.parseError(slot.NodeTest5R0, p.cI, followSets[symbols.NT_NodeTest])
 			}
-		case slot.NodeTest6R0: // NodeTest : ∙NameTestQNameNamespaceWithLocal
+		case slot.NodeTest6R0: // NodeTest : ∙NameTestLocalAnyNamespaceReservedNameConflict
 
 			p.call(slot.NodeTest6R1, cU, p.cI)
-		case slot.NodeTest6R1: // NodeTest : NameTestQNameNamespaceWithLocal ∙
+		case slot.NodeTest6R1: // NodeTest : NameTestLocalAnyNamespaceReservedNameConflict ∙
 
 			if p.follow(symbols.NT_NodeTest) {
 				p.rtn(symbols.NT_NodeTest, cU, p.cI)
 			} else {
 				p.parseError(slot.NodeTest6R0, p.cI, followSets[symbols.NT_NodeTest])
 			}
-		case slot.NodeTest7R0: // NodeTest : ∙NameTestQNameLocalOnly
+		case slot.NodeTest7R0: // NodeTest : ∙NameTestQNameNamespaceWithLocal
 
 			p.call(slot.NodeTest7R1, cU, p.cI)
-		case slot.NodeTest7R1: // NodeTest : NameTestQNameLocalOnly ∙
+		case slot.NodeTest7R1: // NodeTest : NameTestQNameNamespaceWithLocal ∙
 
 			if p.follow(symbols.NT_NodeTest) {
 				p.rtn(symbols.NT_NodeTest, cU, p.cI)
 			} else {
 				p.parseError(slot.NodeTest7R0, p.cI, followSets[symbols.NT_NodeTest])
+			}
+		case slot.NodeTest8R0: // NodeTest : ∙NameTestQNameNamespaceWithLocalReservedNameConflictNamespace
+
+			p.call(slot.NodeTest8R1, cU, p.cI)
+		case slot.NodeTest8R1: // NodeTest : NameTestQNameNamespaceWithLocalReservedNameConflictNamespace ∙
+
+			if p.follow(symbols.NT_NodeTest) {
+				p.rtn(symbols.NT_NodeTest, cU, p.cI)
+			} else {
+				p.parseError(slot.NodeTest8R0, p.cI, followSets[symbols.NT_NodeTest])
+			}
+		case slot.NodeTest9R0: // NodeTest : ∙NameTestQNameNamespaceWithLocalReservedNameConflictLocal
+
+			p.call(slot.NodeTest9R1, cU, p.cI)
+		case slot.NodeTest9R1: // NodeTest : NameTestQNameNamespaceWithLocalReservedNameConflictLocal ∙
+
+			if p.follow(symbols.NT_NodeTest) {
+				p.rtn(symbols.NT_NodeTest, cU, p.cI)
+			} else {
+				p.parseError(slot.NodeTest9R0, p.cI, followSets[symbols.NT_NodeTest])
+			}
+		case slot.NodeTest10R0: // NodeTest : ∙NameTestQNameNamespaceWithLocalReservedNameConflictBoth
+
+			p.call(slot.NodeTest10R1, cU, p.cI)
+		case slot.NodeTest10R1: // NodeTest : NameTestQNameNamespaceWithLocalReservedNameConflictBoth ∙
+
+			if p.follow(symbols.NT_NodeTest) {
+				p.rtn(symbols.NT_NodeTest, cU, p.cI)
+			} else {
+				p.parseError(slot.NodeTest10R0, p.cI, followSets[symbols.NT_NodeTest])
+			}
+		case slot.NodeTest11R0: // NodeTest : ∙NameTestQNameLocalOnly
+
+			p.call(slot.NodeTest11R1, cU, p.cI)
+		case slot.NodeTest11R1: // NodeTest : NameTestQNameLocalOnly ∙
+
+			if p.follow(symbols.NT_NodeTest) {
+				p.rtn(symbols.NT_NodeTest, cU, p.cI)
+			} else {
+				p.parseError(slot.NodeTest11R0, p.cI, followSets[symbols.NT_NodeTest])
+			}
+		case slot.NodeTest12R0: // NodeTest : ∙NameTestQNameLocalOnlyReservedNameConflict
+
+			p.call(slot.NodeTest12R1, cU, p.cI)
+		case slot.NodeTest12R1: // NodeTest : NameTestQNameLocalOnlyReservedNameConflict ∙
+
+			if p.follow(symbols.NT_NodeTest) {
+				p.rtn(symbols.NT_NodeTest, cU, p.cI)
+			} else {
+				p.parseError(slot.NodeTest12R0, p.cI, followSets[symbols.NT_NodeTest])
 			}
 		case slot.NodeTestAndPredicate0R0: // NodeTestAndPredicate : ∙NodeTest StepWithPredicate
 
@@ -1084,16 +1265,6 @@ func (p *parser) parse() (*bsr.Set, []*Error) {
 				p.rtn(symbols.NT_NodeTestNodeTypeNoArgTest, cU, p.cI)
 			} else {
 				p.parseError(slot.NodeTestNodeTypeNoArgTest0R0, p.cI, followSets[symbols.NT_NodeTestNodeTypeNoArgTest])
-			}
-		case slot.NodeTestNodeTypeNoArgTestNodeTestConflictResolver0R0: // NodeTestNodeTypeNoArgTestNodeTestConflictResolver : ∙NodeType
-
-			p.call(slot.NodeTestNodeTypeNoArgTestNodeTestConflictResolver0R1, cU, p.cI)
-		case slot.NodeTestNodeTypeNoArgTestNodeTestConflictResolver0R1: // NodeTestNodeTypeNoArgTestNodeTestConflictResolver : NodeType ∙
-
-			if p.follow(symbols.NT_NodeTestNodeTypeNoArgTestNodeTestConflictResolver) {
-				p.rtn(symbols.NT_NodeTestNodeTypeNoArgTestNodeTestConflictResolver, cU, p.cI)
-			} else {
-				p.parseError(slot.NodeTestNodeTypeNoArgTestNodeTestConflictResolver0R0, p.cI, followSets[symbols.NT_NodeTestNodeTypeNoArgTestNodeTestConflictResolver])
 			}
 		case slot.NodeTestProcInstTargetTest0R0: // NodeTestProcInstTargetTest : ∙processing-instruction ( Literal )
 
@@ -1700,6 +1871,159 @@ func (p *parser) parse() (*bsr.Set, []*Error) {
 			} else {
 				p.parseError(slot.RelativeLocationPathWithStep0R0, p.cI, followSets[symbols.NT_RelativeLocationPathWithStep])
 			}
+		case slot.ReservedNameConflictResolver0R0: // ReservedNameConflictResolver : ∙ancestor
+
+			p.bsrSet.Add(slot.ReservedNameConflictResolver0R1, cU, p.cI, p.cI+1)
+			p.cI++
+			if p.follow(symbols.NT_ReservedNameConflictResolver) {
+				p.rtn(symbols.NT_ReservedNameConflictResolver, cU, p.cI)
+			} else {
+				p.parseError(slot.ReservedNameConflictResolver0R0, p.cI, followSets[symbols.NT_ReservedNameConflictResolver])
+			}
+		case slot.ReservedNameConflictResolver1R0: // ReservedNameConflictResolver : ∙ancestor-or-self
+
+			p.bsrSet.Add(slot.ReservedNameConflictResolver1R1, cU, p.cI, p.cI+1)
+			p.cI++
+			if p.follow(symbols.NT_ReservedNameConflictResolver) {
+				p.rtn(symbols.NT_ReservedNameConflictResolver, cU, p.cI)
+			} else {
+				p.parseError(slot.ReservedNameConflictResolver1R0, p.cI, followSets[symbols.NT_ReservedNameConflictResolver])
+			}
+		case slot.ReservedNameConflictResolver2R0: // ReservedNameConflictResolver : ∙attribute
+
+			p.bsrSet.Add(slot.ReservedNameConflictResolver2R1, cU, p.cI, p.cI+1)
+			p.cI++
+			if p.follow(symbols.NT_ReservedNameConflictResolver) {
+				p.rtn(symbols.NT_ReservedNameConflictResolver, cU, p.cI)
+			} else {
+				p.parseError(slot.ReservedNameConflictResolver2R0, p.cI, followSets[symbols.NT_ReservedNameConflictResolver])
+			}
+		case slot.ReservedNameConflictResolver3R0: // ReservedNameConflictResolver : ∙child
+
+			p.bsrSet.Add(slot.ReservedNameConflictResolver3R1, cU, p.cI, p.cI+1)
+			p.cI++
+			if p.follow(symbols.NT_ReservedNameConflictResolver) {
+				p.rtn(symbols.NT_ReservedNameConflictResolver, cU, p.cI)
+			} else {
+				p.parseError(slot.ReservedNameConflictResolver3R0, p.cI, followSets[symbols.NT_ReservedNameConflictResolver])
+			}
+		case slot.ReservedNameConflictResolver4R0: // ReservedNameConflictResolver : ∙descendant
+
+			p.bsrSet.Add(slot.ReservedNameConflictResolver4R1, cU, p.cI, p.cI+1)
+			p.cI++
+			if p.follow(symbols.NT_ReservedNameConflictResolver) {
+				p.rtn(symbols.NT_ReservedNameConflictResolver, cU, p.cI)
+			} else {
+				p.parseError(slot.ReservedNameConflictResolver4R0, p.cI, followSets[symbols.NT_ReservedNameConflictResolver])
+			}
+		case slot.ReservedNameConflictResolver5R0: // ReservedNameConflictResolver : ∙descendant-or-self
+
+			p.bsrSet.Add(slot.ReservedNameConflictResolver5R1, cU, p.cI, p.cI+1)
+			p.cI++
+			if p.follow(symbols.NT_ReservedNameConflictResolver) {
+				p.rtn(symbols.NT_ReservedNameConflictResolver, cU, p.cI)
+			} else {
+				p.parseError(slot.ReservedNameConflictResolver5R0, p.cI, followSets[symbols.NT_ReservedNameConflictResolver])
+			}
+		case slot.ReservedNameConflictResolver6R0: // ReservedNameConflictResolver : ∙following
+
+			p.bsrSet.Add(slot.ReservedNameConflictResolver6R1, cU, p.cI, p.cI+1)
+			p.cI++
+			if p.follow(symbols.NT_ReservedNameConflictResolver) {
+				p.rtn(symbols.NT_ReservedNameConflictResolver, cU, p.cI)
+			} else {
+				p.parseError(slot.ReservedNameConflictResolver6R0, p.cI, followSets[symbols.NT_ReservedNameConflictResolver])
+			}
+		case slot.ReservedNameConflictResolver7R0: // ReservedNameConflictResolver : ∙following-sibling
+
+			p.bsrSet.Add(slot.ReservedNameConflictResolver7R1, cU, p.cI, p.cI+1)
+			p.cI++
+			if p.follow(symbols.NT_ReservedNameConflictResolver) {
+				p.rtn(symbols.NT_ReservedNameConflictResolver, cU, p.cI)
+			} else {
+				p.parseError(slot.ReservedNameConflictResolver7R0, p.cI, followSets[symbols.NT_ReservedNameConflictResolver])
+			}
+		case slot.ReservedNameConflictResolver8R0: // ReservedNameConflictResolver : ∙namespace
+
+			p.bsrSet.Add(slot.ReservedNameConflictResolver8R1, cU, p.cI, p.cI+1)
+			p.cI++
+			if p.follow(symbols.NT_ReservedNameConflictResolver) {
+				p.rtn(symbols.NT_ReservedNameConflictResolver, cU, p.cI)
+			} else {
+				p.parseError(slot.ReservedNameConflictResolver8R0, p.cI, followSets[symbols.NT_ReservedNameConflictResolver])
+			}
+		case slot.ReservedNameConflictResolver9R0: // ReservedNameConflictResolver : ∙parent
+
+			p.bsrSet.Add(slot.ReservedNameConflictResolver9R1, cU, p.cI, p.cI+1)
+			p.cI++
+			if p.follow(symbols.NT_ReservedNameConflictResolver) {
+				p.rtn(symbols.NT_ReservedNameConflictResolver, cU, p.cI)
+			} else {
+				p.parseError(slot.ReservedNameConflictResolver9R0, p.cI, followSets[symbols.NT_ReservedNameConflictResolver])
+			}
+		case slot.ReservedNameConflictResolver10R0: // ReservedNameConflictResolver : ∙preceding
+
+			p.bsrSet.Add(slot.ReservedNameConflictResolver10R1, cU, p.cI, p.cI+1)
+			p.cI++
+			if p.follow(symbols.NT_ReservedNameConflictResolver) {
+				p.rtn(symbols.NT_ReservedNameConflictResolver, cU, p.cI)
+			} else {
+				p.parseError(slot.ReservedNameConflictResolver10R0, p.cI, followSets[symbols.NT_ReservedNameConflictResolver])
+			}
+		case slot.ReservedNameConflictResolver11R0: // ReservedNameConflictResolver : ∙preceding-sibling
+
+			p.bsrSet.Add(slot.ReservedNameConflictResolver11R1, cU, p.cI, p.cI+1)
+			p.cI++
+			if p.follow(symbols.NT_ReservedNameConflictResolver) {
+				p.rtn(symbols.NT_ReservedNameConflictResolver, cU, p.cI)
+			} else {
+				p.parseError(slot.ReservedNameConflictResolver11R0, p.cI, followSets[symbols.NT_ReservedNameConflictResolver])
+			}
+		case slot.ReservedNameConflictResolver12R0: // ReservedNameConflictResolver : ∙self
+
+			p.bsrSet.Add(slot.ReservedNameConflictResolver12R1, cU, p.cI, p.cI+1)
+			p.cI++
+			if p.follow(symbols.NT_ReservedNameConflictResolver) {
+				p.rtn(symbols.NT_ReservedNameConflictResolver, cU, p.cI)
+			} else {
+				p.parseError(slot.ReservedNameConflictResolver12R0, p.cI, followSets[symbols.NT_ReservedNameConflictResolver])
+			}
+		case slot.ReservedNameConflictResolver13R0: // ReservedNameConflictResolver : ∙comment
+
+			p.bsrSet.Add(slot.ReservedNameConflictResolver13R1, cU, p.cI, p.cI+1)
+			p.cI++
+			if p.follow(symbols.NT_ReservedNameConflictResolver) {
+				p.rtn(symbols.NT_ReservedNameConflictResolver, cU, p.cI)
+			} else {
+				p.parseError(slot.ReservedNameConflictResolver13R0, p.cI, followSets[symbols.NT_ReservedNameConflictResolver])
+			}
+		case slot.ReservedNameConflictResolver14R0: // ReservedNameConflictResolver : ∙text
+
+			p.bsrSet.Add(slot.ReservedNameConflictResolver14R1, cU, p.cI, p.cI+1)
+			p.cI++
+			if p.follow(symbols.NT_ReservedNameConflictResolver) {
+				p.rtn(symbols.NT_ReservedNameConflictResolver, cU, p.cI)
+			} else {
+				p.parseError(slot.ReservedNameConflictResolver14R0, p.cI, followSets[symbols.NT_ReservedNameConflictResolver])
+			}
+		case slot.ReservedNameConflictResolver15R0: // ReservedNameConflictResolver : ∙processing-instruction
+
+			p.bsrSet.Add(slot.ReservedNameConflictResolver15R1, cU, p.cI, p.cI+1)
+			p.cI++
+			if p.follow(symbols.NT_ReservedNameConflictResolver) {
+				p.rtn(symbols.NT_ReservedNameConflictResolver, cU, p.cI)
+			} else {
+				p.parseError(slot.ReservedNameConflictResolver15R0, p.cI, followSets[symbols.NT_ReservedNameConflictResolver])
+			}
+		case slot.ReservedNameConflictResolver16R0: // ReservedNameConflictResolver : ∙node
+
+			p.bsrSet.Add(slot.ReservedNameConflictResolver16R1, cU, p.cI, p.cI+1)
+			p.cI++
+			if p.follow(symbols.NT_ReservedNameConflictResolver) {
+				p.rtn(symbols.NT_ReservedNameConflictResolver, cU, p.cI)
+			} else {
+				p.parseError(slot.ReservedNameConflictResolver16R0, p.cI, followSets[symbols.NT_ReservedNameConflictResolver])
+			}
 		case slot.Step0R0: // Step : ∙NodeTestAndPredicate
 
 			p.call(slot.Step0R1, cU, p.cI)
@@ -2224,10 +2548,23 @@ var first = []map[token.Type]string{
 	// AbbreviatedAxisSpecifier : @ ∙
 	{
 		token.T_3:  "*",
+		token.T_21: "ancestor",
+		token.T_22: "ancestor-or-self",
+		token.T_24: "attribute",
+		token.T_25: "child",
 		token.T_26: "comment",
+		token.T_27: "descendant",
+		token.T_28: "descendant-or-self",
+		token.T_32: "following",
+		token.T_33: "following-sibling",
+		token.T_35: "namespace",
 		token.T_36: "ncname",
 		token.T_37: "node",
+		token.T_39: "parent",
+		token.T_40: "preceding",
+		token.T_41: "preceding-sibling",
 		token.T_42: "processing-instruction",
+		token.T_43: "self",
 		token.T_45: "text",
 	},
 	// AbbreviatedRelativeLocationPath : ∙RelativeLocationPath // Step
@@ -3175,10 +3512,23 @@ var first = []map[token.Type]string{
 	// AxisSpecifier : AxisSpecifierWithAxisName ∙
 	{
 		token.T_3:  "*",
+		token.T_21: "ancestor",
+		token.T_22: "ancestor-or-self",
+		token.T_24: "attribute",
+		token.T_25: "child",
 		token.T_26: "comment",
+		token.T_27: "descendant",
+		token.T_28: "descendant-or-self",
+		token.T_32: "following",
+		token.T_33: "following-sibling",
+		token.T_35: "namespace",
 		token.T_36: "ncname",
 		token.T_37: "node",
+		token.T_39: "parent",
+		token.T_40: "preceding",
+		token.T_41: "preceding-sibling",
 		token.T_42: "processing-instruction",
+		token.T_43: "self",
 		token.T_45: "text",
 	},
 	// AxisSpecifier : ∙AbbreviatedAxisSpecifier
@@ -3188,10 +3538,23 @@ var first = []map[token.Type]string{
 	// AxisSpecifier : AbbreviatedAxisSpecifier ∙
 	{
 		token.T_3:  "*",
+		token.T_21: "ancestor",
+		token.T_22: "ancestor-or-self",
+		token.T_24: "attribute",
+		token.T_25: "child",
 		token.T_26: "comment",
+		token.T_27: "descendant",
+		token.T_28: "descendant-or-self",
+		token.T_32: "following",
+		token.T_33: "following-sibling",
+		token.T_35: "namespace",
 		token.T_36: "ncname",
 		token.T_37: "node",
+		token.T_39: "parent",
+		token.T_40: "preceding",
+		token.T_41: "preceding-sibling",
 		token.T_42: "processing-instruction",
+		token.T_43: "self",
 		token.T_45: "text",
 	},
 	// AxisSpecifierWithAxisName : ∙AxisName ::
@@ -3217,10 +3580,23 @@ var first = []map[token.Type]string{
 	// AxisSpecifierWithAxisName : AxisName :: ∙
 	{
 		token.T_3:  "*",
+		token.T_21: "ancestor",
+		token.T_22: "ancestor-or-self",
+		token.T_24: "attribute",
+		token.T_25: "child",
 		token.T_26: "comment",
+		token.T_27: "descendant",
+		token.T_28: "descendant-or-self",
+		token.T_32: "following",
+		token.T_33: "following-sibling",
+		token.T_35: "namespace",
 		token.T_36: "ncname",
 		token.T_37: "node",
+		token.T_39: "parent",
+		token.T_40: "preceding",
+		token.T_41: "preceding-sibling",
 		token.T_42: "processing-instruction",
+		token.T_43: "self",
 		token.T_45: "text",
 	},
 	// EqualityExpr : ∙RelationalExpr
@@ -4745,6 +5121,58 @@ var first = []map[token.Type]string{
 		token.T_38: "or",
 		token.T_47: "|",
 	},
+	// NameTestLocalAnyNamespaceReservedNameConflict : ∙* : ReservedNameConflictResolver
+	{
+		token.T_3: "*",
+	},
+	// NameTestLocalAnyNamespaceReservedNameConflict : * ∙: ReservedNameConflictResolver
+	{
+		token.T_11: ":",
+	},
+	// NameTestLocalAnyNamespaceReservedNameConflict : * : ∙ReservedNameConflictResolver
+	{
+		token.T_21: "ancestor",
+		token.T_22: "ancestor-or-self",
+		token.T_24: "attribute",
+		token.T_25: "child",
+		token.T_26: "comment",
+		token.T_27: "descendant",
+		token.T_28: "descendant-or-self",
+		token.T_32: "following",
+		token.T_33: "following-sibling",
+		token.T_35: "namespace",
+		token.T_37: "node",
+		token.T_39: "parent",
+		token.T_40: "preceding",
+		token.T_41: "preceding-sibling",
+		token.T_42: "processing-instruction",
+		token.T_43: "self",
+		token.T_45: "text",
+	},
+	// NameTestLocalAnyNamespaceReservedNameConflict : * : ReservedNameConflictResolver ∙
+	{
+		token.T_0:  "!=",
+		token.EOF:  "$",
+		token.T_2:  ")",
+		token.T_3:  "*",
+		token.T_4:  "+",
+		token.T_5:  ",",
+		token.T_6:  "-",
+		token.T_9:  "/",
+		token.T_10: "//",
+		token.T_13: "<",
+		token.T_14: "<=",
+		token.T_15: "=",
+		token.T_16: ">",
+		token.T_17: ">=",
+		token.T_19: "[",
+		token.T_20: "]",
+		token.T_23: "and",
+		token.T_30: "div",
+		token.T_34: "mod",
+		token.T_38: "or",
+		token.T_47: "|",
+	},
 	// NameTestNamespaceAnyLocal : ∙ncname : *
 	{
 		token.T_36: "ncname",
@@ -4781,11 +5209,107 @@ var first = []map[token.Type]string{
 		token.T_38: "or",
 		token.T_47: "|",
 	},
+	// NameTestNamespaceAnyLocalReservedNameConflict : ∙ReservedNameConflictResolver : *
+	{
+		token.T_21: "ancestor",
+		token.T_22: "ancestor-or-self",
+		token.T_24: "attribute",
+		token.T_25: "child",
+		token.T_26: "comment",
+		token.T_27: "descendant",
+		token.T_28: "descendant-or-self",
+		token.T_32: "following",
+		token.T_33: "following-sibling",
+		token.T_35: "namespace",
+		token.T_37: "node",
+		token.T_39: "parent",
+		token.T_40: "preceding",
+		token.T_41: "preceding-sibling",
+		token.T_42: "processing-instruction",
+		token.T_43: "self",
+		token.T_45: "text",
+	},
+	// NameTestNamespaceAnyLocalReservedNameConflict : ReservedNameConflictResolver ∙: *
+	{
+		token.T_11: ":",
+	},
+	// NameTestNamespaceAnyLocalReservedNameConflict : ReservedNameConflictResolver : ∙*
+	{
+		token.T_3: "*",
+	},
+	// NameTestNamespaceAnyLocalReservedNameConflict : ReservedNameConflictResolver : * ∙
+	{
+		token.T_0:  "!=",
+		token.EOF:  "$",
+		token.T_2:  ")",
+		token.T_3:  "*",
+		token.T_4:  "+",
+		token.T_5:  ",",
+		token.T_6:  "-",
+		token.T_9:  "/",
+		token.T_10: "//",
+		token.T_13: "<",
+		token.T_14: "<=",
+		token.T_15: "=",
+		token.T_16: ">",
+		token.T_17: ">=",
+		token.T_19: "[",
+		token.T_20: "]",
+		token.T_23: "and",
+		token.T_30: "div",
+		token.T_34: "mod",
+		token.T_38: "or",
+		token.T_47: "|",
+	},
 	// NameTestQNameLocalOnly : ∙ncname
 	{
 		token.T_36: "ncname",
 	},
 	// NameTestQNameLocalOnly : ncname ∙
+	{
+		token.T_0:  "!=",
+		token.EOF:  "$",
+		token.T_2:  ")",
+		token.T_3:  "*",
+		token.T_4:  "+",
+		token.T_5:  ",",
+		token.T_6:  "-",
+		token.T_9:  "/",
+		token.T_10: "//",
+		token.T_13: "<",
+		token.T_14: "<=",
+		token.T_15: "=",
+		token.T_16: ">",
+		token.T_17: ">=",
+		token.T_19: "[",
+		token.T_20: "]",
+		token.T_23: "and",
+		token.T_30: "div",
+		token.T_34: "mod",
+		token.T_38: "or",
+		token.T_47: "|",
+	},
+	// NameTestQNameLocalOnlyReservedNameConflict : ∙ReservedNameConflictResolver
+	{
+		token.T_21: "ancestor",
+		token.T_22: "ancestor-or-self",
+		token.T_24: "attribute",
+		token.T_25: "child",
+		token.T_26: "comment",
+		token.T_27: "descendant",
+		token.T_28: "descendant-or-self",
+		token.T_32: "following",
+		token.T_33: "following-sibling",
+		token.T_35: "namespace",
+		token.T_37: "node",
+		token.T_39: "parent",
+		token.T_40: "preceding",
+		token.T_41: "preceding-sibling",
+		token.T_42: "processing-instruction",
+		token.T_43: "self",
+		token.T_45: "text",
+	},
+	// NameTestQNameLocalOnlyReservedNameConflict : ReservedNameConflictResolver ∙
 	{
 		token.T_0:  "!=",
 		token.EOF:  "$",
@@ -4845,14 +5369,51 @@ var first = []map[token.Type]string{
 		token.T_38: "or",
 		token.T_47: "|",
 	},
-	// NodeTest : ∙NodeTestNodeTypeNoArgTest
+	// NameTestQNameNamespaceWithLocalReservedNameConflictBoth : ∙ReservedNameConflictResolver : ReservedNameConflictResolver
 	{
+		token.T_21: "ancestor",
+		token.T_22: "ancestor-or-self",
+		token.T_24: "attribute",
+		token.T_25: "child",
 		token.T_26: "comment",
+		token.T_27: "descendant",
+		token.T_28: "descendant-or-self",
+		token.T_32: "following",
+		token.T_33: "following-sibling",
+		token.T_35: "namespace",
 		token.T_37: "node",
+		token.T_39: "parent",
+		token.T_40: "preceding",
+		token.T_41: "preceding-sibling",
 		token.T_42: "processing-instruction",
+		token.T_43: "self",
 		token.T_45: "text",
 	},
-	// NodeTest : NodeTestNodeTypeNoArgTest ∙
+	// NameTestQNameNamespaceWithLocalReservedNameConflictBoth : ReservedNameConflictResolver ∙: ReservedNameConflictResolver
+	{
+		token.T_11: ":",
+	},
+	// NameTestQNameNamespaceWithLocalReservedNameConflictBoth : ReservedNameConflictResolver : ∙ReservedNameConflictResolver
+	{
+		token.T_21: "ancestor",
+		token.T_22: "ancestor-or-self",
+		token.T_24: "attribute",
+		token.T_25: "child",
+		token.T_26: "comment",
+		token.T_27: "descendant",
+		token.T_28: "descendant-or-self",
+		token.T_32: "following",
+		token.T_33: "following-sibling",
+		token.T_35: "namespace",
+		token.T_37: "node",
+		token.T_39: "parent",
+		token.T_40: "preceding",
+		token.T_41: "preceding-sibling",
+		token.T_42: "processing-instruction",
+		token.T_43: "self",
+		token.T_45: "text",
+	},
+	// NameTestQNameNamespaceWithLocalReservedNameConflictBoth : ReservedNameConflictResolver : ReservedNameConflictResolver ∙
 	{
 		token.T_0:  "!=",
 		token.EOF:  "$",
@@ -4876,14 +5437,118 @@ var first = []map[token.Type]string{
 		token.T_38: "or",
 		token.T_47: "|",
 	},
-	// NodeTest : ∙NodeTestNodeTypeNoArgTestNodeTestConflictResolver
+	// NameTestQNameNamespaceWithLocalReservedNameConflictLocal : ∙ncname : ReservedNameConflictResolver
+	{
+		token.T_36: "ncname",
+	},
+	// NameTestQNameNamespaceWithLocalReservedNameConflictLocal : ncname ∙: ReservedNameConflictResolver
+	{
+		token.T_11: ":",
+	},
+	// NameTestQNameNamespaceWithLocalReservedNameConflictLocal : ncname : ∙ReservedNameConflictResolver
+	{
+		token.T_21: "ancestor",
+		token.T_22: "ancestor-or-self",
+		token.T_24: "attribute",
+		token.T_25: "child",
+		token.T_26: "comment",
+		token.T_27: "descendant",
+		token.T_28: "descendant-or-self",
+		token.T_32: "following",
+		token.T_33: "following-sibling",
+		token.T_35: "namespace",
+		token.T_37: "node",
+		token.T_39: "parent",
+		token.T_40: "preceding",
+		token.T_41: "preceding-sibling",
+		token.T_42: "processing-instruction",
+		token.T_43: "self",
+		token.T_45: "text",
+	},
+	// NameTestQNameNamespaceWithLocalReservedNameConflictLocal : ncname : ReservedNameConflictResolver ∙
+	{
+		token.T_0:  "!=",
+		token.EOF:  "$",
+		token.T_2:  ")",
+		token.T_3:  "*",
+		token.T_4:  "+",
+		token.T_5:  ",",
+		token.T_6:  "-",
+		token.T_9:  "/",
+		token.T_10: "//",
+		token.T_13: "<",
+		token.T_14: "<=",
+		token.T_15: "=",
+		token.T_16: ">",
+		token.T_17: ">=",
+		token.T_19: "[",
+		token.T_20: "]",
+		token.T_23: "and",
+		token.T_30: "div",
+		token.T_34: "mod",
+		token.T_38: "or",
+		token.T_47: "|",
+	},
+	// NameTestQNameNamespaceWithLocalReservedNameConflictNamespace : ∙ReservedNameConflictResolver : ncname
+	{
+		token.T_21: "ancestor",
+		token.T_22: "ancestor-or-self",
+		token.T_24: "attribute",
+		token.T_25: "child",
+		token.T_26: "comment",
+		token.T_27: "descendant",
+		token.T_28: "descendant-or-self",
+		token.T_32: "following",
+		token.T_33: "following-sibling",
+		token.T_35: "namespace",
+		token.T_37: "node",
+		token.T_39: "parent",
+		token.T_40: "preceding",
+		token.T_41: "preceding-sibling",
+		token.T_42: "processing-instruction",
+		token.T_43: "self",
+		token.T_45: "text",
+	},
+	// NameTestQNameNamespaceWithLocalReservedNameConflictNamespace : ReservedNameConflictResolver ∙: ncname
+	{
+		token.T_11: ":",
+	},
+	// NameTestQNameNamespaceWithLocalReservedNameConflictNamespace : ReservedNameConflictResolver : ∙ncname
+	{
+		token.T_36: "ncname",
+	},
+	// NameTestQNameNamespaceWithLocalReservedNameConflictNamespace : ReservedNameConflictResolver : ncname ∙
+	{
+		token.T_0:  "!=",
+		token.EOF:  "$",
+		token.T_2:  ")",
+		token.T_3:  "*",
+		token.T_4:  "+",
+		token.T_5:  ",",
+		token.T_6:  "-",
+		token.T_9:  "/",
+		token.T_10: "//",
+		token.T_13: "<",
+		token.T_14: "<=",
+		token.T_15: "=",
+		token.T_16: ">",
+		token.T_17: ">=",
+		token.T_19: "[",
+		token.T_20: "]",
+		token.T_23: "and",
+		token.T_30: "div",
+		token.T_34: "mod",
+		token.T_38: "or",
+		token.T_47: "|",
+	},
+	// NodeTest : ∙NodeTestNodeTypeNoArgTest
 	{
 		token.T_26: "comment",
 		token.T_37: "node",
 		token.T_42: "processing-instruction",
 		token.T_45: "text",
 	},
-	// NodeTest : NodeTestNodeTypeNoArgTestNodeTestConflictResolver ∙
+	// NodeTest : NodeTestNodeTypeNoArgTest ∙
 	{
 		token.T_0:  "!=",
 		token.EOF:  "$",
@@ -4991,11 +5656,83 @@ var first = []map[token.Type]string{
 		token.T_38: "or",
 		token.T_47: "|",
 	},
+	// NodeTest : ∙NameTestNamespaceAnyLocalReservedNameConflict
+	{
+		token.T_21: "ancestor",
+		token.T_22: "ancestor-or-self",
+		token.T_24: "attribute",
+		token.T_25: "child",
+		token.T_26: "comment",
+		token.T_27: "descendant",
+		token.T_28: "descendant-or-self",
+		token.T_32: "following",
+		token.T_33: "following-sibling",
+		token.T_35: "namespace",
+		token.T_37: "node",
+		token.T_39: "parent",
+		token.T_40: "preceding",
+		token.T_41: "preceding-sibling",
+		token.T_42: "processing-instruction",
+		token.T_43: "self",
+		token.T_45: "text",
+	},
+	// NodeTest : NameTestNamespaceAnyLocalReservedNameConflict ∙
+	{
+		token.T_0:  "!=",
+		token.EOF:  "$",
+		token.T_2:  ")",
+		token.T_3:  "*",
+		token.T_4:  "+",
+		token.T_5:  ",",
+		token.T_6:  "-",
+		token.T_9:  "/",
+		token.T_10: "//",
+		token.T_13: "<",
+		token.T_14: "<=",
+		token.T_15: "=",
+		token.T_16: ">",
+		token.T_17: ">=",
+		token.T_19: "[",
+		token.T_20: "]",
+		token.T_23: "and",
+		token.T_30: "div",
+		token.T_34: "mod",
+		token.T_38: "or",
+		token.T_47: "|",
+	},
 	// NodeTest : ∙NameTestLocalAnyNamespace
 	{
 		token.T_3: "*",
 	},
 	// NodeTest : NameTestLocalAnyNamespace ∙
+	{
+		token.T_0:  "!=",
+		token.EOF:  "$",
+		token.T_2:  ")",
+		token.T_3:  "*",
+		token.T_4:  "+",
+		token.T_5:  ",",
+		token.T_6:  "-",
+		token.T_9:  "/",
+		token.T_10: "//",
+		token.T_13: "<",
+		token.T_14: "<=",
+		token.T_15: "=",
+		token.T_16: ">",
+		token.T_17: ">=",
+		token.T_19: "[",
+		token.T_20: "]",
+		token.T_23: "and",
+		token.T_30: "div",
+		token.T_34: "mod",
+		token.T_38: "or",
+		token.T_47: "|",
+	},
+	// NodeTest : ∙NameTestLocalAnyNamespaceReservedNameConflict
+	{
+		token.T_3: "*",
+	},
+	// NodeTest : NameTestLocalAnyNamespaceReservedNameConflict ∙
 	{
 		token.T_0:  "!=",
 		token.EOF:  "$",
@@ -5047,6 +5784,122 @@ var first = []map[token.Type]string{
 		token.T_38: "or",
 		token.T_47: "|",
 	},
+	// NodeTest : ∙NameTestQNameNamespaceWithLocalReservedNameConflictNamespace
+	{
+		token.T_21: "ancestor",
+		token.T_22: "ancestor-or-self",
+		token.T_24: "attribute",
+		token.T_25: "child",
+		token.T_26: "comment",
+		token.T_27: "descendant",
+		token.T_28: "descendant-or-self",
+		token.T_32: "following",
+		token.T_33: "following-sibling",
+		token.T_35: "namespace",
+		token.T_37: "node",
+		token.T_39: "parent",
+		token.T_40: "preceding",
+		token.T_41: "preceding-sibling",
+		token.T_42: "processing-instruction",
+		token.T_43: "self",
+		token.T_45: "text",
+	},
+	// NodeTest : NameTestQNameNamespaceWithLocalReservedNameConflictNamespace ∙
+	{
+		token.T_0:  "!=",
+		token.EOF:  "$",
+		token.T_2:  ")",
+		token.T_3:  "*",
+		token.T_4:  "+",
+		token.T_5:  ",",
+		token.T_6:  "-",
+		token.T_9:  "/",
+		token.T_10: "//",
+		token.T_13: "<",
+		token.T_14: "<=",
+		token.T_15: "=",
+		token.T_16: ">",
+		token.T_17: ">=",
+		token.T_19: "[",
+		token.T_20: "]",
+		token.T_23: "and",
+		token.T_30: "div",
+		token.T_34: "mod",
+		token.T_38: "or",
+		token.T_47: "|",
+	},
+	// NodeTest : ∙NameTestQNameNamespaceWithLocalReservedNameConflictLocal
+	{
+		token.T_36: "ncname",
+	},
+	// NodeTest : NameTestQNameNamespaceWithLocalReservedNameConflictLocal ∙
+	{
+		token.T_0:  "!=",
+		token.EOF:  "$",
+		token.T_2:  ")",
+		token.T_3:  "*",
+		token.T_4:  "+",
+		token.T_5:  ",",
+		token.T_6:  "-",
+		token.T_9:  "/",
+		token.T_10: "//",
+		token.T_13: "<",
+		token.T_14: "<=",
+		token.T_15: "=",
+		token.T_16: ">",
+		token.T_17: ">=",
+		token.T_19: "[",
+		token.T_20: "]",
+		token.T_23: "and",
+		token.T_30: "div",
+		token.T_34: "mod",
+		token.T_38: "or",
+		token.T_47: "|",
+	},
+	// NodeTest : ∙NameTestQNameNamespaceWithLocalReservedNameConflictBoth
+	{
+		token.T_21: "ancestor",
+		token.T_22: "ancestor-or-self",
+		token.T_24: "attribute",
+		token.T_25: "child",
+		token.T_26: "comment",
+		token.T_27: "descendant",
+		token.T_28: "descendant-or-self",
+		token.T_32: "following",
+		token.T_33: "following-sibling",
+		token.T_35: "namespace",
+		token.T_37: "node",
+		token.T_39: "parent",
+		token.T_40: "preceding",
+		token.T_41: "preceding-sibling",
+		token.T_42: "processing-instruction",
+		token.T_43: "self",
+		token.T_45: "text",
+	},
+	// NodeTest : NameTestQNameNamespaceWithLocalReservedNameConflictBoth ∙
+	{
+		token.T_0:  "!=",
+		token.EOF:  "$",
+		token.T_2:  ")",
+		token.T_3:  "*",
+		token.T_4:  "+",
+		token.T_5:  ",",
+		token.T_6:  "-",
+		token.T_9:  "/",
+		token.T_10: "//",
+		token.T_13: "<",
+		token.T_14: "<=",
+		token.T_15: "=",
+		token.T_16: ">",
+		token.T_17: ">=",
+		token.T_19: "[",
+		token.T_20: "]",
+		token.T_23: "and",
+		token.T_30: "div",
+		token.T_34: "mod",
+		token.T_38: "or",
+		token.T_47: "|",
+	},
 	// NodeTest : ∙NameTestQNameLocalOnly
 	{
 		token.T_36: "ncname",
@@ -5075,13 +5928,70 @@ var first = []map[token.Type]string{
 		token.T_38: "or",
 		token.T_47: "|",
 	},
+	// NodeTest : ∙NameTestQNameLocalOnlyReservedNameConflict
+	{
+		token.T_21: "ancestor",
+		token.T_22: "ancestor-or-self",
+		token.T_24: "attribute",
+		token.T_25: "child",
+		token.T_26: "comment",
+		token.T_27: "descendant",
+		token.T_28: "descendant-or-self",
+		token.T_32: "following",
+		token.T_33: "following-sibling",
+		token.T_35: "namespace",
+		token.T_37: "node",
+		token.T_39: "parent",
+		token.T_40: "preceding",
+		token.T_41: "preceding-sibling",
+		token.T_42: "processing-instruction",
+		token.T_43: "self",
+		token.T_45: "text",
+	},
+	// NodeTest : NameTestQNameLocalOnlyReservedNameConflict ∙
+	{
+		token.T_0:  "!=",
+		token.EOF:  "$",
+		token.T_2:  ")",
+		token.T_3:  "*",
+		token.T_4:  "+",
+		token.T_5:  ",",
+		token.T_6:  "-",
+		token.T_9:  "/",
+		token.T_10: "//",
+		token.T_13: "<",
+		token.T_14: "<=",
+		token.T_15: "=",
+		token.T_16: ">",
+		token.T_17: ">=",
+		token.T_19: "[",
+		token.T_20: "]",
+		token.T_23: "and",
+		token.T_30: "div",
+		token.T_34: "mod",
+		token.T_38: "or",
+		token.T_47: "|",
+	},
 	// NodeTestAndPredicate : ∙NodeTest StepWithPredicate
 	{
 		token.T_3:  "*",
+		token.T_21: "ancestor",
+		token.T_22: "ancestor-or-self",
+		token.T_24: "attribute",
+		token.T_25: "child",
 		token.T_26: "comment",
+		token.T_27: "descendant",
+		token.T_28: "descendant-or-self",
+		token.T_32: "following",
+		token.T_33: "following-sibling",
+		token.T_35: "namespace",
 		token.T_36: "ncname",
 		token.T_37: "node",
+		token.T_39: "parent",
+		token.T_40: "preceding",
+		token.T_41: "preceding-sibling",
 		token.T_42: "processing-instruction",
+		token.T_43: "self",
 		token.T_45: "text",
 	},
 	// NodeTestAndPredicate : NodeTest ∙StepWithPredicate
@@ -5127,37 +6037,6 @@ var first = []map[token.Type]string{
 		token.T_2: ")",
 	},
 	// NodeTestNodeTypeNoArgTest : NodeType ( ) ∙
-	{
-		token.T_0:  "!=",
-		token.EOF:  "$",
-		token.T_2:  ")",
-		token.T_3:  "*",
-		token.T_4:  "+",
-		token.T_5:  ",",
-		token.T_6:  "-",
-		token.T_9:  "/",
-		token.T_10: "//",
-		token.T_13: "<",
-		token.T_14: "<=",
-		token.T_15: "=",
-		token.T_16: ">",
-		token.T_17: ">=",
-		token.T_19: "[",
-		token.T_20: "]",
-		token.T_23: "and",
-		token.T_30: "div",
-		token.T_34: "mod",
-		token.T_38: "or",
-		token.T_47: "|",
-	},
-	// NodeTestNodeTypeNoArgTestNodeTestConflictResolver : ∙NodeType
-	{
-		token.T_26: "comment",
-		token.T_37: "node",
-		token.T_42: "processing-instruction",
-		token.T_45: "text",
-	},
-	// NodeTestNodeTypeNoArgTestNodeTestConflictResolver : NodeType ∙
 	{
 		token.T_0:  "!=",
 		token.EOF:  "$",
@@ -5228,28 +6107,7 @@ var first = []map[token.Type]string{
 	},
 	// NodeType : comment ∙
 	{
-		token.T_0:  "!=",
-		token.EOF:  "$",
-		token.T_1:  "(",
-		token.T_2:  ")",
-		token.T_3:  "*",
-		token.T_4:  "+",
-		token.T_5:  ",",
-		token.T_6:  "-",
-		token.T_9:  "/",
-		token.T_10: "//",
-		token.T_13: "<",
-		token.T_14: "<=",
-		token.T_15: "=",
-		token.T_16: ">",
-		token.T_17: ">=",
-		token.T_19: "[",
-		token.T_20: "]",
-		token.T_23: "and",
-		token.T_30: "div",
-		token.T_34: "mod",
-		token.T_38: "or",
-		token.T_47: "|",
+		token.T_1: "(",
 	},
 	// NodeType : ∙text
 	{
@@ -5257,28 +6115,7 @@ var first = []map[token.Type]string{
 	},
 	// NodeType : text ∙
 	{
-		token.T_0:  "!=",
-		token.EOF:  "$",
-		token.T_1:  "(",
-		token.T_2:  ")",
-		token.T_3:  "*",
-		token.T_4:  "+",
-		token.T_5:  ",",
-		token.T_6:  "-",
-		token.T_9:  "/",
-		token.T_10: "//",
-		token.T_13: "<",
-		token.T_14: "<=",
-		token.T_15: "=",
-		token.T_16: ">",
-		token.T_17: ">=",
-		token.T_19: "[",
-		token.T_20: "]",
-		token.T_23: "and",
-		token.T_30: "div",
-		token.T_34: "mod",
-		token.T_38: "or",
-		token.T_47: "|",
+		token.T_1: "(",
 	},
 	// NodeType : ∙processing-instruction
 	{
@@ -5286,28 +6123,7 @@ var first = []map[token.Type]string{
 	},
 	// NodeType : processing-instruction ∙
 	{
-		token.T_0:  "!=",
-		token.EOF:  "$",
-		token.T_1:  "(",
-		token.T_2:  ")",
-		token.T_3:  "*",
-		token.T_4:  "+",
-		token.T_5:  ",",
-		token.T_6:  "-",
-		token.T_9:  "/",
-		token.T_10: "//",
-		token.T_13: "<",
-		token.T_14: "<=",
-		token.T_15: "=",
-		token.T_16: ">",
-		token.T_17: ">=",
-		token.T_19: "[",
-		token.T_20: "]",
-		token.T_23: "and",
-		token.T_30: "div",
-		token.T_34: "mod",
-		token.T_38: "or",
-		token.T_47: "|",
+		token.T_1: "(",
 	},
 	// NodeType : ∙node
 	{
@@ -5315,28 +6131,7 @@ var first = []map[token.Type]string{
 	},
 	// NodeType : node ∙
 	{
-		token.T_0:  "!=",
-		token.EOF:  "$",
-		token.T_1:  "(",
-		token.T_2:  ")",
-		token.T_3:  "*",
-		token.T_4:  "+",
-		token.T_5:  ",",
-		token.T_6:  "-",
-		token.T_9:  "/",
-		token.T_10: "//",
-		token.T_13: "<",
-		token.T_14: "<=",
-		token.T_15: "=",
-		token.T_16: ">",
-		token.T_17: ">=",
-		token.T_19: "[",
-		token.T_20: "]",
-		token.T_23: "and",
-		token.T_30: "div",
-		token.T_34: "mod",
-		token.T_38: "or",
-		token.T_47: "|",
+		token.T_1: "(",
 	},
 	// Number : ∙digits
 	{
@@ -6968,13 +7763,519 @@ var first = []map[token.Type]string{
 		token.T_38: "or",
 		token.T_47: "|",
 	},
+	// ReservedNameConflictResolver : ∙ancestor
+	{
+		token.T_21: "ancestor",
+	},
+	// ReservedNameConflictResolver : ancestor ∙
+	{
+		token.T_0:  "!=",
+		token.EOF:  "$",
+		token.T_2:  ")",
+		token.T_3:  "*",
+		token.T_4:  "+",
+		token.T_5:  ",",
+		token.T_6:  "-",
+		token.T_9:  "/",
+		token.T_10: "//",
+		token.T_11: ":",
+		token.T_13: "<",
+		token.T_14: "<=",
+		token.T_15: "=",
+		token.T_16: ">",
+		token.T_17: ">=",
+		token.T_19: "[",
+		token.T_20: "]",
+		token.T_23: "and",
+		token.T_30: "div",
+		token.T_34: "mod",
+		token.T_38: "or",
+		token.T_47: "|",
+	},
+	// ReservedNameConflictResolver : ∙ancestor-or-self
+	{
+		token.T_22: "ancestor-or-self",
+	},
+	// ReservedNameConflictResolver : ancestor-or-self ∙
+	{
+		token.T_0:  "!=",
+		token.EOF:  "$",
+		token.T_2:  ")",
+		token.T_3:  "*",
+		token.T_4:  "+",
+		token.T_5:  ",",
+		token.T_6:  "-",
+		token.T_9:  "/",
+		token.T_10: "//",
+		token.T_11: ":",
+		token.T_13: "<",
+		token.T_14: "<=",
+		token.T_15: "=",
+		token.T_16: ">",
+		token.T_17: ">=",
+		token.T_19: "[",
+		token.T_20: "]",
+		token.T_23: "and",
+		token.T_30: "div",
+		token.T_34: "mod",
+		token.T_38: "or",
+		token.T_47: "|",
+	},
+	// ReservedNameConflictResolver : ∙attribute
+	{
+		token.T_24: "attribute",
+	},
+	// ReservedNameConflictResolver : attribute ∙
+	{
+		token.T_0:  "!=",
+		token.EOF:  "$",
+		token.T_2:  ")",
+		token.T_3:  "*",
+		token.T_4:  "+",
+		token.T_5:  ",",
+		token.T_6:  "-",
+		token.T_9:  "/",
+		token.T_10: "//",
+		token.T_11: ":",
+		token.T_13: "<",
+		token.T_14: "<=",
+		token.T_15: "=",
+		token.T_16: ">",
+		token.T_17: ">=",
+		token.T_19: "[",
+		token.T_20: "]",
+		token.T_23: "and",
+		token.T_30: "div",
+		token.T_34: "mod",
+		token.T_38: "or",
+		token.T_47: "|",
+	},
+	// ReservedNameConflictResolver : ∙child
+	{
+		token.T_25: "child",
+	},
+	// ReservedNameConflictResolver : child ∙
+	{
+		token.T_0:  "!=",
+		token.EOF:  "$",
+		token.T_2:  ")",
+		token.T_3:  "*",
+		token.T_4:  "+",
+		token.T_5:  ",",
+		token.T_6:  "-",
+		token.T_9:  "/",
+		token.T_10: "//",
+		token.T_11: ":",
+		token.T_13: "<",
+		token.T_14: "<=",
+		token.T_15: "=",
+		token.T_16: ">",
+		token.T_17: ">=",
+		token.T_19: "[",
+		token.T_20: "]",
+		token.T_23: "and",
+		token.T_30: "div",
+		token.T_34: "mod",
+		token.T_38: "or",
+		token.T_47: "|",
+	},
+	// ReservedNameConflictResolver : ∙descendant
+	{
+		token.T_27: "descendant",
+	},
+	// ReservedNameConflictResolver : descendant ∙
+	{
+		token.T_0:  "!=",
+		token.EOF:  "$",
+		token.T_2:  ")",
+		token.T_3:  "*",
+		token.T_4:  "+",
+		token.T_5:  ",",
+		token.T_6:  "-",
+		token.T_9:  "/",
+		token.T_10: "//",
+		token.T_11: ":",
+		token.T_13: "<",
+		token.T_14: "<=",
+		token.T_15: "=",
+		token.T_16: ">",
+		token.T_17: ">=",
+		token.T_19: "[",
+		token.T_20: "]",
+		token.T_23: "and",
+		token.T_30: "div",
+		token.T_34: "mod",
+		token.T_38: "or",
+		token.T_47: "|",
+	},
+	// ReservedNameConflictResolver : ∙descendant-or-self
+	{
+		token.T_28: "descendant-or-self",
+	},
+	// ReservedNameConflictResolver : descendant-or-self ∙
+	{
+		token.T_0:  "!=",
+		token.EOF:  "$",
+		token.T_2:  ")",
+		token.T_3:  "*",
+		token.T_4:  "+",
+		token.T_5:  ",",
+		token.T_6:  "-",
+		token.T_9:  "/",
+		token.T_10: "//",
+		token.T_11: ":",
+		token.T_13: "<",
+		token.T_14: "<=",
+		token.T_15: "=",
+		token.T_16: ">",
+		token.T_17: ">=",
+		token.T_19: "[",
+		token.T_20: "]",
+		token.T_23: "and",
+		token.T_30: "div",
+		token.T_34: "mod",
+		token.T_38: "or",
+		token.T_47: "|",
+	},
+	// ReservedNameConflictResolver : ∙following
+	{
+		token.T_32: "following",
+	},
+	// ReservedNameConflictResolver : following ∙
+	{
+		token.T_0:  "!=",
+		token.EOF:  "$",
+		token.T_2:  ")",
+		token.T_3:  "*",
+		token.T_4:  "+",
+		token.T_5:  ",",
+		token.T_6:  "-",
+		token.T_9:  "/",
+		token.T_10: "//",
+		token.T_11: ":",
+		token.T_13: "<",
+		token.T_14: "<=",
+		token.T_15: "=",
+		token.T_16: ">",
+		token.T_17: ">=",
+		token.T_19: "[",
+		token.T_20: "]",
+		token.T_23: "and",
+		token.T_30: "div",
+		token.T_34: "mod",
+		token.T_38: "or",
+		token.T_47: "|",
+	},
+	// ReservedNameConflictResolver : ∙following-sibling
+	{
+		token.T_33: "following-sibling",
+	},
+	// ReservedNameConflictResolver : following-sibling ∙
+	{
+		token.T_0:  "!=",
+		token.EOF:  "$",
+		token.T_2:  ")",
+		token.T_3:  "*",
+		token.T_4:  "+",
+		token.T_5:  ",",
+		token.T_6:  "-",
+		token.T_9:  "/",
+		token.T_10: "//",
+		token.T_11: ":",
+		token.T_13: "<",
+		token.T_14: "<=",
+		token.T_15: "=",
+		token.T_16: ">",
+		token.T_17: ">=",
+		token.T_19: "[",
+		token.T_20: "]",
+		token.T_23: "and",
+		token.T_30: "div",
+		token.T_34: "mod",
+		token.T_38: "or",
+		token.T_47: "|",
+	},
+	// ReservedNameConflictResolver : ∙namespace
+	{
+		token.T_35: "namespace",
+	},
+	// ReservedNameConflictResolver : namespace ∙
+	{
+		token.T_0:  "!=",
+		token.EOF:  "$",
+		token.T_2:  ")",
+		token.T_3:  "*",
+		token.T_4:  "+",
+		token.T_5:  ",",
+		token.T_6:  "-",
+		token.T_9:  "/",
+		token.T_10: "//",
+		token.T_11: ":",
+		token.T_13: "<",
+		token.T_14: "<=",
+		token.T_15: "=",
+		token.T_16: ">",
+		token.T_17: ">=",
+		token.T_19: "[",
+		token.T_20: "]",
+		token.T_23: "and",
+		token.T_30: "div",
+		token.T_34: "mod",
+		token.T_38: "or",
+		token.T_47: "|",
+	},
+	// ReservedNameConflictResolver : ∙parent
+	{
+		token.T_39: "parent",
+	},
+	// ReservedNameConflictResolver : parent ∙
+	{
+		token.T_0:  "!=",
+		token.EOF:  "$",
+		token.T_2:  ")",
+		token.T_3:  "*",
+		token.T_4:  "+",
+		token.T_5:  ",",
+		token.T_6:  "-",
+		token.T_9:  "/",
+		token.T_10: "//",
+		token.T_11: ":",
+		token.T_13: "<",
+		token.T_14: "<=",
+		token.T_15: "=",
+		token.T_16: ">",
+		token.T_17: ">=",
+		token.T_19: "[",
+		token.T_20: "]",
+		token.T_23: "and",
+		token.T_30: "div",
+		token.T_34: "mod",
+		token.T_38: "or",
+		token.T_47: "|",
+	},
+	// ReservedNameConflictResolver : ∙preceding
+	{
+		token.T_40: "preceding",
+	},
+	// ReservedNameConflictResolver : preceding ∙
+	{
+		token.T_0:  "!=",
+		token.EOF:  "$",
+		token.T_2:  ")",
+		token.T_3:  "*",
+		token.T_4:  "+",
+		token.T_5:  ",",
+		token.T_6:  "-",
+		token.T_9:  "/",
+		token.T_10: "//",
+		token.T_11: ":",
+		token.T_13: "<",
+		token.T_14: "<=",
+		token.T_15: "=",
+		token.T_16: ">",
+		token.T_17: ">=",
+		token.T_19: "[",
+		token.T_20: "]",
+		token.T_23: "and",
+		token.T_30: "div",
+		token.T_34: "mod",
+		token.T_38: "or",
+		token.T_47: "|",
+	},
+	// ReservedNameConflictResolver : ∙preceding-sibling
+	{
+		token.T_41: "preceding-sibling",
+	},
+	// ReservedNameConflictResolver : preceding-sibling ∙
+	{
+		token.T_0:  "!=",
+		token.EOF:  "$",
+		token.T_2:  ")",
+		token.T_3:  "*",
+		token.T_4:  "+",
+		token.T_5:  ",",
+		token.T_6:  "-",
+		token.T_9:  "/",
+		token.T_10: "//",
+		token.T_11: ":",
+		token.T_13: "<",
+		token.T_14: "<=",
+		token.T_15: "=",
+		token.T_16: ">",
+		token.T_17: ">=",
+		token.T_19: "[",
+		token.T_20: "]",
+		token.T_23: "and",
+		token.T_30: "div",
+		token.T_34: "mod",
+		token.T_38: "or",
+		token.T_47: "|",
+	},
+	// ReservedNameConflictResolver : ∙self
+	{
+		token.T_43: "self",
+	},
+	// ReservedNameConflictResolver : self ∙
+	{
+		token.T_0:  "!=",
+		token.EOF:  "$",
+		token.T_2:  ")",
+		token.T_3:  "*",
+		token.T_4:  "+",
+		token.T_5:  ",",
+		token.T_6:  "-",
+		token.T_9:  "/",
+		token.T_10: "//",
+		token.T_11: ":",
+		token.T_13: "<",
+		token.T_14: "<=",
+		token.T_15: "=",
+		token.T_16: ">",
+		token.T_17: ">=",
+		token.T_19: "[",
+		token.T_20: "]",
+		token.T_23: "and",
+		token.T_30: "div",
+		token.T_34: "mod",
+		token.T_38: "or",
+		token.T_47: "|",
+	},
+	// ReservedNameConflictResolver : ∙comment
+	{
+		token.T_26: "comment",
+	},
+	// ReservedNameConflictResolver : comment ∙
+	{
+		token.T_0:  "!=",
+		token.EOF:  "$",
+		token.T_2:  ")",
+		token.T_3:  "*",
+		token.T_4:  "+",
+		token.T_5:  ",",
+		token.T_6:  "-",
+		token.T_9:  "/",
+		token.T_10: "//",
+		token.T_11: ":",
+		token.T_13: "<",
+		token.T_14: "<=",
+		token.T_15: "=",
+		token.T_16: ">",
+		token.T_17: ">=",
+		token.T_19: "[",
+		token.T_20: "]",
+		token.T_23: "and",
+		token.T_30: "div",
+		token.T_34: "mod",
+		token.T_38: "or",
+		token.T_47: "|",
+	},
+	// ReservedNameConflictResolver : ∙text
+	{
+		token.T_45: "text",
+	},
+	// ReservedNameConflictResolver : text ∙
+	{
+		token.T_0:  "!=",
+		token.EOF:  "$",
+		token.T_2:  ")",
+		token.T_3:  "*",
+		token.T_4:  "+",
+		token.T_5:  ",",
+		token.T_6:  "-",
+		token.T_9:  "/",
+		token.T_10: "//",
+		token.T_11: ":",
+		token.T_13: "<",
+		token.T_14: "<=",
+		token.T_15: "=",
+		token.T_16: ">",
+		token.T_17: ">=",
+		token.T_19: "[",
+		token.T_20: "]",
+		token.T_23: "and",
+		token.T_30: "div",
+		token.T_34: "mod",
+		token.T_38: "or",
+		token.T_47: "|",
+	},
+	// ReservedNameConflictResolver : ∙processing-instruction
+	{
+		token.T_42: "processing-instruction",
+	},
+	// ReservedNameConflictResolver : processing-instruction ∙
+	{
+		token.T_0:  "!=",
+		token.EOF:  "$",
+		token.T_2:  ")",
+		token.T_3:  "*",
+		token.T_4:  "+",
+		token.T_5:  ",",
+		token.T_6:  "-",
+		token.T_9:  "/",
+		token.T_10: "//",
+		token.T_11: ":",
+		token.T_13: "<",
+		token.T_14: "<=",
+		token.T_15: "=",
+		token.T_16: ">",
+		token.T_17: ">=",
+		token.T_19: "[",
+		token.T_20: "]",
+		token.T_23: "and",
+		token.T_30: "div",
+		token.T_34: "mod",
+		token.T_38: "or",
+		token.T_47: "|",
+	},
+	// ReservedNameConflictResolver : ∙node
+	{
+		token.T_37: "node",
+	},
+	// ReservedNameConflictResolver : node ∙
+	{
+		token.T_0:  "!=",
+		token.EOF:  "$",
+		token.T_2:  ")",
+		token.T_3:  "*",
+		token.T_4:  "+",
+		token.T_5:  ",",
+		token.T_6:  "-",
+		token.T_9:  "/",
+		token.T_10: "//",
+		token.T_11: ":",
+		token.T_13: "<",
+		token.T_14: "<=",
+		token.T_15: "=",
+		token.T_16: ">",
+		token.T_17: ">=",
+		token.T_19: "[",
+		token.T_20: "]",
+		token.T_23: "and",
+		token.T_30: "div",
+		token.T_34: "mod",
+		token.T_38: "or",
+		token.T_47: "|",
+	},
 	// Step : ∙NodeTestAndPredicate
 	{
 		token.T_3:  "*",
+		token.T_21: "ancestor",
+		token.T_22: "ancestor-or-self",
+		token.T_24: "attribute",
+		token.T_25: "child",
 		token.T_26: "comment",
+		token.T_27: "descendant",
+		token.T_28: "descendant-or-self",
+		token.T_32: "following",
+		token.T_33: "following-sibling",
+		token.T_35: "namespace",
 		token.T_36: "ncname",
 		token.T_37: "node",
+		token.T_39: "parent",
+		token.T_40: "preceding",
+		token.T_41: "preceding-sibling",
 		token.T_42: "processing-instruction",
+		token.T_43: "self",
 		token.T_45: "text",
 	},
 	// Step : NodeTestAndPredicate ∙
@@ -7003,10 +8304,23 @@ var first = []map[token.Type]string{
 	// Step : ∙NodeTest
 	{
 		token.T_3:  "*",
+		token.T_21: "ancestor",
+		token.T_22: "ancestor-or-self",
+		token.T_24: "attribute",
+		token.T_25: "child",
 		token.T_26: "comment",
+		token.T_27: "descendant",
+		token.T_28: "descendant-or-self",
+		token.T_32: "following",
+		token.T_33: "following-sibling",
+		token.T_35: "namespace",
 		token.T_36: "ncname",
 		token.T_37: "node",
+		token.T_39: "parent",
+		token.T_40: "preceding",
+		token.T_41: "preceding-sibling",
 		token.T_42: "processing-instruction",
+		token.T_43: "self",
 		token.T_45: "text",
 	},
 	// Step : NodeTest ∙
@@ -7187,10 +8501,23 @@ var first = []map[token.Type]string{
 	// StepWithAxisAndNodeTest : AxisSpecifier ∙NodeTest
 	{
 		token.T_3:  "*",
+		token.T_21: "ancestor",
+		token.T_22: "ancestor-or-self",
+		token.T_24: "attribute",
+		token.T_25: "child",
 		token.T_26: "comment",
+		token.T_27: "descendant",
+		token.T_28: "descendant-or-self",
+		token.T_32: "following",
+		token.T_33: "following-sibling",
+		token.T_35: "namespace",
 		token.T_36: "ncname",
 		token.T_37: "node",
+		token.T_39: "parent",
+		token.T_40: "preceding",
+		token.T_41: "preceding-sibling",
 		token.T_42: "processing-instruction",
+		token.T_43: "self",
 		token.T_45: "text",
 	},
 	// StepWithAxisAndNodeTest : AxisSpecifier NodeTest ∙
@@ -7729,10 +9056,23 @@ var followSets = []map[token.Type]string{
 	// AbbreviatedAxisSpecifier
 	{
 		token.T_3:  "*",
+		token.T_21: "ancestor",
+		token.T_22: "ancestor-or-self",
+		token.T_24: "attribute",
+		token.T_25: "child",
 		token.T_26: "comment",
+		token.T_27: "descendant",
+		token.T_28: "descendant-or-self",
+		token.T_32: "following",
+		token.T_33: "following-sibling",
+		token.T_35: "namespace",
 		token.T_36: "ncname",
 		token.T_37: "node",
+		token.T_39: "parent",
+		token.T_40: "preceding",
+		token.T_41: "preceding-sibling",
 		token.T_42: "processing-instruction",
+		token.T_43: "self",
 		token.T_45: "text",
 	},
 	// AbbreviatedRelativeLocationPath
@@ -7966,19 +9306,45 @@ var followSets = []map[token.Type]string{
 	// AxisSpecifier
 	{
 		token.T_3:  "*",
+		token.T_21: "ancestor",
+		token.T_22: "ancestor-or-self",
+		token.T_24: "attribute",
+		token.T_25: "child",
 		token.T_26: "comment",
+		token.T_27: "descendant",
+		token.T_28: "descendant-or-self",
+		token.T_32: "following",
+		token.T_33: "following-sibling",
+		token.T_35: "namespace",
 		token.T_36: "ncname",
 		token.T_37: "node",
+		token.T_39: "parent",
+		token.T_40: "preceding",
+		token.T_41: "preceding-sibling",
 		token.T_42: "processing-instruction",
+		token.T_43: "self",
 		token.T_45: "text",
 	},
 	// AxisSpecifierWithAxisName
 	{
 		token.T_3:  "*",
+		token.T_21: "ancestor",
+		token.T_22: "ancestor-or-self",
+		token.T_24: "attribute",
+		token.T_25: "child",
 		token.T_26: "comment",
+		token.T_27: "descendant",
+		token.T_28: "descendant-or-self",
+		token.T_32: "following",
+		token.T_33: "following-sibling",
+		token.T_35: "namespace",
 		token.T_36: "ncname",
 		token.T_37: "node",
+		token.T_39: "parent",
+		token.T_40: "preceding",
+		token.T_41: "preceding-sibling",
 		token.T_42: "processing-instruction",
+		token.T_43: "self",
 		token.T_45: "text",
 	},
 	// EqualityExpr
@@ -8379,7 +9745,55 @@ var followSets = []map[token.Type]string{
 		token.T_38: "or",
 		token.T_47: "|",
 	},
+	// NameTestLocalAnyNamespaceReservedNameConflict
+	{
+		token.T_0:  "!=",
+		token.EOF:  "$",
+		token.T_2:  ")",
+		token.T_3:  "*",
+		token.T_4:  "+",
+		token.T_5:  ",",
+		token.T_6:  "-",
+		token.T_9:  "/",
+		token.T_10: "//",
+		token.T_13: "<",
+		token.T_14: "<=",
+		token.T_15: "=",
+		token.T_16: ">",
+		token.T_17: ">=",
+		token.T_19: "[",
+		token.T_20: "]",
+		token.T_23: "and",
+		token.T_30: "div",
+		token.T_34: "mod",
+		token.T_38: "or",
+		token.T_47: "|",
+	},
 	// NameTestNamespaceAnyLocal
+	{
+		token.T_0:  "!=",
+		token.EOF:  "$",
+		token.T_2:  ")",
+		token.T_3:  "*",
+		token.T_4:  "+",
+		token.T_5:  ",",
+		token.T_6:  "-",
+		token.T_9:  "/",
+		token.T_10: "//",
+		token.T_13: "<",
+		token.T_14: "<=",
+		token.T_15: "=",
+		token.T_16: ">",
+		token.T_17: ">=",
+		token.T_19: "[",
+		token.T_20: "]",
+		token.T_23: "and",
+		token.T_30: "div",
+		token.T_34: "mod",
+		token.T_38: "or",
+		token.T_47: "|",
+	},
+	// NameTestNamespaceAnyLocalReservedNameConflict
 	{
 		token.T_0:  "!=",
 		token.EOF:  "$",
@@ -8427,7 +9841,103 @@ var followSets = []map[token.Type]string{
 		token.T_38: "or",
 		token.T_47: "|",
 	},
+	// NameTestQNameLocalOnlyReservedNameConflict
+	{
+		token.T_0:  "!=",
+		token.EOF:  "$",
+		token.T_2:  ")",
+		token.T_3:  "*",
+		token.T_4:  "+",
+		token.T_5:  ",",
+		token.T_6:  "-",
+		token.T_9:  "/",
+		token.T_10: "//",
+		token.T_13: "<",
+		token.T_14: "<=",
+		token.T_15: "=",
+		token.T_16: ">",
+		token.T_17: ">=",
+		token.T_19: "[",
+		token.T_20: "]",
+		token.T_23: "and",
+		token.T_30: "div",
+		token.T_34: "mod",
+		token.T_38: "or",
+		token.T_47: "|",
+	},
 	// NameTestQNameNamespaceWithLocal
+	{
+		token.T_0:  "!=",
+		token.EOF:  "$",
+		token.T_2:  ")",
+		token.T_3:  "*",
+		token.T_4:  "+",
+		token.T_5:  ",",
+		token.T_6:  "-",
+		token.T_9:  "/",
+		token.T_10: "//",
+		token.T_13: "<",
+		token.T_14: "<=",
+		token.T_15: "=",
+		token.T_16: ">",
+		token.T_17: ">=",
+		token.T_19: "[",
+		token.T_20: "]",
+		token.T_23: "and",
+		token.T_30: "div",
+		token.T_34: "mod",
+		token.T_38: "or",
+		token.T_47: "|",
+	},
+	// NameTestQNameNamespaceWithLocalReservedNameConflictBoth
+	{
+		token.T_0:  "!=",
+		token.EOF:  "$",
+		token.T_2:  ")",
+		token.T_3:  "*",
+		token.T_4:  "+",
+		token.T_5:  ",",
+		token.T_6:  "-",
+		token.T_9:  "/",
+		token.T_10: "//",
+		token.T_13: "<",
+		token.T_14: "<=",
+		token.T_15: "=",
+		token.T_16: ">",
+		token.T_17: ">=",
+		token.T_19: "[",
+		token.T_20: "]",
+		token.T_23: "and",
+		token.T_30: "div",
+		token.T_34: "mod",
+		token.T_38: "or",
+		token.T_47: "|",
+	},
+	// NameTestQNameNamespaceWithLocalReservedNameConflictLocal
+	{
+		token.T_0:  "!=",
+		token.EOF:  "$",
+		token.T_2:  ")",
+		token.T_3:  "*",
+		token.T_4:  "+",
+		token.T_5:  ",",
+		token.T_6:  "-",
+		token.T_9:  "/",
+		token.T_10: "//",
+		token.T_13: "<",
+		token.T_14: "<=",
+		token.T_15: "=",
+		token.T_16: ">",
+		token.T_17: ">=",
+		token.T_19: "[",
+		token.T_20: "]",
+		token.T_23: "and",
+		token.T_30: "div",
+		token.T_34: "mod",
+		token.T_38: "or",
+		token.T_47: "|",
+	},
+	// NameTestQNameNamespaceWithLocalReservedNameConflictNamespace
 	{
 		token.T_0:  "!=",
 		token.EOF:  "$",
@@ -8522,30 +10032,6 @@ var followSets = []map[token.Type]string{
 		token.T_38: "or",
 		token.T_47: "|",
 	},
-	// NodeTestNodeTypeNoArgTestNodeTestConflictResolver
-	{
-		token.T_0:  "!=",
-		token.EOF:  "$",
-		token.T_2:  ")",
-		token.T_3:  "*",
-		token.T_4:  "+",
-		token.T_5:  ",",
-		token.T_6:  "-",
-		token.T_9:  "/",
-		token.T_10: "//",
-		token.T_13: "<",
-		token.T_14: "<=",
-		token.T_15: "=",
-		token.T_16: ">",
-		token.T_17: ">=",
-		token.T_19: "[",
-		token.T_20: "]",
-		token.T_23: "and",
-		token.T_30: "div",
-		token.T_34: "mod",
-		token.T_38: "or",
-		token.T_47: "|",
-	},
 	// NodeTestProcInstTargetTest
 	{
 		token.T_0:  "!=",
@@ -8572,28 +10058,7 @@ var followSets = []map[token.Type]string{
 	},
 	// NodeType
 	{
-		token.T_0:  "!=",
-		token.EOF:  "$",
-		token.T_1:  "(",
-		token.T_2:  ")",
-		token.T_3:  "*",
-		token.T_4:  "+",
-		token.T_5:  ",",
-		token.T_6:  "-",
-		token.T_9:  "/",
-		token.T_10: "//",
-		token.T_13: "<",
-		token.T_14: "<=",
-		token.T_15: "=",
-		token.T_16: ">",
-		token.T_17: ">=",
-		token.T_19: "[",
-		token.T_20: "]",
-		token.T_23: "and",
-		token.T_30: "div",
-		token.T_34: "mod",
-		token.T_38: "or",
-		token.T_47: "|",
+		token.T_1: "(",
 	},
 	// Number
 	{
@@ -8896,6 +10361,31 @@ var followSets = []map[token.Type]string{
 		token.T_15: "=",
 		token.T_16: ">",
 		token.T_17: ">=",
+		token.T_20: "]",
+		token.T_23: "and",
+		token.T_30: "div",
+		token.T_34: "mod",
+		token.T_38: "or",
+		token.T_47: "|",
+	},
+	// ReservedNameConflictResolver
+	{
+		token.T_0:  "!=",
+		token.EOF:  "$",
+		token.T_2:  ")",
+		token.T_3:  "*",
+		token.T_4:  "+",
+		token.T_5:  ",",
+		token.T_6:  "-",
+		token.T_9:  "/",
+		token.T_10: "//",
+		token.T_11: ":",
+		token.T_13: "<",
+		token.T_14: "<=",
+		token.T_15: "=",
+		token.T_16: ">",
+		token.T_17: ">=",
+		token.T_19: "[",
 		token.T_20: "]",
 		token.T_23: "and",
 		token.T_30: "div",

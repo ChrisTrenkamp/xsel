@@ -16,16 +16,21 @@ func init() {
 	contextFunctions[symbols.NT_AbsoluteLocationPathOnly] = execAbsoluteLocationPathOnly
 	contextFunctions[symbols.NT_RelativeLocationPathWithStep] = leftRightDependentResult
 	contextFunctions[symbols.NT_Step] = execStep
-	contextFunctions[symbols.NT_NameTestQNameLocalOnly] = execNameTestQNameLocalOnly
-	contextFunctions[symbols.NT_NodeTestNodeTypeNoArgTestNodeTestConflictResolver] = execNameTestQNameLocalOnly
 	contextFunctions[symbols.NT_NodeTestAndPredicate] = leftRightDependentResult
 	contextFunctions[symbols.NT_Predicate] = execPredicate
 	contextFunctions[symbols.NT_NodeTestNodeTypeNoArgTest] = execNodeTestNodeTypeNoArgTest
 	contextFunctions[symbols.NT_NodeTestProcInstTargetTest] = execNodeTestProcInstTargetTest
 	contextFunctions[symbols.NT_NameTestAnyElement] = execNameTestAnyElement
 	contextFunctions[symbols.NT_NameTestNamespaceAnyLocal] = execNameTestNamespaceAnyLocal
+	contextFunctions[symbols.NT_NameTestNamespaceAnyLocalReservedNameConflict] = execNameTestNamespaceAnyLocalReservedNameConflict
 	contextFunctions[symbols.NT_NameTestLocalAnyNamespace] = execNameTestLocalAnyNamespace
+	contextFunctions[symbols.NT_NameTestLocalAnyNamespaceReservedNameConflict] = execNameTestLocalAnyNamespaceReservedNameConflict
 	contextFunctions[symbols.NT_NameTestQNameNamespaceWithLocal] = execNameTestQNameNamespaceWithLocal
+	contextFunctions[symbols.NT_NameTestQNameNamespaceWithLocalReservedNameConflictNamespace] = execNameTestQNameNamespaceWithLocalReservedNameConflictNamespace
+	contextFunctions[symbols.NT_NameTestQNameNamespaceWithLocalReservedNameConflictLocal] = execNameTestQNameNamespaceWithLocalReservedNameConflictLocal
+	contextFunctions[symbols.NT_NameTestQNameNamespaceWithLocalReservedNameConflictBoth] = execNameTestQNameNamespaceWithLocalReservedNameConflictBoth
+	contextFunctions[symbols.NT_NameTestQNameLocalOnly] = execNameTestQNameLocalOnly
+	contextFunctions[symbols.NT_NameTestQNameLocalOnlyReservedNameConflict] = execNameTestQNameLocalOnly
 	contextFunctions[symbols.NT_StepWithAxisAndNodeTest] = leftRightDependentResult
 	contextFunctions[symbols.NT_AxisName] = execAxisName
 	contextFunctions[symbols.NT_AbbreviatedStepParent] = execAbbreviatedStepParent
@@ -53,12 +58,18 @@ func execStep(context *exprContext, expr *grammar.Grammar) error {
 	case symbols.NT_NodeTest,
 		symbols.NT_NodeTestAndPredicate,
 		symbols.NT_NodeTestNodeTypeNoArgTest,
-		symbols.NT_NodeTestNodeTypeNoArgTestNodeTestConflictResolver,
 		symbols.NT_NodeTestProcInstTargetTest,
 		symbols.NT_NameTestAnyElement,
 		symbols.NT_NameTestNamespaceAnyLocal,
+		symbols.NT_NameTestNamespaceAnyLocalReservedNameConflict,
+		symbols.NT_NameTestLocalAnyNamespace,
+		symbols.NT_NameTestLocalAnyNamespaceReservedNameConflict,
 		symbols.NT_NameTestQNameNamespaceWithLocal,
-		symbols.NT_NameTestQNameLocalOnly:
+		symbols.NT_NameTestQNameNamespaceWithLocalReservedNameConflictNamespace,
+		symbols.NT_NameTestQNameNamespaceWithLocalReservedNameConflictLocal,
+		symbols.NT_NameTestQNameNamespaceWithLocalReservedNameConflictBoth,
+		symbols.NT_NameTestQNameLocalOnly,
+		symbols.NT_NameTestQNameLocalOnlyReservedNameConflict:
 		nodeSet, ok := context.result.(NodeSet)
 
 		if !ok {
@@ -199,6 +210,24 @@ func execNameTestAnyElement(context *exprContext, expr *grammar.Grammar) error {
 
 func execNameTestNamespaceAnyLocal(context *exprContext, expr *grammar.Grammar) error {
 	namespaceLookup := expr.BSR.GetTChildI(0).LiteralString()
+
+	return nameTestNamespaceAnyLocal(namespaceLookup, context, expr)
+}
+
+func execNameTestNamespaceAnyLocalReservedNameConflict(context *exprContext, expr *grammar.Grammar) error {
+	children := make([]*bsr.BSR, 0, 1)
+
+	for _, cn := range expr.BSR.GetAllNTChildren() {
+		for _, c := range cn {
+			children = append(children, &c)
+		}
+	}
+
+	namespaceLookup := expr.GetStringExtents(children[0].LeftExtent(), children[0].RightExtent())
+	return nameTestNamespaceAnyLocal(namespaceLookup, context, expr)
+}
+
+func nameTestNamespaceAnyLocal(namespaceLookup string, context *exprContext, expr *grammar.Grammar) error {
 	namespaceValue, ok := context.NamespaceDecls[namespaceLookup]
 
 	if !ok {
@@ -227,6 +256,25 @@ func execNameTestNamespaceAnyLocal(context *exprContext, expr *grammar.Grammar) 
 
 func execNameTestLocalAnyNamespace(context *exprContext, expr *grammar.Grammar) error {
 	localValue := expr.BSR.GetTChildI(2).LiteralString()
+
+	return nameTestLocalAnyNamespace(localValue, context, expr)
+}
+
+func execNameTestLocalAnyNamespaceReservedNameConflict(context *exprContext, expr *grammar.Grammar) error {
+	children := make([]*bsr.BSR, 0, 1)
+
+	for _, cn := range expr.BSR.GetAllNTChildren() {
+		for _, c := range cn {
+			children = append(children, &c)
+			break
+		}
+	}
+
+	localValue := expr.GetStringExtents(children[0].LeftExtent(), children[0].RightExtent())
+	return nameTestLocalAnyNamespace(localValue, context, expr)
+}
+
+func nameTestLocalAnyNamespace(localValue string, context *exprContext, expr *grammar.Grammar) error {
 	nodeSet, ok := context.result.(NodeSet)
 
 	if !ok {
@@ -249,8 +297,62 @@ func execNameTestLocalAnyNamespace(context *exprContext, expr *grammar.Grammar) 
 
 func execNameTestQNameNamespaceWithLocal(context *exprContext, expr *grammar.Grammar) error {
 	namespaceLookup := expr.BSR.GetTChildI(0).LiteralString()
-	namespaceValue := context.NamespaceDecls[namespaceLookup]
 	local := expr.BSR.GetTChildI(2).LiteralString()
+
+	return nameTestQNameNamespaceWithLocal(namespaceLookup, local, context, expr)
+}
+
+func execNameTestQNameNamespaceWithLocalReservedNameConflictNamespace(context *exprContext, expr *grammar.Grammar) error {
+	children := make([]*bsr.BSR, 0, 1)
+
+	for _, cn := range expr.BSR.GetAllNTChildren() {
+		for _, c := range cn {
+			children = append(children, &c)
+			break
+		}
+	}
+
+	namespaceLookup := expr.GetStringExtents(children[0].LeftExtent(), children[0].RightExtent())
+	local := expr.BSR.GetTChildI(2).LiteralString()
+	return nameTestQNameNamespaceWithLocal(namespaceLookup, local, context, expr)
+}
+
+func execNameTestQNameNamespaceWithLocalReservedNameConflictLocal(context *exprContext, expr *grammar.Grammar) error {
+	children := make([]*bsr.BSR, 0, 1)
+
+	for _, cn := range expr.BSR.GetAllNTChildren() {
+		for _, c := range cn {
+			children = append(children, &c)
+			break
+		}
+	}
+
+	namespaceLookup := expr.BSR.GetTChildI(0).LiteralString()
+	local := expr.GetStringExtents(children[0].LeftExtent(), children[0].RightExtent())
+	return nameTestQNameNamespaceWithLocal(namespaceLookup, local, context, expr)
+}
+
+func execNameTestQNameNamespaceWithLocalReservedNameConflictBoth(context *exprContext, expr *grammar.Grammar) error {
+	children := make([]*bsr.BSR, 0, 2)
+
+	for _, cn := range expr.BSR.GetAllNTChildren() {
+		for _, c := range cn {
+			children = append(children, &c)
+			break
+		}
+	}
+
+	namespaceLookup := expr.GetStringExtents(children[0].LeftExtent(), children[0].RightExtent())
+	local := expr.GetStringExtents(children[1].LeftExtent(), children[1].RightExtent())
+	return nameTestQNameNamespaceWithLocal(namespaceLookup, local, context, expr)
+}
+
+func nameTestQNameNamespaceWithLocal(namespaceLookup, local string, context *exprContext, expr *grammar.Grammar) error {
+	namespaceValue, ok := context.NamespaceDecls[namespaceLookup]
+
+	if !ok {
+		return fmt.Errorf("unknown namespace binding '%s'", namespaceLookup)
+	}
 
 	nodeSet, ok := context.result.(NodeSet)
 

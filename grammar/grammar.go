@@ -26,6 +26,10 @@ func (g *Grammar) GetString() string {
 	return g.lex.GetString(g.BSR.LeftExtent(), g.BSR.RightExtent()-1)
 }
 
+func (g *Grammar) GetStringExtents(left, right int) string {
+	return g.lex.GetString(left, right-1)
+}
+
 // Creates an XPath query.
 func Build(xpath string) (Grammar, error) {
 	lex := lexer.New([]rune(xpath))
