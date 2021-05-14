@@ -110,7 +110,7 @@ func main() {
 
 func walker(path string, d fs.DirEntry, err error) error {
 	if err != nil {
-		fmt.Fprintln(os.Stderr, err)
+		fmt.Fprintf(os.Stderr, "Error traversing %s: %s\n", path, err)
 		return nil
 	}
 
@@ -140,7 +140,7 @@ func runXpathOnFile(path string) {
 	fileBytes, err := ioutil.ReadFile(path)
 
 	if err != nil {
-		fmt.Fprintln(os.Stderr, err)
+		fmt.Fprintf(os.Stderr, "Error reading file %s: %s\n", path, err)
 		return
 	}
 
@@ -154,7 +154,7 @@ func runXpathOnStdin() {
 	_, err := io.Copy(&buf, os.Stdin)
 
 	if err != nil {
-		fmt.Fprintln(os.Stderr, err)
+		fmt.Fprintf(os.Stderr, "Error reading from stdin: %s\n", err)
 		return
 	}
 
@@ -166,14 +166,14 @@ func executeXpath(fileBytes []byte, path string) {
 	cursor, err := store.CreateInMemory(parser)
 
 	if err != nil {
-		fmt.Fprintln(os.Stderr, err)
+		fmt.Fprintf(os.Stderr, "Error parsing file %s: %s\n", path, err)
 		return
 	}
 
 	result, err := exec.Exec(cursor, &xpath, buildContextSettings)
 
 	if err != nil {
-		fmt.Fprintln(os.Stderr, err)
+		fmt.Fprintf(os.Stderr, "Error executing XPath function on file %s: %s\n", path, err)
 		return
 	}
 
@@ -223,12 +223,12 @@ func writeXmlResult(buffer *bytes.Buffer, path string, result exec.NodeSet) {
 		err := encodeCursorToXml(encoder, i)
 
 		if err != nil {
-			fmt.Fprintln(os.Stderr, err)
+			fmt.Fprintf(os.Stderr, "Error printing results for file %s: %s\n", path, err)
 			return
 		}
 
 		if err = encoder.Flush(); err != nil {
-			fmt.Fprintln(os.Stderr, err)
+			fmt.Fprintf(os.Stderr, "Error flushing results for file %s: %s\n", path, err)
 			return
 		}
 
