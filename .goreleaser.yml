@@ -1,0 +1,31 @@
+project_name: xsel
+
+archives:
+  - format: tar.gz
+    wrap_in_directory: true
+    format_overrides:
+      - goos: windows
+        format: zip
+    # remove README and LICENSE
+    files:
+      - none*
+
+builds:
+  - env: [CGO_ENABLED=0]
+    goos:
+      - linux
+      - windows
+      - darwin
+    goarch:
+      - amd64
+      - arm64
+
+nfpms:
+- maintainer: Chris Trenkamp <chris@christrenkamp.com>
+  description: XPath querying commandline utility
+  homepage: https://github.com/ChrisTrenkamp/xsel
+  license: MIT
+  formats:
+  - deb
+  - rpm
+  - apk
