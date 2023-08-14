@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"io"
 	"io/fs"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
@@ -36,14 +35,14 @@ func (n keyValuePair) Set(value string) error {
 	nsMap := strings.Split(value, "=")
 
 	if len(nsMap) != 2 {
-		return fmt.Errorf("Invalid namespace mapping: %s\n", value)
+		return fmt.Errorf("invalid namespace mapping: %s", value)
 	}
 
 	n[nsMap[0]] = nsMap[1]
 	return nil
 }
 
-var concurrent = flag.Bool("c", false, "Execute XPath queries concurrently on files (beware that results will have no predictable order)")
+var concurrent = flag.Int("c", 1, "Run queries in the given number of concurrent workers (beware that results will have no predictable order)")
 var printAllNodes = flag.Bool("a", false, "If the result is a NodeSet, print the string value of all the nodes instead of just the first")
 var suppressFileNames = flag.Bool("n", false, "Suppress filenames")
 var recursive = flag.Bool("r", false, "Recursively traverse directories")
@@ -54,6 +53,7 @@ var namespaces = make(keyValuePair)
 var fileSync = sync.WaitGroup{}
 var xpath grammar.Grammar
 var variableBindings = make(map[exec.XmlName]exec.Result)
+var semaphore chan struct{}
 
 func main() {
 	variableDeclarations := make(keyValuePair)
@@ -63,6 +63,13 @@ func main() {
 	flag.Var(entities, "e", "Bind an entity value e.g. entityname=entityval")
 	flag.Parse()
 
+	max := *concurrent
+
+	if max < 1 {
+		max = 1
+	}
+
+	semaphore = make(chan struct{}, max)
 	args := flag.Args()
 
 	if *xpathExpr == "" {
@@ -97,6 +104,7 @@ func main() {
 
 	for _, file := range args {
 		if file == "-" {
+			semaphore <- struct{}{}
 			fileSync.Add(1)
 
 			go runXpathOnStdin()
@@ -115,9 +123,10 @@ func walker(path string, d fs.DirEntry, err error) error {
 	}
 
 	if !d.IsDir() {
+		semaphore <- struct{}{}
 		fileSync.Add(1)
 
-		if *concurrent {
+		if *concurrent > 1 {
 			go runXpathOnFile(path)
 		} else {
 			runXpathOnFile(path)
@@ -137,32 +146,32 @@ func walker(path string, d fs.DirEntry, err error) error {
 func runXpathOnFile(path string) {
 	defer fileSync.Done()
 
-	fileBytes, err := ioutil.ReadFile(path)
+	file, err := os.Open(path)
 
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error reading file %s: %s\n", path, err)
 		return
 	}
 
-	executeXpath(fileBytes, path)
+	defer func() {
+		if err := file.Close(); err != nil {
+			fmt.Fprintf(os.Stderr, "Error closing file %s: %s\n", path, err)
+		}
+	}()
+
+	executeXpath(file, path)
+	<-semaphore
 }
 
 func runXpathOnStdin() {
 	defer fileSync.Done()
 
-	buf := bytes.Buffer{}
-	_, err := io.Copy(&buf, os.Stdin)
-
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error reading from stdin: %s\n", err)
-		return
-	}
-
-	executeXpath(buf.Bytes(), "-")
+	executeXpath(os.Stdin, "-")
+	<-semaphore
 }
 
-func executeXpath(fileBytes []byte, path string) {
-	parser := parser.ReadXml(bytes.NewBuffer(fileBytes), buildParserSettings)
+func executeXpath(in io.Reader, path string) {
+	parser := parser.ReadXml(in, buildParserSettings)
 	cursor, err := store.CreateInMemory(parser)
 
 	if err != nil {
