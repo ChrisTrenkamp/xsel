@@ -141,7 +141,8 @@ $ go get github.com/ChrisTrenkamp/xsel
 $ xsel -h
 Usage of xsel:
   -a    If the result is a NodeSet, print the string value of all the nodes instead of just the first
-  -c    Execute XPath queries concurrently on files (beware that results will have no predictable order)
+  -c int
+        Run queries in the given number of concurrent workers (beware that results will have no predictable order) (default 1)
   -e value
         Bind an entity value e.g. entityname=entityval
   -m    If the result is a NodeSet, print all the results as XML
