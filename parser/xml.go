@@ -79,6 +79,66 @@ func (x XmlProcInst) ProcInstValue() string {
 var emptyAttrs = make([]XmlAttribute, 0)
 var emptyNamespaces = make([]XmlNamespace, 0)
 
+type xmlParser struct {
+	xmlReader  *xml.Decoder
+	namespaces []XmlNamespace
+	nsPos      int
+	attrs      []XmlAttribute
+	attrPos    int
+}
+
+func (x *xmlParser) Pull() (node.Node, bool, error) {
+	if x.nsPos < len(x.namespaces) {
+		n := x.namespaces[x.nsPos]
+		x.nsPos++
+
+		return n, false, nil
+	}
+
+	if x.attrPos < len(x.attrs) {
+		a := x.attrs[x.attrPos]
+		x.attrPos++
+
+		return a, false, nil
+	}
+
+	x.attrs = emptyAttrs
+	x.attrPos = 0
+	x.namespaces = emptyNamespaces
+	x.nsPos = 0
+	tok, err := x.xmlReader.Token()
+
+	if err != nil {
+		return nil, false, err
+	}
+
+	switch n := tok.(type) {
+	case xml.StartElement:
+		x.namespaces = createNamespaces(n.Attr)
+		x.attrs = createAttrs(n.Attr)
+		return XmlElement{
+			space: n.Name.Space,
+			local: n.Name.Local,
+		}, false, nil
+	case xml.CharData:
+		return XmlCharData{
+			value: (string)(n),
+		}, false, nil
+	case xml.Comment:
+		return XmlComment{
+			value: (string)(n),
+		}, false, nil
+	case xml.ProcInst:
+		return XmlProcInst{
+			target: n.Target,
+			value:  string(n.Inst),
+		}, false, nil
+	}
+
+	//case xml.EndElement:
+	return nil, true, nil
+}
+
 type XmlParseOptions func(d *xml.Decoder)
 
 // Creates a Parser that reads the given XML document.
@@ -90,62 +150,12 @@ func ReadXml(in io.Reader, opts ...XmlParseOptions) Parser {
 		i(xmlReader)
 	}
 
-	namespaces := emptyNamespaces
-	nsPos := 0
-
-	attrs := emptyAttrs
-	attrPos := 0
-
-	return func() (node.Node, bool, error) {
-		if nsPos < len(namespaces) {
-			n := namespaces[nsPos]
-			nsPos++
-
-			return n, false, nil
-		}
-
-		if attrPos < len(attrs) {
-			a := attrs[attrPos]
-			attrPos++
-
-			return a, false, nil
-		}
-
-		attrs = emptyAttrs
-		attrPos = 0
-		namespaces = emptyNamespaces
-		nsPos = 0
-		tok, err := xmlReader.Token()
-
-		if err != nil {
-			return nil, false, err
-		}
-
-		switch n := tok.(type) {
-		case xml.StartElement:
-			namespaces = createNamespaces(n.Attr)
-			attrs = createAttrs(n.Attr)
-			return XmlElement{
-				space: n.Name.Space,
-				local: n.Name.Local,
-			}, false, nil
-		case xml.CharData:
-			return XmlCharData{
-				value: (string)(n),
-			}, false, nil
-		case xml.Comment:
-			return XmlComment{
-				value: (string)(n),
-			}, false, nil
-		case xml.ProcInst:
-			return XmlProcInst{
-				target: n.Target,
-				value:  string(n.Inst),
-			}, false, nil
-		}
-
-		//case xml.EndElement:
-		return nil, true, nil
+	return &xmlParser{
+		xmlReader:  xmlReader,
+		namespaces: emptyNamespaces,
+		nsPos:      0,
+		attrs:      emptyAttrs,
+		attrPos:    0,
 	}
 }
 

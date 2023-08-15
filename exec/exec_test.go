@@ -11,67 +11,211 @@ import (
 	"github.com/ChrisTrenkamp/xsel/store"
 )
 
-func exec(t *testing.T, expr, xml string, expected Result) {
+func query(t *testing.T, expr string, parser parser.Parser, settings ...ContextApply) Result {
 	xpath := grammar.MustBuild(expr)
-	parser := parser.ReadXml(bytes.NewBufferString(xml))
 	cursor, err := store.CreateInMemory(parser)
 
 	if err != nil {
 		t.Error(err)
-		return
+		return NodeSet{}
 	}
 
-	result, err := Exec(cursor, &xpath)
+	result, err := Exec(cursor, &xpath, settings...)
 
 	if err != nil {
 		t.Error(err)
 	}
+
+	return result
+}
+
+func queryXml(t *testing.T, expr, xml string, settings ...ContextApply) Result {
+	parser := parser.ReadXml(bytes.NewBufferString(xml))
+
+	return query(t, expr, parser, settings...)
+}
+
+func execXml(t *testing.T, expr, xml string, expected Result, settings ...ContextApply) {
+	result := queryXml(t, expr, xml, settings...)
 
 	if result != expected {
 		t.Errorf("Result != '%s'. Received '%s'", expected, result)
 	}
 }
 
-func execNodesToString(t *testing.T, expr, xml string, expected string, settings ...ContextApply) {
-	xpath := grammar.MustBuild(expr)
-	parser := parser.ReadXml(bytes.NewBufferString(xml))
-	cursor, err := store.CreateInMemory(parser)
-
-	if err != nil {
-		t.Error(err)
-		return
-	}
-
-	result, err := Exec(cursor, &xpath, settings...)
-
-	if err != nil {
-		t.Error(err)
-	}
-
-	resultString := result.String()
+func execXmlNodesToString(t *testing.T, expr, xml string, expected string, settings ...ContextApply) {
+	resultString := queryXml(t, expr, xml, settings...).String()
 
 	if resultString != expected {
 		t.Errorf("Result != '%s'. Received '%s'", expected, resultString)
 	}
 }
 
-func execNodes(t *testing.T, expr, xml string, settings ...ContextApply) NodeSet {
-	xpath := grammar.MustBuild(expr)
-	parser := parser.ReadXml(bytes.NewBufferString(xml))
-	cursor, err := store.CreateInMemory(parser)
+func execXmlNodes(t *testing.T, expr, xml string, settings ...ContextApply) NodeSet {
+	return queryXml(t, expr, xml, settings...).(NodeSet)
+}
 
-	if err != nil {
-		t.Error(err)
-		return nil
+func queryJson(t *testing.T, expr, json string, settings ...ContextApply) Result {
+	parser := parser.ReadJson(bytes.NewBufferString(json))
+
+	return query(t, expr, parser, settings...)
+}
+
+func execJsonNodes(t *testing.T, expr, json string, settings ...ContextApply) NodeSet {
+	return queryJson(t, expr, json, settings...).(NodeSet)
+}
+
+/*
+func printTree(cursor store.Cursor, depth int) {
+	for i := 0; i < depth; i++ {
+		fmt.Print("  ")
 	}
 
-	result, err := Exec(cursor, &xpath, settings...)
-
-	if err != nil {
-		t.Error(err)
+	switch t := cursor.Node().(type) {
+	case node.Element:
+		fmt.Println(t.Local())
+	case node.CharData:
+		fmt.Println(t.CharDataValue())
 	}
 
-	return result.(NodeSet)
+	for _, i := range cursor.Children() {
+		printTree(i, depth+1)
+	}
+}
+*/
+
+func TestJsonNestedArray(t *testing.T) {
+	json := `
+{
+	"a": [ 0, ["b", "c", {"d": 2.71828}]],
+	"b": {
+		"c": 3.14,
+		"d": [{"e": "f"}, "g"]
+	},
+	"nil": null
+}
+`
+	value := execJsonNodes(t, "/a[. = '0']", json)
+
+	if value.String() != "0" || value[0].Node().(node.Element).Local() != "a" {
+		t.Error("bad array value")
+	}
+
+	value = execJsonNodes(t, "/a[. = 'b']", json)
+
+	if value.String() != "b" || value[0].Node().(node.Element).Local() != "a" {
+		t.Error("bad nested array value")
+	}
+
+	value = execJsonNodes(t, "/a/d[. = 2.71828]", json)
+
+	if value.String() != "2.71828" || value[0].Node().(node.Element).Local() != "d" {
+		t.Error("bad object-in-array value")
+	}
+
+	value = execJsonNodes(t, "/b/c", json)
+
+	if value.String() != "3.14" || value[0].Node().(node.Element).Local() != "c" {
+		t.Error("bad nested object value")
+	}
+
+	value = execJsonNodes(t, "/b/d/e", json)
+
+	if value.String() != "f" || value[0].Node().(node.Element).Local() != "e" {
+		t.Error("bad object-in-array-in-object value")
+	}
+
+	value = execJsonNodes(t, "/b/d[. = 'g']", json)
+
+	if value.String() != "g" || value[0].Node().(node.Element).Local() != "d" {
+		t.Error("bad object-in-array-in-object value")
+	}
+
+	value = execJsonNodes(t, "/nil", json)
+
+	if value.String() != "null" || value[0].Node().(node.Element).Local() != "nil" {
+		t.Error("bad nil value")
+	}
+}
+
+func TestJson(t *testing.T) {
+	json := `
+	{ "store": {
+		"book": [
+		  { "category": "reference",
+			"author": "Nigel Rees",
+			"title": "Sayings of the Century",
+			"price": 8.95
+		  },
+		  { "category": "fiction",
+			"author": "Evelyn Waugh",
+			"title": "Sword of Honour",
+			"price": 12.99
+		  },
+		  { "category": "fiction",
+			"author": "Herman Melville",
+			"title": "Moby Dick",
+			"isbn": "0-553-21311-3",
+			"price": 8.99
+		  },
+		  { "category": "fiction",
+			"author": "J. R. R. Tolkien",
+			"title": "The Lord of the Rings",
+			"isbn": "0-395-19395-8",
+			"price": 22.99
+		  }
+		],
+		"bicycle": {
+		  "color": "red",
+		  "price": 19.95
+		}
+	  }
+	}
+`
+
+	pricedItems := execJsonNodes(t, "//*[price]", json)
+
+	if len(pricedItems) != 5 {
+		t.Error("result size not 5")
+	}
+
+	for i := 0; i < 4; i++ {
+		if pricedItems[i].Node().(node.Element).Local() != "book" {
+			t.Error("name not 'book'")
+		}
+	}
+
+	if pricedItems[4].Node().(node.Element).Local() != "bicycle" {
+		t.Error("name not 'bicycle'")
+	}
+
+	nodes := execJsonNodes(t, "/store/book/author", json)
+
+	if len(nodes) != 4 {
+		t.Error("result size not 4")
+	}
+
+	for _, i := range nodes {
+		if i.Node().(node.Element).Local() != "author" {
+			t.Error("name not 'author'")
+		}
+	}
+
+	if getCursorString(nodes[0]) != "Nigel Rees" {
+		t.Error("first node value incorrect")
+	}
+
+	if getCursorString(nodes[1]) != "Evelyn Waugh" {
+		t.Error("second node value incorrect")
+	}
+
+	if getCursorString(nodes[2]) != "Herman Melville" {
+		t.Error("third node value incorrect")
+	}
+
+	if getCursorString(nodes[3]) != "J. R. R. Tolkien" {
+		t.Error("forth node value incorrect")
+	}
 }
 
 func TestInfinity(t *testing.T) {
@@ -89,38 +233,38 @@ func TestInfinity(t *testing.T) {
 }
 
 func TestAdd(t *testing.T) {
-	exec(t, "1.2+2.3", `<root/>`, Number(3.5))
+	execXml(t, "1.2+2.3", `<root/>`, Number(3.5))
 }
 
 func TestSubtract(t *testing.T) {
-	exec(t, "5-3", `<root/>`, Number(2))
+	execXml(t, "5-3", `<root/>`, Number(2))
 }
 
 func TestMultiply(t *testing.T) {
-	exec(t, "3*4", `<root/>`, Number(12))
+	execXml(t, "3*4", `<root/>`, Number(12))
 }
 
 func TestDivide(t *testing.T) {
-	exec(t, "15 div 3", `<root/>`, Number(5))
-	execNodesToString(t, "0 div 0", `<root/>`, Number(math.NaN()).String())
-	exec(t, "1 div 0", `<root/>`, Number(math.Inf(1)))
-	exec(t, "-1 div 0", `<root/>`, Number(math.Inf(-1)))
+	execXml(t, "15 div 3", `<root/>`, Number(5))
+	execXmlNodesToString(t, "0 div 0", `<root/>`, Number(math.NaN()).String())
+	execXml(t, "1 div 0", `<root/>`, Number(math.Inf(1)))
+	execXml(t, "-1 div 0", `<root/>`, Number(math.Inf(-1)))
 }
 
 func TestMod(t *testing.T) {
-	exec(t, "4 mod 3", `<root/>`, Number(1))
-	execNodesToString(t, "4 mod 0", `<root/>`, Number(math.NaN()).String())
+	execXml(t, "4 mod 3", `<root/>`, Number(1))
+	execXmlNodesToString(t, "4 mod 0", `<root/>`, Number(math.NaN()).String())
 }
 
 func TestString(t *testing.T) {
-	exec(t, "'foo'", `<root/>`, String("foo"))
+	execXml(t, "'foo'", `<root/>`, String("foo"))
 }
 
 func TestNegate(t *testing.T) {
-	exec(t, "8", `<root/>`, Number(8))
-	exec(t, "-8", `<root/>`, Number(-8))
-	exec(t, "--8", `<root/>`, Number(8))
-	exec(t, "---8", `<root/>`, Number(-8))
+	execXml(t, "8", `<root/>`, Number(8))
+	execXml(t, "-8", `<root/>`, Number(-8))
+	execXml(t, "--8", `<root/>`, Number(8))
+	execXml(t, "---8", `<root/>`, Number(-8))
 }
 
 func TestEquality(t *testing.T) {
@@ -131,32 +275,32 @@ func TestEquality(t *testing.T) {
 	<one>1</one>
 </root>
 `
-	exec(t, "/root/a = /root/b", xml, Bool(false))
-	exec(t, "/root/a = /root/a", xml, Bool(true))
+	execXml(t, "/root/a = /root/b", xml, Bool(false))
+	execXml(t, "/root/a = /root/a", xml, Bool(true))
 
-	exec(t, "/root/one = 1", xml, Bool(true))
-	exec(t, "1 = /root/one", xml, Bool(true))
-	exec(t, "2 = /root/one", xml, Bool(false))
-	exec(t, "/root/one = 2", xml, Bool(false))
+	execXml(t, "/root/one = 1", xml, Bool(true))
+	execXml(t, "1 = /root/one", xml, Bool(true))
+	execXml(t, "2 = /root/one", xml, Bool(false))
+	execXml(t, "/root/one = 2", xml, Bool(false))
 
-	exec(t, "/root/a = 'a'", xml, Bool(true))
-	exec(t, "'a' = /root/a", xml, Bool(true))
-	exec(t, "'b' = /root/a", xml, Bool(false))
-	exec(t, "/root/a = 'b'", xml, Bool(false))
+	execXml(t, "/root/a = 'a'", xml, Bool(true))
+	execXml(t, "'a' = /root/a", xml, Bool(true))
+	execXml(t, "'b' = /root/a", xml, Bool(false))
+	execXml(t, "/root/a = 'b'", xml, Bool(false))
 
-	exec(t, "1 = 1", xml, Bool(true))
-	exec(t, "1 = 2", xml, Bool(false))
+	execXml(t, "1 = 1", xml, Bool(true))
+	execXml(t, "1 = 2", xml, Bool(false))
 
-	exec(t, "1 = '1'", xml, Bool(true))
-	exec(t, "1 = '2'", xml, Bool(false))
+	execXml(t, "1 = '1'", xml, Bool(true))
+	execXml(t, "1 = '2'", xml, Bool(false))
 
-	exec(t, "'1' = '1'", xml, Bool(true))
-	exec(t, "'1' = '2'", xml, Bool(false))
+	execXml(t, "'1' = '1'", xml, Bool(true))
+	execXml(t, "'1' = '2'", xml, Bool(false))
 
-	exec(t, "/root/a = true()", xml, Bool(true))
-	exec(t, "true() = /root/a", xml, Bool(true))
-	exec(t, "true() = 1", xml, Bool(true))
-	exec(t, "true() = 0", xml, Bool(false))
+	execXml(t, "/root/a = true()", xml, Bool(true))
+	execXml(t, "true() = /root/a", xml, Bool(true))
+	execXml(t, "true() = 1", xml, Bool(true))
+	execXml(t, "true() = 0", xml, Bool(false))
 }
 
 func TestNotEqual(t *testing.T) {
@@ -167,32 +311,32 @@ func TestNotEqual(t *testing.T) {
 	<one>1</one>
 </root>
 `
-	exec(t, "/root/a != /root/b", xml, Bool(true))
-	exec(t, "/root/a != /root/a", xml, Bool(false))
+	execXml(t, "/root/a != /root/b", xml, Bool(true))
+	execXml(t, "/root/a != /root/a", xml, Bool(false))
 
-	exec(t, "/root/one != 1", xml, Bool(false))
-	exec(t, "1 != /root/one", xml, Bool(false))
-	exec(t, "2 != /root/one", xml, Bool(true))
-	exec(t, "/root/one != 2", xml, Bool(true))
+	execXml(t, "/root/one != 1", xml, Bool(false))
+	execXml(t, "1 != /root/one", xml, Bool(false))
+	execXml(t, "2 != /root/one", xml, Bool(true))
+	execXml(t, "/root/one != 2", xml, Bool(true))
 
-	exec(t, "/root/a != 'a'", xml, Bool(false))
-	exec(t, "'a' != /root/a", xml, Bool(false))
-	exec(t, "'b' != /root/a", xml, Bool(true))
-	exec(t, "/root/a != 'b'", xml, Bool(true))
+	execXml(t, "/root/a != 'a'", xml, Bool(false))
+	execXml(t, "'a' != /root/a", xml, Bool(false))
+	execXml(t, "'b' != /root/a", xml, Bool(true))
+	execXml(t, "/root/a != 'b'", xml, Bool(true))
 
-	exec(t, "1 != 1", xml, Bool(false))
-	exec(t, "1 != 2", xml, Bool(true))
+	execXml(t, "1 != 1", xml, Bool(false))
+	execXml(t, "1 != 2", xml, Bool(true))
 
-	exec(t, "1 != '1'", xml, Bool(false))
-	exec(t, "1 != '2'", xml, Bool(true))
+	execXml(t, "1 != '1'", xml, Bool(false))
+	execXml(t, "1 != '2'", xml, Bool(true))
 
-	exec(t, "'1' != '1'", xml, Bool(false))
-	exec(t, "'1' != '2'", xml, Bool(true))
+	execXml(t, "'1' != '1'", xml, Bool(false))
+	execXml(t, "'1' != '2'", xml, Bool(true))
 
-	exec(t, "/root/a != true()", xml, Bool(false))
-	exec(t, "true() != /root/a", xml, Bool(false))
-	exec(t, "true() != 1", xml, Bool(false))
-	exec(t, "true() != 0", xml, Bool(true))
+	execXml(t, "/root/a != true()", xml, Bool(false))
+	execXml(t, "true() != /root/a", xml, Bool(false))
+	execXml(t, "true() != 1", xml, Bool(false))
+	execXml(t, "true() != 0", xml, Bool(true))
 }
 
 func TestLessThan(t *testing.T) {
@@ -202,20 +346,20 @@ func TestLessThan(t *testing.T) {
 	<two>2</two>
 </root>
 `
-	exec(t, "/root/one < /root/two", xml, Bool(true))
-	exec(t, "1 < /root/two", xml, Bool(true))
-	exec(t, "/root/two < /root/one", xml, Bool(false))
+	execXml(t, "/root/one < /root/two", xml, Bool(true))
+	execXml(t, "1 < /root/two", xml, Bool(true))
+	execXml(t, "/root/two < /root/one", xml, Bool(false))
 
-	exec(t, "/root/two < 1", xml, Bool(false))
-	exec(t, "3 < /root/two", xml, Bool(false))
-	exec(t, "/root/one < 2", xml, Bool(true))
+	execXml(t, "/root/two < 1", xml, Bool(false))
+	execXml(t, "3 < /root/two", xml, Bool(false))
+	execXml(t, "/root/one < 2", xml, Bool(true))
 
-	exec(t, "'1' < /root/two", xml, Bool(true))
-	exec(t, "/root/one < '2'", xml, Bool(true))
-	exec(t, "'3' < /root/two", xml, Bool(false))
-	exec(t, "/root/two < '1'", xml, Bool(false))
+	execXml(t, "'1' < /root/two", xml, Bool(true))
+	execXml(t, "/root/one < '2'", xml, Bool(true))
+	execXml(t, "'3' < /root/two", xml, Bool(false))
+	execXml(t, "/root/two < '1'", xml, Bool(false))
 
-	exec(t, "'1' < '2'", xml, Bool(true))
+	execXml(t, "'1' < '2'", xml, Bool(true))
 }
 
 func TestLessThanOrEqual(t *testing.T) {
@@ -225,27 +369,27 @@ func TestLessThanOrEqual(t *testing.T) {
 	<two>2</two>
 </root>
 `
-	exec(t, "/root/one <= /root/two", xml, Bool(true))
-	exec(t, "/root/two <= /root/two", xml, Bool(true))
-	exec(t, "1 <= /root/two", xml, Bool(true))
-	exec(t, "2 <= /root/two", xml, Bool(true))
-	exec(t, "/root/two <= /root/one", xml, Bool(false))
-	exec(t, "/root/two <= /root/two", xml, Bool(true))
+	execXml(t, "/root/one <= /root/two", xml, Bool(true))
+	execXml(t, "/root/two <= /root/two", xml, Bool(true))
+	execXml(t, "1 <= /root/two", xml, Bool(true))
+	execXml(t, "2 <= /root/two", xml, Bool(true))
+	execXml(t, "/root/two <= /root/one", xml, Bool(false))
+	execXml(t, "/root/two <= /root/two", xml, Bool(true))
 
-	exec(t, "/root/two <= 1", xml, Bool(false))
-	exec(t, "3 <= /root/two", xml, Bool(false))
-	exec(t, "/root/one <= 2", xml, Bool(true))
-	exec(t, "/root/two <= 2", xml, Bool(true))
+	execXml(t, "/root/two <= 1", xml, Bool(false))
+	execXml(t, "3 <= /root/two", xml, Bool(false))
+	execXml(t, "/root/one <= 2", xml, Bool(true))
+	execXml(t, "/root/two <= 2", xml, Bool(true))
 
-	exec(t, "'1' <= /root/two", xml, Bool(true))
-	exec(t, "'2' <= /root/two", xml, Bool(true))
-	exec(t, "/root/one <= '2'", xml, Bool(true))
-	exec(t, "/root/two <= '2'", xml, Bool(true))
-	exec(t, "'3' <= /root/two", xml, Bool(false))
-	exec(t, "/root/two <= '1'", xml, Bool(false))
+	execXml(t, "'1' <= /root/two", xml, Bool(true))
+	execXml(t, "'2' <= /root/two", xml, Bool(true))
+	execXml(t, "/root/one <= '2'", xml, Bool(true))
+	execXml(t, "/root/two <= '2'", xml, Bool(true))
+	execXml(t, "'3' <= /root/two", xml, Bool(false))
+	execXml(t, "/root/two <= '1'", xml, Bool(false))
 
-	exec(t, "'1' <= '2'", xml, Bool(true))
-	exec(t, "'2' <= '2'", xml, Bool(true))
+	execXml(t, "'1' <= '2'", xml, Bool(true))
+	execXml(t, "'2' <= '2'", xml, Bool(true))
 }
 
 func TestGreaterThan(t *testing.T) {
@@ -255,20 +399,20 @@ func TestGreaterThan(t *testing.T) {
 	<two>2</two>
 </root>
 `
-	exec(t, "/root/one > /root/two", xml, Bool(false))
-	exec(t, "1 > /root/two", xml, Bool(false))
-	exec(t, "/root/two > /root/one", xml, Bool(true))
+	execXml(t, "/root/one > /root/two", xml, Bool(false))
+	execXml(t, "1 > /root/two", xml, Bool(false))
+	execXml(t, "/root/two > /root/one", xml, Bool(true))
 
-	exec(t, "/root/two > 1", xml, Bool(true))
-	exec(t, "3 > /root/two", xml, Bool(true))
-	exec(t, "/root/one > 2", xml, Bool(false))
+	execXml(t, "/root/two > 1", xml, Bool(true))
+	execXml(t, "3 > /root/two", xml, Bool(true))
+	execXml(t, "/root/one > 2", xml, Bool(false))
 
-	exec(t, "'1' > /root/two", xml, Bool(false))
-	exec(t, "/root/one > '2'", xml, Bool(false))
-	exec(t, "'3' > /root/two", xml, Bool(true))
-	exec(t, "/root/two > '1'", xml, Bool(true))
+	execXml(t, "'1' > /root/two", xml, Bool(false))
+	execXml(t, "/root/one > '2'", xml, Bool(false))
+	execXml(t, "'3' > /root/two", xml, Bool(true))
+	execXml(t, "/root/two > '1'", xml, Bool(true))
 
-	exec(t, "'1' > '2'", xml, Bool(false))
+	execXml(t, "'1' > '2'", xml, Bool(false))
 }
 
 func TestGreaterThanOrEqual(t *testing.T) {
@@ -278,40 +422,40 @@ func TestGreaterThanOrEqual(t *testing.T) {
 	<two>2</two>
 </root>
 `
-	exec(t, "/root/one >= /root/two", xml, Bool(false))
-	exec(t, "1 >= /root/two", xml, Bool(false))
-	exec(t, "/root/two >= /root/one", xml, Bool(true))
-	exec(t, "/root/two >= /root/two", xml, Bool(true))
+	execXml(t, "/root/one >= /root/two", xml, Bool(false))
+	execXml(t, "1 >= /root/two", xml, Bool(false))
+	execXml(t, "/root/two >= /root/one", xml, Bool(true))
+	execXml(t, "/root/two >= /root/two", xml, Bool(true))
 
-	exec(t, "/root/two >= 1", xml, Bool(true))
-	exec(t, "/root/two >= 2", xml, Bool(true))
-	exec(t, "3 >= /root/two", xml, Bool(true))
-	exec(t, "2 >= /root/two", xml, Bool(true))
-	exec(t, "/root/one >= 2", xml, Bool(false))
+	execXml(t, "/root/two >= 1", xml, Bool(true))
+	execXml(t, "/root/two >= 2", xml, Bool(true))
+	execXml(t, "3 >= /root/two", xml, Bool(true))
+	execXml(t, "2 >= /root/two", xml, Bool(true))
+	execXml(t, "/root/one >= 2", xml, Bool(false))
 
-	exec(t, "'1' >= /root/two", xml, Bool(false))
-	exec(t, "/root/one >= '2'", xml, Bool(false))
-	exec(t, "'3' >= /root/two", xml, Bool(true))
-	exec(t, "'2' >= /root/two", xml, Bool(true))
-	exec(t, "/root/two >= '1'", xml, Bool(true))
-	exec(t, "/root/two >= '2'", xml, Bool(true))
+	execXml(t, "'1' >= /root/two", xml, Bool(false))
+	execXml(t, "/root/one >= '2'", xml, Bool(false))
+	execXml(t, "'3' >= /root/two", xml, Bool(true))
+	execXml(t, "'2' >= /root/two", xml, Bool(true))
+	execXml(t, "/root/two >= '1'", xml, Bool(true))
+	execXml(t, "/root/two >= '2'", xml, Bool(true))
 
-	exec(t, "'1' >= '2'", xml, Bool(false))
-	exec(t, "'2' >= '2'", xml, Bool(true))
+	execXml(t, "'1' >= '2'", xml, Bool(false))
+	execXml(t, "'2' >= '2'", xml, Bool(true))
 }
 
 func TestOr(t *testing.T) {
-	exec(t, "1 or 0", `<root/>`, Bool(true))
-	exec(t, "0 or 0", `<root/>`, Bool(false))
+	execXml(t, "1 or 0", `<root/>`, Bool(true))
+	execXml(t, "0 or 0", `<root/>`, Bool(false))
 }
 
 func TestAnd(t *testing.T) {
-	exec(t, "1 and 0", `<root/>`, Bool(false))
-	exec(t, "1 and 1", `<root/>`, Bool(true))
+	execXml(t, "1 and 0", `<root/>`, Bool(false))
+	execXml(t, "1 and 1", `<root/>`, Bool(true))
 }
 
 func TestAbsoluteLocationPathOnly(t *testing.T) {
-	execNodesToString(t, "/", `b <root>a root node</root> c`, "b a root node c")
+	execXmlNodesToString(t, "/", `b <root>a root node</root> c`, "b a root node c")
 }
 
 func TestAbsoluteLocationPathWithRelative(t *testing.T) {
@@ -320,7 +464,7 @@ a root node
 <Node>node value</Node>
 other text
 `
-	execNodesToString(t, "/ Node", xml, "node value")
+	execXmlNodesToString(t, "/ Node", xml, "node value")
 }
 
 func TestRelativeLocationPath(t *testing.T) {
@@ -334,8 +478,8 @@ text3
 </Root>
 text4
 `
-	execNodesToString(t, "/Root/node", xml, "a")
-	execNodesToString(t, "/Root/attribute", xml, "c")
+	execXmlNodesToString(t, "/Root/node", xml, "a")
+	execXmlNodesToString(t, "/Root/attribute", xml, "c")
 }
 
 func TestPredicate(t *testing.T) {
@@ -348,7 +492,7 @@ text3
 </Root>
 text4
 `
-	execNodesToString(t, "/Root/Node[2]", xml, "b")
+	execXmlNodesToString(t, "/Root/Node[2]", xml, "b")
 }
 
 func TestUnion(t *testing.T) {
@@ -361,7 +505,7 @@ text3
 </Root>
 text4
 `
-	nodes := execNodes(t, "/ Root/ Node [ 1 ] | /Root/Node[2]", xml)
+	nodes := execXmlNodes(t, "/ Root/ Node [ 1 ] | /Root/Node[2]", xml)
 
 	if len(nodes) != 2 {
 		t.Error("Size is not 2")
@@ -389,7 +533,7 @@ text3
 </Root>
 text4
 `
-	nodes := execNodes(t, "/Root/Node[1] | /Root/Node[1]", xml)
+	nodes := execXmlNodes(t, "/Root/Node[1] | /Root/Node[1]", xml)
 
 	if len(nodes) != 1 {
 		t.Error("Size is not 1")
@@ -406,34 +550,34 @@ func TestNodeTest(t *testing.T) {
 	xml := `
 <root>foo<node>bar</node></root>
 `
-	execNodesToString(t, "/root/node ( ) ", xml, "foo")
+	execXmlNodesToString(t, "/root/node ( ) ", xml, "foo")
 
 	xml = `
 <!--some comment-->
 <comment>node</comment>
 `
-	execNodesToString(t, "/comment ( ) ", xml, "some comment")
-	execNodesToString(t, "/comment", xml, "node")
+	execXmlNodesToString(t, "/comment ( ) ", xml, "some comment")
+	execXmlNodesToString(t, "/comment", xml, "node")
 
 	xml = `
 <?foo bar?>
 <processing-instruction>proc</processing-instruction>
 <?eggs spam?>
 `
-	execNodesToString(t, "/processing-instruction ( ) ", xml, "bar")
-	execNodesToString(t, "/processing-instruction ( 'eggs' ) ", xml, "spam")
-	execNodesToString(t, "/processing-instruction", xml, "proc")
+	execXmlNodesToString(t, "/processing-instruction ( ) ", xml, "bar")
+	execXmlNodesToString(t, "/processing-instruction ( 'eggs' ) ", xml, "spam")
+	execXmlNodesToString(t, "/processing-instruction", xml, "proc")
 
 	xml = `some text<text>other text</text>`
-	execNodesToString(t, "/text ( ) ", xml, "some text")
-	execNodesToString(t, "/text", xml, "other text")
+	execXmlNodesToString(t, "/text ( ) ", xml, "some text")
+	execXmlNodesToString(t, "/text", xml, "other text")
 }
 
 func TestAnyElement(t *testing.T) {
 	xml := `
 <root>root text<data>data text</data></root>
 `
-	execNodesToString(t, "/root/*", xml, "data text")
+	execXmlNodesToString(t, "/root/*", xml, "data text")
 }
 
 func TestChild(t *testing.T) {
@@ -442,14 +586,14 @@ a root node
 <Node>node value</Node>
 other text
 `
-	execNodesToString(t, "/child::Node", xml, "node value")
+	execXmlNodesToString(t, "/child::Node", xml, "node value")
 }
 
 func TestAnyAttr(t *testing.T) {
 	xml := `
 <root foo="bar" eggs="ham"></root>
 `
-	nodes := execNodes(t, "/root/attribute::*", xml)
+	nodes := execXmlNodes(t, "/root/attribute::*", xml)
 
 	if len(nodes) != 2 {
 		t.Error("Size is not 2")
@@ -471,7 +615,7 @@ func TestAttrAbbreviated(t *testing.T) {
 	xml := `
 <root foo="bar" eggs="ham"></root>
 `
-	nodes := execNodes(t, "/root/@eggs", xml)
+	nodes := execXmlNodes(t, "/root/@eggs", xml)
 
 	if len(nodes) != 1 {
 		t.Error("Size is not 1")
@@ -496,7 +640,7 @@ func TestAncestor(t *testing.T) {
 	</a>
 </root>
 `
-	nodes := execNodes(t, "/root/a/b/ancestor::*", xml)
+	nodes := execXmlNodes(t, "/root/a/b/ancestor::*", xml)
 
 	if len(nodes) != 2 {
 		t.Error("Size is not 2")
@@ -526,7 +670,7 @@ func TestAncestorOrSelf(t *testing.T) {
 	</a>
 </root>
 `
-	nodes := execNodes(t, "/root/a/b/ancestor-or-self::*", xml)
+	nodes := execXmlNodes(t, "/root/a/b/ancestor-or-self::*", xml)
 
 	if len(nodes) != 3 {
 		t.Error("Size is not 3")
@@ -551,7 +695,7 @@ func TestAncestorOrSelf(t *testing.T) {
 
 func TestDescendent(t *testing.T) {
 	xml := `<root><a><b/></a></root>`
-	nodes := execNodes(t, "/root/descendant::*", xml)
+	nodes := execXmlNodes(t, "/root/descendant::*", xml)
 
 	if len(nodes) != 2 {
 		t.Error("Size is not 2")
@@ -571,7 +715,7 @@ func TestDescendent(t *testing.T) {
 
 func TestDescendentOrSelf(t *testing.T) {
 	xml := `<root><a><b/></a></root>`
-	nodes := execNodes(t, "/root/descendant-or-self::*", xml)
+	nodes := execXmlNodes(t, "/root/descendant-or-self::*", xml)
 
 	if len(nodes) != 3 {
 		t.Error("Size is not 3")
@@ -605,7 +749,7 @@ func TestFollowing(t *testing.T) {
 		<e/>
 	</d>
 </root>`
-	nodes := execNodes(t, "/root/a/b/following::*", xml)
+	nodes := execXmlNodes(t, "/root/a/b/following::*", xml)
 
 	if len(nodes) != 3 {
 		t.Error("Size is not 3")
@@ -639,7 +783,7 @@ func TestFollowingSibling(t *testing.T) {
 	</a>
 	<f/>
 </root>`
-	nodes := execNodes(t, "/root/a/c/following-sibling::*", xml)
+	nodes := execXmlNodes(t, "/root/a/c/following-sibling::*", xml)
 
 	if len(nodes) != 2 {
 		t.Error("Size is not 2")
@@ -669,7 +813,7 @@ func TestParent(t *testing.T) {
 	execs := []string{"/root/a/b/parent::*", "/root/a/b/.."}
 
 	for _, i := range execs {
-		nodes := execNodes(t, i, xml)
+		nodes := execXmlNodes(t, i, xml)
 
 		if len(nodes) != 1 {
 			t.Error("Size is not 1")
@@ -694,7 +838,7 @@ func TestPreceding(t *testing.T) {
 		<e/>
 	</d>
 </root>`
-	nodes := execNodes(t, "/root/d/e/preceding::*", xml)
+	nodes := execXmlNodes(t, "/root/d/e/preceding::*", xml)
 
 	if len(nodes) != 3 {
 		t.Error("Size is not 3")
@@ -728,7 +872,7 @@ func TestPrecedingSibling(t *testing.T) {
 		<e/>
 	</a>
 </root>`
-	nodes := execNodes(t, "/root/a/d/preceding-sibling::*", xml)
+	nodes := execXmlNodes(t, "/root/a/d/preceding-sibling::*", xml)
 
 	if len(nodes) != 2 {
 		t.Error("Size is not 2")
@@ -752,7 +896,7 @@ func TestAbbreviatedAbsoluteLocation(t *testing.T) {
 	<a>a</a>
 	<a>b</a>
 </root>`
-	nodes := execNodes(t, "//a", xml)
+	nodes := execXmlNodes(t, "//a", xml)
 
 	if len(nodes) != 2 {
 		t.Error("Size is not 2")
@@ -783,7 +927,7 @@ func TestAbbreviatedRelativeLocation(t *testing.T) {
 	</bar>
 	<a>e</a>
 </root>`
-	nodes := execNodes(t, "/root/foo//a", xml)
+	nodes := execXmlNodes(t, "/root/foo//a", xml)
 
 	if len(nodes) != 3 {
 		t.Error("Size is not 3")
@@ -812,7 +956,7 @@ func TestNamespaces(t *testing.T) {
 	<a a:xmlns="http://a"/>
 	<b xmlns="http://b"/>
 </root>`
-	nodes := execNodes(t, "/root/a/namespace::*", xml)
+	nodes := execXmlNodes(t, "/root/a/namespace::*", xml)
 
 	if len(nodes) != 3 {
 		t.Error("Size is not 3")
@@ -841,7 +985,7 @@ func TestNamespaceOverride(t *testing.T) {
 	<a root:xmlns="http://a"/>
 	<b root:xmlns="http://b"/>
 </root>`
-	nodes := execNodes(t, "/root/a/namespace::*", xml)
+	nodes := execXmlNodes(t, "/root/a/namespace::*", xml)
 
 	if len(nodes) != 2 {
 		t.Error("Size is not 2")
@@ -869,7 +1013,7 @@ func TestDefaultNamespace(t *testing.T) {
 		c.NamespaceDecls["bar"] = "http://a"
 	}
 
-	nodes := execNodes(t, "/foo:root/bar:a", xml, namespaces)
+	nodes := execXmlNodes(t, "/foo:root/bar:a", xml, namespaces)
 
 	if len(nodes) != 1 {
 		t.Error("Size is not 1")
@@ -892,7 +1036,7 @@ func TestDefaultNamespaceOverrides(t *testing.T) {
 		c.NamespaceDecls["bar"] = "http://a"
 	}
 
-	nodes := execNodes(t, "/foo:root/bar:a/namespace::*", xml, namespaces)
+	nodes := execXmlNodes(t, "/foo:root/bar:a/namespace::*", xml, namespaces)
 
 	if len(nodes) != 2 {
 		t.Error("Size is not 2")
@@ -916,7 +1060,7 @@ func TestNamespaceSelect(t *testing.T) {
 		c.NamespaceDecls["foo"] = "http://root"
 	}
 
-	nodes := execNodes(t, "/foo:root/namespace::foo", xml, namespaces)
+	nodes := execXmlNodes(t, "/foo:root/namespace::foo", xml, namespaces)
 
 	if len(nodes) != 1 {
 		t.Error("Size is not 1")
@@ -939,7 +1083,7 @@ func TestNamespaceAnyLocal(t *testing.T) {
 		c.NamespaceDecls["b"] = "http://b"
 	}
 
-	nodes := execNodes(t, "//b:*", xml, namespaces)
+	nodes := execXmlNodes(t, "//b:*", xml, namespaces)
 
 	if len(nodes) != 1 {
 		t.Error("Size is not 1")
@@ -965,7 +1109,7 @@ func TestNamespaceAnyLocalConflict(t *testing.T) {
 		c.NamespaceDecls["attribute"] = "http://b"
 	}
 
-	nodes := execNodes(t, "//attribute:*", xml, namespaces)
+	nodes := execXmlNodes(t, "//attribute:*", xml, namespaces)
 
 	if len(nodes) != 1 {
 		t.Error("Size is not 1")
@@ -991,7 +1135,7 @@ func TestNameTestQNameNamespaceWithLocalReservedNameConflictNamespace(t *testing
 		c.NamespaceDecls["descendant"] = "http://c"
 	}
 
-	execNodesToString(t, "//descendant:c", xml, "c", namespaces)
+	execXmlNodesToString(t, "//descendant:c", xml, "c", namespaces)
 }
 
 func TestNameTestQNameNamespaceWithLocalReservedNameConflictLocal(t *testing.T) {
@@ -1007,7 +1151,7 @@ func TestNameTestQNameNamespaceWithLocalReservedNameConflictLocal(t *testing.T) 
 		c.NamespaceDecls["a"] = "http://c"
 	}
 
-	execNodesToString(t, "//a:descendant", xml, "c", namespaces)
+	execXmlNodesToString(t, "//a:descendant", xml, "c", namespaces)
 }
 
 func TestNameTestQNameNamespaceWithLocalReservedNameConflictBoth(t *testing.T) {
@@ -1023,7 +1167,7 @@ func TestNameTestQNameNamespaceWithLocalReservedNameConflictBoth(t *testing.T) {
 		c.NamespaceDecls["descendant"] = "http://c"
 	}
 
-	execNodesToString(t, "//descendant:descendant", xml, "c", namespaces)
+	execXmlNodesToString(t, "//descendant:descendant", xml, "c", namespaces)
 }
 
 func TestLocalAnyNamespace(t *testing.T) {
@@ -1032,7 +1176,7 @@ func TestLocalAnyNamespace(t *testing.T) {
 	<a xmlns="http://a"/>
 	<a xmlns="http://b"/>
 </root>`
-	nodes := execNodes(t, "//*:a", xml)
+	nodes := execXmlNodes(t, "//*:a", xml)
 
 	if len(nodes) != 2 {
 		t.Error("Size is not 2")
@@ -1056,7 +1200,7 @@ func TestLocalAxisConflict(t *testing.T) {
 	<attribute xmlns="http://a"/>
 	<attribute xmlns="http://b"/>
 </root>`
-	nodes := execNodes(t, "//*: attribute ", xml)
+	nodes := execXmlNodes(t, "//*: attribute ", xml)
 
 	if len(nodes) != 2 {
 		t.Error("Size is not 2")
@@ -1081,7 +1225,7 @@ func TestFunctionLast(t *testing.T) {
 	<a>b</a>
 </root>`
 
-	execNodesToString(t, "/root/a[last()]", xml, "b")
+	execXmlNodesToString(t, "/root/a[last()]", xml, "b")
 }
 
 func TestFunctionPosition(t *testing.T) {
@@ -1092,7 +1236,7 @@ func TestFunctionPosition(t *testing.T) {
 	<a>c</a>
 </root>`
 
-	execNodesToString(t, "/root/a[position() = 2]", xml, "b")
+	execXmlNodesToString(t, "/root/a[position() = 2]", xml, "b")
 }
 
 func TestFunctionCount(t *testing.T) {
@@ -1103,7 +1247,7 @@ func TestFunctionCount(t *testing.T) {
 	<a>c</a>
 </root>`
 
-	execNodesToString(t, "count(/root/a)", xml, "3")
+	execXmlNodesToString(t, "count(/root/a)", xml, "3")
 }
 
 func TestFunctionLocalName(t *testing.T) {
@@ -1111,8 +1255,8 @@ func TestFunctionLocalName(t *testing.T) {
 <root>
 </root>`
 
-	execNodesToString(t, "/root/local-name()", xml, "root")
-	execNodesToString(t, "local-name(/root)", xml, "root")
+	execXmlNodesToString(t, "/root/local-name()", xml, "root")
+	execXmlNodesToString(t, "local-name(/root)", xml, "root")
 }
 
 func TestFunctionNamespaceUri(t *testing.T) {
@@ -1120,8 +1264,8 @@ func TestFunctionNamespaceUri(t *testing.T) {
 <root xmlns="http://foo">
 </root>`
 
-	execNodesToString(t, "/*/namespace-uri()", xml, "http://foo")
-	execNodesToString(t, "namespace-uri(/*)", xml, "http://foo")
+	execXmlNodesToString(t, "/*/namespace-uri()", xml, "http://foo")
+	execXmlNodesToString(t, "namespace-uri(/*)", xml, "http://foo")
 }
 
 func TestFunctionName(t *testing.T) {
@@ -1129,92 +1273,92 @@ func TestFunctionName(t *testing.T) {
 <root>
 </root>`
 
-	execNodesToString(t, "/*/name()", xml, "root")
-	execNodesToString(t, "name(/*)", xml, "root")
+	execXmlNodesToString(t, "/*/name()", xml, "root")
+	execXmlNodesToString(t, "name(/*)", xml, "root")
 
 	xml = `
 <root xmlns="http://foo">
 </root>`
 
-	execNodesToString(t, "/*/name()", xml, "{http://foo}root")
-	execNodesToString(t, "name(/*)", xml, "{http://foo}root")
+	execXmlNodesToString(t, "/*/name()", xml, "{http://foo}root")
+	execXmlNodesToString(t, "name(/*)", xml, "{http://foo}root")
 }
 
 func TestFunctionString(t *testing.T) {
 	xml := `<root>1</root>`
 
-	execNodesToString(t, "string(/root)", xml, "1")
-	execNodesToString(t, "/root/string()", xml, "1")
+	execXmlNodesToString(t, "string(/root)", xml, "1")
+	execXmlNodesToString(t, "/root/string()", xml, "1")
 }
 
 func TestFunctionConcat(t *testing.T) {
-	execNodesToString(t, "concat('foo', 'bar')", ``, "foobar")
+	execXmlNodesToString(t, "concat('foo', 'bar')", ``, "foobar")
 }
 
 func TestFunctionStartsWith(t *testing.T) {
-	execNodesToString(t, "starts-with('abcd', 'ab')", ``, "true")
-	execNodesToString(t, "starts-with('abcd', 'b')", ``, "false")
+	execXmlNodesToString(t, "starts-with('abcd', 'ab')", ``, "true")
+	execXmlNodesToString(t, "starts-with('abcd', 'b')", ``, "false")
 }
 
 func TestFunctionContains(t *testing.T) {
-	execNodesToString(t, "contains('abcd', 'bc')", ``, "true")
-	execNodesToString(t, "contains('abcd', 'z')", ``, "false")
+	execXmlNodesToString(t, "contains('abcd', 'bc')", ``, "true")
+	execXmlNodesToString(t, "contains('abcd', 'z')", ``, "false")
 }
 
 func TestFunctionSubstringBefore(t *testing.T) {
-	execNodesToString(t, `substring-before("1999/04/01","/")`, ``, "1999")
-	execNodesToString(t, `substring-before("1999/04/01","2")`, ``, "")
+	execXmlNodesToString(t, `substring-before("1999/04/01","/")`, ``, "1999")
+	execXmlNodesToString(t, `substring-before("1999/04/01","2")`, ``, "")
 }
 
 func TestFunctionSubstringAfter(t *testing.T) {
-	execNodesToString(t, `substring-after("1999/04/01","/")`, ``, "04/01")
-	execNodesToString(t, `substring-after("1999/04/01","19")`, ``, "99/04/01")
-	execNodesToString(t, `substring-after("1999/04/01","a")`, ``, "")
+	execXmlNodesToString(t, `substring-after("1999/04/01","/")`, ``, "04/01")
+	execXmlNodesToString(t, `substring-after("1999/04/01","19")`, ``, "99/04/01")
+	execXmlNodesToString(t, `substring-after("1999/04/01","a")`, ``, "")
 }
 
 func TestFunctionSubstring(t *testing.T) {
-	execNodesToString(t, `substring("12345", 2, 3)`, ``, "234")
-	execNodesToString(t, `substring("12345", 2)`, ``, "2345")
-	execNodesToString(t, `substring('abcd', -2, 5)`, ``, "ab")
-	execNodesToString(t, `substring('abcd', 0)`, ``, "abcd")
-	execNodesToString(t, `substring('abcd', 1, 4)`, ``, "abcd")
-	execNodesToString(t, `substring("12345", 1.5, 2.6)`, ``, "234")
-	execNodesToString(t, `substring("12345", 0 div 0, 3)`, ``, "")
-	execNodesToString(t, `substring("12345", 1, 0 div 0)`, ``, "")
-	execNodesToString(t, `substring("12345", -42, 1 div 0)`, ``, "12345")
-	execNodesToString(t, `substring("12345", -1 div 0, 1 div 0)`, ``, "")
+	execXmlNodesToString(t, `substring("12345", 2, 3)`, ``, "234")
+	execXmlNodesToString(t, `substring("12345", 2)`, ``, "2345")
+	execXmlNodesToString(t, `substring('abcd', -2, 5)`, ``, "ab")
+	execXmlNodesToString(t, `substring('abcd', 0)`, ``, "abcd")
+	execXmlNodesToString(t, `substring('abcd', 1, 4)`, ``, "abcd")
+	execXmlNodesToString(t, `substring("12345", 1.5, 2.6)`, ``, "234")
+	execXmlNodesToString(t, `substring("12345", 0 div 0, 3)`, ``, "")
+	execXmlNodesToString(t, `substring("12345", 1, 0 div 0)`, ``, "")
+	execXmlNodesToString(t, `substring("12345", -42, 1 div 0)`, ``, "12345")
+	execXmlNodesToString(t, `substring("12345", -1 div 0, 1 div 0)`, ``, "")
 }
 
 func TestFunctionStringLength(t *testing.T) {
 	xml := `<root>1234</root>`
 
-	execNodesToString(t, "string-length(/root)", xml, "4")
-	execNodesToString(t, "/root/string-length()", xml, "4")
+	execXmlNodesToString(t, "string-length(/root)", xml, "4")
+	execXmlNodesToString(t, "/root/string-length()", xml, "4")
 }
 
 func TestFunctionNormalizeSpace(t *testing.T) {
 	xml := `<root>  1234   </root>`
 
-	execNodesToString(t, "normalize-space(/root)", xml, "1234")
-	execNodesToString(t, "/root/normalize-space()", xml, "1234")
+	execXmlNodesToString(t, "normalize-space(/root)", xml, "1234")
+	execXmlNodesToString(t, "/root/normalize-space()", xml, "1234")
 }
 
 func TestFunctionTranslate(t *testing.T) {
-	execNodesToString(t, `translate("bar","abc","ABC")`, ``, "BAr")
-	execNodesToString(t, `translate("--aaa--","abc-","ABC")`, ``, "AAA")
+	execXmlNodesToString(t, `translate("bar","abc","ABC")`, ``, "BAr")
+	execXmlNodesToString(t, `translate("--aaa--","abc-","ABC")`, ``, "AAA")
 }
 
 func TestFunctionNot(t *testing.T) {
-	exec(t, `not(1)`, ``, Bool(false))
-	exec(t, `not(0)`, ``, Bool(true))
+	execXml(t, `not(1)`, ``, Bool(false))
+	execXml(t, `not(0)`, ``, Bool(true))
 }
 
 func TestFunctionTrue(t *testing.T) {
-	exec(t, `true()`, ``, Bool(true))
+	execXml(t, `true()`, ``, Bool(true))
 }
 
 func TestFunctionFalse(t *testing.T) {
-	exec(t, `false()`, ``, Bool(false))
+	execXml(t, `false()`, ``, Bool(false))
 }
 
 func TestFunctionLang(t *testing.T) {
@@ -1225,18 +1369,18 @@ func TestFunctionLang(t *testing.T) {
 	<p xml:lang="en-US">I rode the elevator.</p>
 </p1>`
 
-	execNodesToString(t, `count(//p[lang('en')])`, xml, "3")
-	execNodesToString(t, `count(//text()[lang('en-GB')])`, xml, "1")
-	execNodesToString(t, `count(//p[lang('en-US')])`, xml, "1")
-	execNodesToString(t, `count(//p[lang('de')])`, xml, "0")
-	execNodesToString(t, `count(/p1[lang('en')])`, xml, "0")
+	execXmlNodesToString(t, `count(//p[lang('en')])`, xml, "3")
+	execXmlNodesToString(t, `count(//text()[lang('en-GB')])`, xml, "1")
+	execXmlNodesToString(t, `count(//p[lang('en-US')])`, xml, "1")
+	execXmlNodesToString(t, `count(//p[lang('de')])`, xml, "0")
+	execXmlNodesToString(t, `count(/p1[lang('en')])`, xml, "0")
 }
 
 func TestFunctionNumber(t *testing.T) {
 	xml := `<root>1234</root>`
 
-	exec(t, "number(/root)", xml, Number(1234))
-	exec(t, "/root/number()", xml, Number(1234))
+	execXml(t, "number(/root)", xml, Number(1234))
+	execXml(t, "/root/number()", xml, Number(1234))
 }
 
 func TestFunctionSum(t *testing.T) {
@@ -1248,21 +1392,21 @@ func TestFunctionSum(t *testing.T) {
 </root>
 `
 
-	exec(t, "sum(/root/a)", xml, Number(6))
+	execXml(t, "sum(/root/a)", xml, Number(6))
 }
 
 func TestFunctionFloor(t *testing.T) {
-	exec(t, "floor(2.2)", ``, Number(2))
+	execXml(t, "floor(2.2)", ``, Number(2))
 }
 
 func TestFunctionCeiling(t *testing.T) {
-	exec(t, "ceiling(2.2)", ``, Number(3))
+	execXml(t, "ceiling(2.2)", ``, Number(3))
 }
 
 func TestFunctionRound(t *testing.T) {
-	exec(t, `round(-1.5)`, ``, Number(-2))
-	exec(t, `round(1.5)`, ``, Number(2))
-	exec(t, `round(0)`, ``, Number(0))
+	execXml(t, `round(-1.5)`, ``, Number(-2))
+	execXml(t, `round(1.5)`, ``, Number(2))
+	execXml(t, `round(0)`, ``, Number(0))
 }
 
 func TestCustomFunction(t *testing.T) {
@@ -1280,7 +1424,7 @@ func TestCustomFunction(t *testing.T) {
 		}
 	}
 
-	nodes := execNodes(t, "//*[. = foo:bar()]", xml, variables)
+	nodes := execXmlNodes(t, "//*[. = foo:bar()]", xml, variables)
 
 	if len(nodes) != 1 {
 		t.Error("Size is not 1")
@@ -1306,7 +1450,7 @@ func TestVariableReference(t *testing.T) {
 		c.Variables[XmlName{"http://root", "bar"}] = Number(2.5)
 	}
 
-	nodes := execNodes(t, "//*[. = $foo:bar]", xml, variables)
+	nodes := execXmlNodes(t, "//*[. = $foo:bar]", xml, variables)
 
 	if len(nodes) != 1 {
 		t.Error("Size is not 1")
