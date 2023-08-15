@@ -9,6 +9,26 @@ import (
 	"github.com/ChrisTrenkamp/xsel/node"
 )
 
+type JsonElement struct {
+	local string
+}
+
+func (j JsonElement) Space() string {
+	return ""
+}
+
+func (j JsonElement) Local() string {
+	return j.local
+}
+
+type JsonCharData struct {
+	value string
+}
+
+func (j JsonCharData) CharDataValue() string {
+	return j.value
+}
+
 type jsonState int
 
 const (
@@ -73,7 +93,7 @@ func (j *jsonParser) popName() {
 func (j *jsonParser) Pull() (node.Node, bool, error) {
 	if j.currentState() == EMIT_OBJECT_VALUE {
 		j.replaceState(OBJECT_VALUE_EMITTED)
-		return tokValue(j.stagedToken), false, nil
+		return jsonTokenValue(j.stagedToken), false, nil
 	}
 
 	if j.currentState() == OBJECT_VALUE_EMITTED {
@@ -84,7 +104,7 @@ func (j *jsonParser) Pull() (node.Node, bool, error) {
 
 	if j.currentState() == READ_ARRAY_VALUE {
 		j.replaceState(ARRAY_VALUE_EMITTED)
-		return tokValue(j.stagedToken), false, nil
+		return jsonTokenValue(j.stagedToken), false, nil
 	}
 
 	if j.currentState() == ARRAY_VALUE_EMITTED {
@@ -104,7 +124,7 @@ func (j *jsonParser) Pull() (node.Node, bool, error) {
 		default:
 			j.replaceState(EMIT_OBJECT_VALUE)
 			j.stagedToken = tok
-			return XmlElement{space: "", local: j.currentName()}, false, nil
+			return JsonElement{local: j.currentName()}, false, nil
 		}
 	}
 
@@ -114,13 +134,13 @@ func (j *jsonParser) Pull() (node.Node, bool, error) {
 		default:
 			j.replaceState(READ_ARRAY_VALUE)
 			j.stagedToken = tok
-			return XmlElement{space: "", local: j.currentName()}, false, nil
+			return JsonElement{local: j.currentName()}, false, nil
 		}
 	}
 
 	switch t := tok.(type) {
 	case json.Delim:
-		return parseDelim(j, t)
+		return parseJsonDelim(j, t)
 	case string:
 		if j.currentState() == READ_OBJECT_FIELD {
 			j.replaceState(READ_OBJECT_VALUE)
@@ -131,30 +151,30 @@ func (j *jsonParser) Pull() (node.Node, bool, error) {
 	return j.Pull()
 }
 
-func tokValue(tok json.Token) node.Node {
+func jsonTokenValue(tok json.Token) node.Node {
 	switch t := tok.(type) {
 	case bool:
-		return XmlCharData{value: fmt.Sprintf("%t", t)}
+		return JsonCharData{value: fmt.Sprintf("%t", t)}
 	case float64:
 		str := strconv.FormatFloat(t, 'g', -1, 64)
-		return XmlCharData{value: str}
+		return JsonCharData{value: str}
 	case json.Number:
-		return XmlCharData{value: string(t)}
+		return JsonCharData{value: string(t)}
 	case string:
-		return XmlCharData{value: t}
+		return JsonCharData{value: t}
 	}
 
-	return XmlCharData{value: "null"}
+	return JsonCharData{value: "null"}
 }
 
-func parseDelim(j *jsonParser, t json.Delim) (node.Node, bool, error) {
+func parseJsonDelim(j *jsonParser, t json.Delim) (node.Node, bool, error) {
 	switch t.String() {
 	case "{":
 		state := j.currentState()
 		j.appendState(READ_OBJECT_FIELD)
 
 		if state == READ_OBJECT_VALUE || state == READ_ARRAY {
-			return XmlElement{space: "", local: j.currentName()}, false, nil
+			return JsonElement{local: j.currentName()}, false, nil
 		}
 	case "}":
 		j.popState()
@@ -181,6 +201,7 @@ func parseDelim(j *jsonParser, t json.Delim) (node.Node, bool, error) {
 	return j.Pull()
 }
 
+// Create a Parser that reads the given JSON document.
 func ReadJson(in io.Reader) Parser {
 	jsonReader := json.NewDecoder(in)
 

@@ -65,6 +65,21 @@ func execJsonNodes(t *testing.T, expr, json string, settings ...ContextApply) No
 	return queryJson(t, expr, json, settings...).(NodeSet)
 }
 
+func queryHtml(t *testing.T, expr, html string, settings ...ContextApply) Result {
+	parser, err := parser.ReadHtml(bytes.NewBufferString(html))
+
+	if err != nil {
+		t.Error(err)
+		return nil
+	}
+
+	return query(t, expr, parser, settings...)
+}
+
+func execHtmlNodes(t *testing.T, expr, html string, settings ...ContextApply) NodeSet {
+	return queryHtml(t, expr, html, settings...).(NodeSet)
+}
+
 /*
 func printTree(cursor store.Cursor, depth int) {
 	for i := 0; i < depth; i++ {
@@ -83,140 +98,6 @@ func printTree(cursor store.Cursor, depth int) {
 	}
 }
 */
-
-func TestJsonNestedArray(t *testing.T) {
-	json := `
-{
-	"a": [ 0, ["b", "c", {"d": 2.71828}]],
-	"b": {
-		"c": 3.14,
-		"d": [{"e": "f"}, "g"]
-	},
-	"nil": null
-}
-`
-	value := execJsonNodes(t, "/a[. = '0']", json)
-
-	if value.String() != "0" || value[0].Node().(node.Element).Local() != "a" {
-		t.Error("bad array value")
-	}
-
-	value = execJsonNodes(t, "/a[. = 'b']", json)
-
-	if value.String() != "b" || value[0].Node().(node.Element).Local() != "a" {
-		t.Error("bad nested array value")
-	}
-
-	value = execJsonNodes(t, "/a/d[. = 2.71828]", json)
-
-	if value.String() != "2.71828" || value[0].Node().(node.Element).Local() != "d" {
-		t.Error("bad object-in-array value")
-	}
-
-	value = execJsonNodes(t, "/b/c", json)
-
-	if value.String() != "3.14" || value[0].Node().(node.Element).Local() != "c" {
-		t.Error("bad nested object value")
-	}
-
-	value = execJsonNodes(t, "/b/d/e", json)
-
-	if value.String() != "f" || value[0].Node().(node.Element).Local() != "e" {
-		t.Error("bad object-in-array-in-object value")
-	}
-
-	value = execJsonNodes(t, "/b/d[. = 'g']", json)
-
-	if value.String() != "g" || value[0].Node().(node.Element).Local() != "d" {
-		t.Error("bad object-in-array-in-object value")
-	}
-
-	value = execJsonNodes(t, "/nil", json)
-
-	if value.String() != "null" || value[0].Node().(node.Element).Local() != "nil" {
-		t.Error("bad nil value")
-	}
-}
-
-func TestJson(t *testing.T) {
-	json := `
-	{ "store": {
-		"book": [
-		  { "category": "reference",
-			"author": "Nigel Rees",
-			"title": "Sayings of the Century",
-			"price": 8.95
-		  },
-		  { "category": "fiction",
-			"author": "Evelyn Waugh",
-			"title": "Sword of Honour",
-			"price": 12.99
-		  },
-		  { "category": "fiction",
-			"author": "Herman Melville",
-			"title": "Moby Dick",
-			"isbn": "0-553-21311-3",
-			"price": 8.99
-		  },
-		  { "category": "fiction",
-			"author": "J. R. R. Tolkien",
-			"title": "The Lord of the Rings",
-			"isbn": "0-395-19395-8",
-			"price": 22.99
-		  }
-		],
-		"bicycle": {
-		  "color": "red",
-		  "price": 19.95
-		}
-	  }
-	}
-`
-
-	pricedItems := execJsonNodes(t, "//*[price]", json)
-
-	if len(pricedItems) != 5 {
-		t.Error("result size not 5")
-	}
-
-	for i := 0; i < 4; i++ {
-		if pricedItems[i].Node().(node.Element).Local() != "book" {
-			t.Error("name not 'book'")
-		}
-	}
-
-	if pricedItems[4].Node().(node.Element).Local() != "bicycle" {
-		t.Error("name not 'bicycle'")
-	}
-
-	nodes := execJsonNodes(t, "/store/book/author", json)
-
-	if len(nodes) != 4 {
-		t.Error("result size not 4")
-	}
-
-	for _, i := range nodes {
-		if i.Node().(node.Element).Local() != "author" {
-			t.Error("name not 'author'")
-		}
-	}
-
-	if getCursorString(nodes[0]) != "Nigel Rees" {
-		t.Error("first node value incorrect")
-	}
-
-	if getCursorString(nodes[1]) != "Evelyn Waugh" {
-		t.Error("second node value incorrect")
-	}
-
-	if getCursorString(nodes[2]) != "Herman Melville" {
-		t.Error("third node value incorrect")
-	}
-
-	if getCursorString(nodes[3]) != "J. R. R. Tolkien" {
-		t.Error("forth node value incorrect")
-	}
-}
 
 func TestInfinity(t *testing.T) {
 	num := Number(math.Inf(1))
@@ -1491,5 +1372,181 @@ func TestNewContext(t *testing.T) {
 
 	if result.String() != "5" {
 		t.Errorf("Result != '5'")
+	}
+}
+
+func TestJsonNestedArray(t *testing.T) {
+	json := `
+{
+	"a": [ 0, ["b", "c", {"d": 2.71828}]],
+	"b": {
+		"c": 3.14,
+		"d": [{"e": "f"}, "g"]
+	},
+	"nil": null
+}
+`
+	value := execJsonNodes(t, "/a[. = '0']", json)
+
+	if value.String() != "0" || value[0].Node().(node.Element).Local() != "a" {
+		t.Error("bad array value")
+	}
+
+	value = execJsonNodes(t, "/a[. = 'b']", json)
+
+	if value.String() != "b" || value[0].Node().(node.Element).Local() != "a" {
+		t.Error("bad nested array value")
+	}
+
+	value = execJsonNodes(t, "/a/d[. = 2.71828]", json)
+
+	if value.String() != "2.71828" || value[0].Node().(node.Element).Local() != "d" {
+		t.Error("bad object-in-array value")
+	}
+
+	value = execJsonNodes(t, "/b/c", json)
+
+	if value.String() != "3.14" || value[0].Node().(node.Element).Local() != "c" {
+		t.Error("bad nested object value")
+	}
+
+	value = execJsonNodes(t, "/b/d/e", json)
+
+	if value.String() != "f" || value[0].Node().(node.Element).Local() != "e" {
+		t.Error("bad object-in-array-in-object value")
+	}
+
+	value = execJsonNodes(t, "/b/d[. = 'g']", json)
+
+	if value.String() != "g" || value[0].Node().(node.Element).Local() != "d" {
+		t.Error("bad object-in-array-in-object value")
+	}
+
+	value = execJsonNodes(t, "/nil", json)
+
+	if value.String() != "null" || value[0].Node().(node.Element).Local() != "nil" {
+		t.Error("bad nil value")
+	}
+}
+
+func TestJson(t *testing.T) {
+	json := `
+	{ "store": {
+		"book": [
+		  { "category": "reference",
+			"author": "Nigel Rees",
+			"title": "Sayings of the Century",
+			"price": 8.95
+		  },
+		  { "category": "fiction",
+			"author": "Evelyn Waugh",
+			"title": "Sword of Honour",
+			"price": 12.99
+		  },
+		  { "category": "fiction",
+			"author": "Herman Melville",
+			"title": "Moby Dick",
+			"isbn": "0-553-21311-3",
+			"price": 8.99
+		  },
+		  { "category": "fiction",
+			"author": "J. R. R. Tolkien",
+			"title": "The Lord of the Rings",
+			"isbn": "0-395-19395-8",
+			"price": 22.99
+		  }
+		],
+		"bicycle": {
+		  "color": "red",
+		  "price": 19.95
+		}
+	  }
+	}
+`
+
+	pricedItems := execJsonNodes(t, "//*[price]", json)
+
+	if len(pricedItems) != 5 {
+		t.Error("result size not 5")
+	}
+
+	for i := 0; i < 4; i++ {
+		if pricedItems[i].Node().(node.Element).Local() != "book" {
+			t.Error("name not 'book'")
+		}
+	}
+
+	if pricedItems[4].Node().(node.Element).Local() != "bicycle" {
+		t.Error("name not 'bicycle'")
+	}
+
+	nodes := execJsonNodes(t, "/store/book/author", json)
+
+	if len(nodes) != 4 {
+		t.Error("result size not 4")
+	}
+
+	for _, i := range nodes {
+		if i.Node().(node.Element).Local() != "author" {
+			t.Error("name not 'author'")
+		}
+	}
+
+	if getCursorString(nodes[0]) != "Nigel Rees" {
+		t.Error("first node value incorrect")
+	}
+
+	if getCursorString(nodes[1]) != "Evelyn Waugh" {
+		t.Error("second node value incorrect")
+	}
+
+	if getCursorString(nodes[2]) != "Herman Melville" {
+		t.Error("third node value incorrect")
+	}
+
+	if getCursorString(nodes[3]) != "J. R. R. Tolkien" {
+		t.Error("forth node value incorrect")
+	}
+}
+
+func TestHtmlDocument(t *testing.T) {
+	html := `
+<!doctype html>
+<html lang=en xmlns:svg="http://www.w3.org/2000/svg">
+<head><meta charset="utf-8"><title>html title</title></head><body>
+<br/>
+<p>content</p>
+<svg:svg height="110" xmlns="http://www.w3.org/2000/svg">
+  <rect width="300" style="fill:rgb(0,0,255)" xlink:href="http://example.com" />
+</svg>
+</body>
+</html>
+`
+
+	nodes := execHtmlNodes(t, "/html/body/p", html)
+	if nodes.String() != "content" {
+		t.Error("result not 'content'")
+	}
+
+	nodes = execHtmlNodes(t, "/html/@*", html)
+
+	if len(nodes) != 1 {
+		t.Error("result not one lang attribute")
+	}
+
+	if nodes[0].Node().(node.Attribute).Local() != "lang" || getCursorString(nodes[0]) != "en" {
+		t.Error("lang attribute not 'en'")
+	}
+
+	nodes = execHtmlNodes(t, "/html/body/svg", html)
+
+	if len(nodes) != 1 || nodes[0].Node().(node.Element).Local() != "svg" {
+		t.Error("svg not selected")
+	}
+
+	nodes = execHtmlNodes(t, "/html/body/svg/rect/@href", html)
+
+	if len(nodes) != 1 || nodes[0].Node().(node.Attribute).AttributeValue() != "http://example.com" {
+		t.Error("bad href value")
 	}
 }
