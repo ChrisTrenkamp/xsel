@@ -128,9 +128,34 @@ func main() {
 
 ## Extensible
 
-`xsel` supplies an XML parser (using the `encoding/xml` package) out of the box, but the XPath logic does not depend directly on XML.  It instead depends on the interfaces defined in the [node](https://pkg.go.dev/github.com/ChrisTrenkamp/xsel/node) and [store](https://pkg.go.dev/github.com/ChrisTrenkamp/xsel/store) packages.  This means it's possible to use `xsel` for querying against non-XML documents, such as JSON.
+`xsel` supplies an XML parser (using the `encoding/xml` package) out of the box, but the XPath logic does not depend directly on XML.  It instead depends on the interfaces defined in the [node](https://pkg.go.dev/github.com/ChrisTrenkamp/xsel/node) and [store](https://pkg.go.dev/github.com/ChrisTrenkamp/xsel/store) packages.  This means it's possible to use `xsel` for querying against non-XML documents.  The [parser](https://pkg.go.dev/github.com/ChrisTrenkamp/xsel/parser) package supplies methods for parsing XML, HTML, and JSON documents.
 
 To build a custom document, implement your own [Parser](https://pkg.go.dev/github.com/ChrisTrenkamp/xsel/parser#Parser) method, and build [Element](https://pkg.go.dev/github.com/ChrisTrenkamp/xsel/node#Element)'s, [Attribute](https://pkg.go.dev/github.com/ChrisTrenkamp/xsel/node#Attribute)'s [Character Data](https://pkg.go.dev/github.com/ChrisTrenkamp/xsel/node#CharData), [Comment](https://pkg.go.dev/github.com/ChrisTrenkamp/xsel/node#Comment)'s, [Processing Instruction](https://pkg.go.dev/github.com/ChrisTrenkamp/xsel/node#ProcInst)'s, and [Namespace](https://pkg.go.dev/github.com/ChrisTrenkamp/xsel/node#Namespace)'s.
+
+
+## Caveats for HTML documents
+
+Namespaces are completely ignored for HTML documents.  Keep all queries in the default namespace.  Write queries such as `//svg`.  Do not write queries such as `//svg:svg`.
+
+## Caveats for JSON documents
+
+JSON documents only build elements and character data.  All element names are in the default namespace.
+
+Elements in arrays are wrapped in element nodes, with a name based on the name of the object field, and arrays nested in arrays are flattened.  For example, if you had the following JSON document:
+
+```
+{
+	"states": ["AK", ["MD", "FL"] ]
+}
+```
+
+The XML equivalent will be:
+
+```
+<states>AK</states>
+<states>MD</states>
+<states>FL</states>
+```
 
 ## Commandline Utility
 
@@ -150,6 +175,8 @@ Usage of xsel:
   -r    Recursively traverse directories
   -s value
         Namespace mapping. e.g. -ns companyns=http://company.com
+  -t string
+        Force xsel to parse files as the given type.  Can be 'xml', 'html', or 'json'.  If unspecified, the file will be detected by its MIME type.  Must be specified when reading from stdin.
   -u    Turns off strict XML decoding
   -v value
         Bind a variable (all variables are bound as string types) e.g. -v var=value or -v companyns:var=value
