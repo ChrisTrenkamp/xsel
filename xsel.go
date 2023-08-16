@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io"
 	"io/fs"
+	"mime"
 	"os"
 	"path/filepath"
 	"strings"
@@ -42,12 +43,19 @@ func (n keyValuePair) Set(value string) error {
 	return nil
 }
 
+var VALID_FILE_TYPES = map[string]bool{
+	"xml":  true,
+	"html": true,
+	"json": true,
+}
+
 var concurrent = flag.Int("c", 1, "Run queries in the given number of concurrent workers (beware that results will have no predictable order)")
 var printAllNodes = flag.Bool("a", false, "If the result is a NodeSet, print the string value of all the nodes instead of just the first")
 var suppressFileNames = flag.Bool("n", false, "Suppress filenames")
 var recursive = flag.Bool("r", false, "Recursively traverse directories")
 var asXml = flag.Bool("m", false, "If the result is a NodeSet, print all the results as XML")
 var unstrict = flag.Bool("u", false, "Turns off strict XML decoding")
+var fileType = flag.String("t", "", "Force xsel to parse files as the given type.  Can be 'xml', 'html', or 'json'.  If unspecified, the file will be detected by its MIME type.  Must be specified when reading from stdin.")
 var entities = make(keyValuePair)
 var namespaces = make(keyValuePair)
 var fileSync = sync.WaitGroup{}
@@ -71,6 +79,13 @@ func main() {
 
 	semaphore = make(chan struct{}, max)
 	args := flag.Args()
+
+	if *fileType != "" {
+		if !VALID_FILE_TYPES[*fileType] {
+			fmt.Fprintf(os.Stderr, "Invalid file type, '%s'", *fileType)
+			return
+		}
+	}
 
 	if *xpathExpr == "" {
 		fmt.Fprintln(os.Stderr, "Missing XPath expression")
@@ -145,6 +160,31 @@ func walker(path string, d fs.DirEntry, err error) error {
 
 func runXpathOnFile(path string) {
 	defer fileSync.Done()
+	defer func() {
+		<-semaphore
+	}()
+
+	parseType := *fileType
+
+	if parseType == "" {
+		media, _, err := mime.ParseMediaType(mime.TypeByExtension(filepath.Ext(path)))
+
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Error detecting file MIME type for file %s: %s\n", path, err)
+			return
+		}
+
+		if strings.Contains(media, "xml") {
+			parseType = "xml"
+		} else if strings.Contains(media, "html") {
+			parseType = "html"
+		} else if strings.Contains(media, "json") {
+			parseType = "json"
+		} else {
+			fmt.Fprintf(os.Stderr, "Unsupported MIME type for file %s: %s\n", path, media)
+			return
+		}
+	}
 
 	file, err := os.Open(path)
 
@@ -159,19 +199,56 @@ func runXpathOnFile(path string) {
 		}
 	}()
 
-	executeXpath(file, path)
-	<-semaphore
+	parser, err := createCursor(file, parseType)
+
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error reading file %s: %s\n", path, err)
+		return
+	}
+
+	executeXpath(parser, path)
 }
 
 func runXpathOnStdin() {
 	defer fileSync.Done()
+	defer func() {
+		<-semaphore
+	}()
 
-	executeXpath(os.Stdin, "-")
-	<-semaphore
+	if *fileType == "" {
+		fmt.Fprintln(os.Stderr, "Must specify file type when reading from stdin")
+		return
+	}
+
+	parser, err := createCursor(os.Stdin, *fileType)
+
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error reading from stdin: %s\n", err)
+		return
+	}
+
+	executeXpath(parser, "-")
 }
 
-func executeXpath(in io.Reader, path string) {
-	parser := parser.ReadXml(in, buildParserSettings)
+func buildXmlParserSettings(d *xml.Decoder) {
+	d.Strict = !*unstrict
+	d.Entity = entities
+}
+
+func createCursor(in io.Reader, parseType string) (parser.Parser, error) {
+	switch parseType {
+	case "xml":
+		return parser.ReadXml(in, buildXmlParserSettings), nil
+	case "html":
+		return parser.ReadHtml(in)
+	case "json":
+		return parser.ReadJson(in), nil
+	}
+
+	return nil, fmt.Errorf("unsupported file type")
+}
+
+func executeXpath(parser parser.Parser, path string) {
 	cursor, err := store.CreateInMemory(parser)
 
 	if err != nil {
@@ -187,6 +264,11 @@ func executeXpath(in io.Reader, path string) {
 	}
 
 	nodeSet, isNodeSet := result.(exec.NodeSet)
+
+	if isNodeSet && len(nodeSet) == 0 {
+		return
+	}
+
 	buffer := bytes.Buffer{}
 
 	if isNodeSet && *asXml {
@@ -200,11 +282,6 @@ func executeXpath(in io.Reader, path string) {
 	}
 
 	fmt.Print(buffer.String())
-}
-
-func buildParserSettings(d *xml.Decoder) {
-	d.Strict = !*unstrict
-	d.Entity = entities
 }
 
 func buildContextSettings(c *exec.ContextSettings) {
