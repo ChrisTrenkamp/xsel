@@ -118,6 +118,11 @@ func (x *htmlParser) Pull() (node.Node, bool, error) {
 		return nil, false, fmt.Errorf("encountered raw node")
 	case html.DocumentNode:
 		x.node = x.node.FirstChild
+
+		if x.node.Type != html.DoctypeNode {
+			return nil, false, fmt.Errorf("doctype declaration not found")
+		}
+
 		return x.Pull()
 	case html.DoctypeNode:
 		x.node = x.node.NextSibling
