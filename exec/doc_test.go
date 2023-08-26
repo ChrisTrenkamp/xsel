@@ -97,3 +97,64 @@ func ExampleExec_custom_variables() {
 
 	fmt.Println(result)
 }
+
+func ExampleExec_unmarshal() {
+	xml := `
+<Root xmlns="http://www.adventure-works.com">
+	<Customers>
+		<Customer CustomerID="GREAL">
+			<CompanyName>Great Lakes Food Market</CompanyName>
+			<ContactName>Howard Snyder</ContactName>
+			<ContactTitle>Marketing Manager</ContactTitle>
+			<FullAddress>
+				<Address>2732 Baker Blvd.</Address>
+				<City>Eugene</City>
+				<Region>OR</Region>
+			</FullAddress>
+		</Customer>
+		<Customer CustomerID="HUNGC">
+		  <CompanyName>Hungry Coyote Import Store</CompanyName>
+		  <ContactName>Yoshi Latimer</ContactName>
+		  <FullAddress>
+			<Address>City Center Plaza 516 Main St.</Address>
+			<City>Walla Walla</City>
+			<Region>WA</Region>
+		  </FullAddress>
+		</Customer>
+	</Customers>
+</Root>
+`
+
+	type Address struct {
+		Address string `xsel:"NS:Address"`
+		City    string `xsel:"NS:City"`
+		Region  string `xsel:"NS:Region"`
+	}
+
+	type Customer struct {
+		Id          string  `xsel:"@CustomerID"`
+		Name        string  `xsel:"NS:CompanyName"`
+		ContactName string  `xsel:"NS:ContactName"`
+		Address     Address `xsel:"NS:FullAddress"`
+	}
+
+	type Customers struct {
+		Customers []Customer `xsel:"NS:Customers/NS:Customer"`
+	}
+
+	contextSettings := func(c *exec.ContextSettings) {
+		c.NamespaceDecls["NS"] = "http://www.adventure-works.com"
+	}
+
+	xpath := grammar.MustBuild(`/NS:Root`)
+	parser := parser.ReadXml(bytes.NewBufferString(xml))
+	cursor, _ := store.CreateInMemory(parser)
+	result, _ := exec.Exec(cursor, &xpath, contextSettings)
+
+	customers := Customers{}
+	exec.Unmarshal(result, &customers, contextSettings) // Remember to check for errors
+
+	fmt.Printf("%+v\n", customers)
+	//{Customers:[{Id:GREAL Name:Great Lakes Food Market ContactName:Howard Snyder Address:{Address:2732 Baker Blvd. City:Eugene Region:OR}}
+	// {Id:HUNGC Name:Hungry Coyote Import Store ContactName:Yoshi Latimer Address:{Address:City Center Plaza 516 Main St. City:Walla Walla Region:WA}}]}
+}

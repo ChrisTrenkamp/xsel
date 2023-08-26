@@ -3,6 +3,7 @@ package exec
 import (
 	"bytes"
 	"math"
+	"reflect"
 	"testing"
 
 	"github.com/ChrisTrenkamp/xsel/grammar"
@@ -1548,5 +1549,82 @@ func TestHtmlDocument(t *testing.T) {
 
 	if len(nodes) != 1 || nodes[0].Node().(node.Attribute).AttributeValue() != "http://example.com" {
 		t.Error("bad href value")
+	}
+}
+
+func TestUnmarshal(t *testing.T) {
+	type SubUnmarshalTarget struct {
+		A      *string `xsel:"a"`
+		Battr  bool    `xsel:"b/@attr"`
+		Ignore string
+	}
+
+	type SliceUnmarshalTarget struct {
+		Elem string `xsel:"."`
+	}
+
+	type UnmarshalTarget struct {
+		Text        string                   `xsel:"normalize-space(text())"`
+		Attr        float32                  `xsel:"node/@attr"`
+		Attr64      float64                  `xsel:"node/@attr"`
+		Subfield    **SubUnmarshalTarget     `xsel:"node"`
+		Slice       *[]*SliceUnmarshalTarget `xsel:"slice/elem"`
+		StringSlice []string                 `xsel:"slice/elem"`
+		Uint8       uint8                    `xsel:"slice/elem[1]"`
+		Int8        int8                     `xsel:"slice/elem[1]"`
+		Uint16      uint16                   `xsel:"slice/elem[1]"`
+		Int16       int16                    `xsel:"slice/elem[1]"`
+		Uint32      uint32                   `xsel:"slice/elem[1]"`
+		Int32       int32                    `xsel:"slice/elem[1]"`
+		Uint64      uint64                   `xsel:"slice/elem[1]"`
+		Int64       int64                    `xsel:"slice/elem[1]"`
+	}
+
+	xml := `
+<root>
+	foo
+	<node attr="3.14">
+		<a>a</a>
+		<b attr="true"/>
+	</node>
+	<slice>
+		<elem>1</elem>
+		<elem>2</elem>
+		<elem>3</elem>
+	</slice>
+</root>
+`
+	nodes := execXmlNodes(t, "/root", xml)
+	target := UnmarshalTarget{}
+
+	if err := Unmarshal(nodes, &target); err != nil {
+		t.Error(err)
+	}
+
+	a := "a"
+	subExpected := &SubUnmarshalTarget{
+		A:     &a,
+		Battr: true,
+	}
+	sliceResults := []*SliceUnmarshalTarget{{"1"}, {"2"}, {"3"}}
+	expected := UnmarshalTarget{
+		Text:        "foo",
+		Attr:        3.14,
+		Attr64:      3.14,
+		Subfield:    &subExpected,
+		Slice:       &sliceResults,
+		StringSlice: []string{"1", "2", "3"},
+		Uint8:       1,
+		Int8:        1,
+		Uint16:      1,
+		Int16:       1,
+		Uint32:      1,
+		Int32:       1,
+		Uint64:      1,
+		Int64:       1,
+	}
+
+	if !reflect.DeepEqual(expected, target) {
+		t.Error("incorrect result")
 	}
 }
