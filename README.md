@@ -126,6 +126,84 @@ func main() {
 }
 ```
 
+## Unmarshal result into a struct
+
+```go
+package main
+
+import (
+	"bytes"
+	"fmt"
+
+	"github.com/ChrisTrenkamp/xsel/exec"
+	"github.com/ChrisTrenkamp/xsel/grammar"
+	"github.com/ChrisTrenkamp/xsel/node"
+	"github.com/ChrisTrenkamp/xsel/parser"
+	"github.com/ChrisTrenkamp/xsel/store"
+)
+
+func main() {
+	xml := `
+<Root xmlns="http://www.adventure-works.com">
+	<Customers>
+		<Customer CustomerID="GREAL">
+			<CompanyName>Great Lakes Food Market</CompanyName>
+			<ContactName>Howard Snyder</ContactName>
+			<ContactTitle>Marketing Manager</ContactTitle>
+			<FullAddress>
+				<Address>2732 Baker Blvd.</Address>
+				<City>Eugene</City>
+				<Region>OR</Region>
+			</FullAddress>
+		</Customer>
+		<Customer CustomerID="HUNGC">
+		  <CompanyName>Hungry Coyote Import Store</CompanyName>
+		  <ContactName>Yoshi Latimer</ContactName>
+		  <FullAddress>
+			<Address>City Center Plaza 516 Main St.</Address>
+			<City>Walla Walla</City>
+			<Region>WA</Region>
+		  </FullAddress>
+		</Customer>
+	</Customers>
+</Root>
+`
+
+	type Address struct {
+		Address string `xsel:"NS:Address"`
+		City    string `xsel:"NS:City"`
+		Region  string `xsel:"NS:Region"`
+	}
+
+	type Customer struct {
+		Id          string  `xsel:"@CustomerID"`
+		Name        string  `xsel:"NS:CompanyName"`
+		ContactName string  `xsel:"NS:ContactName"`
+		Address     Address `xsel:"NS:FullAddress"`
+	}
+
+	type Customers struct {
+		Customers []Customer `xsel:"NS:Customers/NS:Customer"`
+	}
+
+	contextSettings := func(c *exec.ContextSettings) {
+		c.NamespaceDecls["NS"] = "http://www.adventure-works.com"
+	}
+
+	xpath := grammar.MustBuild(`/NS:Root`)
+	parser := parser.ReadXml(bytes.NewBufferString(xml))
+	cursor, _ := store.CreateInMemory(parser)
+	result, _ := exec.Exec(cursor, &xpath, contextSettings)
+
+	customers := Customers{}
+	exec.Unmarshal(result, &customers, contextSettings) // Remember to check for errors
+
+	fmt.Printf("%+v\n", customers)
+	//{Customers:[{Id:GREAL Name:Great Lakes Food Market ContactName:Howard Snyder Address:{Address:2732 Baker Blvd. City:Eugene Region:OR}}
+	// {Id:HUNGC Name:Hungry Coyote Import Store ContactName:Yoshi Latimer Address:{Address:City Center Plaza 516 Main St. City:Walla Walla Region:WA}}]}
+}
+```
+
 ## Extensible
 
 `xsel` supplies an XML parser (using the `encoding/xml` package) out of the box, but the XPath logic does not depend directly on XML.  It instead depends on the interfaces defined in the [node](https://pkg.go.dev/github.com/ChrisTrenkamp/xsel/node) and [store](https://pkg.go.dev/github.com/ChrisTrenkamp/xsel/store) packages.  This means it's possible to use `xsel` for querying against non-XML documents.  The [parser](https://pkg.go.dev/github.com/ChrisTrenkamp/xsel/parser) package supplies methods for parsing XML, HTML, and JSON documents.
