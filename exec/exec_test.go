@@ -1578,6 +1578,8 @@ func TestUnmarshal(t *testing.T) {
 		Int32       int32                    `xsel:"slice/elem[1]"`
 		Uint64      uint64                   `xsel:"slice/elem[1]"`
 		Int64       int64                    `xsel:"slice/elem[1]"`
+		Uint        uint                     `xsel:"slice/elem[1]"`
+		Int         int                      `xsel:"slice/elem[1]"`
 	}
 
 	xml := `
@@ -1622,6 +1624,8 @@ func TestUnmarshal(t *testing.T) {
 		Int32:       1,
 		Uint64:      1,
 		Int64:       1,
+		Uint:        1,
+		Int:         1,
 	}
 
 	if !reflect.DeepEqual(expected, target) {

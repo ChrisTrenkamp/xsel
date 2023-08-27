@@ -203,6 +203,10 @@ func createValue(kind reflect.Kind, result Result) (reflect.Value, bool) {
 	case reflect.Bool:
 		return reflect.ValueOf(result.Bool()), true
 
+	case reflect.Int:
+		return reflect.ValueOf(int(result.Number())), true
+	case reflect.Uint:
+		return reflect.ValueOf(uint(result.Number())), true
 	case reflect.Uint8:
 		return reflect.ValueOf(uint8(result.Number())), true
 	case reflect.Int8:
