@@ -123,7 +123,6 @@ func unmarshalSlice(result Result, val reflect.Value, settings ...ContextApply) 
 	}
 
 	for _, i := range nodeset {
-		var err error
 		var sliceValue reflect.Value
 
 		if sliceElementKind == reflect.Slice {
@@ -131,7 +130,12 @@ func unmarshalSlice(result Result, val reflect.Value, settings ...ContextApply) 
 		} else if sliceElementKind == reflect.Struct {
 			ptr := reflect.New(sliceElement)
 			ptr.Elem().Set(reflect.Zero(sliceElement))
-			err = unmarshal(NodeSet{i}, ptr.Interface(), settings...)
+
+			err := unmarshal(NodeSet{i}, ptr.Interface(), settings...)
+			if err != nil {
+				return err
+			}
+
 			sliceValue = ptr.Elem()
 		} else {
 			val, ok := createValue(sliceElementKind, NodeSet{i})
@@ -143,7 +147,7 @@ func unmarshalSlice(result Result, val reflect.Value, settings ...ContextApply) 
 			sliceValue = val
 		}
 
-		setField("<slice>", val, sliceValue, true)
+		err := setField("<slice>", val, sliceValue, true)
 
 		if err != nil {
 			return err
@@ -184,6 +188,10 @@ func setField(name string, field reflect.Value, val reflect.Value, checkSlice bo
 
 	if !assignableType.AssignableTo(ptrVal.Type()) {
 		return fmt.Errorf("could not set field, %s", name)
+	}
+
+	if !field.CanSet() {
+		return fmt.Errorf("field %s is not settable", name)
 	}
 
 	if isSlice {

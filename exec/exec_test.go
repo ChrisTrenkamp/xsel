@@ -1552,6 +1552,32 @@ func TestHtmlDocument(t *testing.T) {
 	}
 }
 
+func TestNonPointerSliceUnmarshal(t *testing.T) {
+	sl := make([]int, 0)
+	xml := `
+<root>
+	<elem>1</elem>
+	<elem>2</elem>
+	<elem>3</elem>
+</root>
+`
+
+	nodes := execXmlNodes(t, "/root/elem", xml)
+	err := Unmarshal(nodes, sl)
+	if err.Error() != "field <slice> is not settable" {
+		t.Error("incorrect error:", err)
+	}
+
+	err = Unmarshal(nodes, &sl)
+	if err != nil {
+		t.Error("got error:", err)
+	}
+
+	if !reflect.DeepEqual(sl, []int{1, 2, 3}) {
+		t.Error("incorrect result:", sl)
+	}
+}
+
 func TestUnmarshal(t *testing.T) {
 	type SubUnmarshalTarget struct {
 		A      *string `xsel:"a"`
