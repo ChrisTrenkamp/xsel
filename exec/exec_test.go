@@ -1363,9 +1363,7 @@ func TestNewContext(t *testing.T) {
 		return
 	}
 
-	result, err := Exec(cursor, &xpath, func(c *ContextSettings) {
-		c.Context = cursor.Children()[0]
-	})
+	result, err := Exec(cursor.Children()[0], &xpath)
 
 	if err != nil {
 		t.Error(err)

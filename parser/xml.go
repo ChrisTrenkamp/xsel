@@ -8,7 +8,7 @@ import (
 	"golang.org/x/net/html/charset"
 )
 
-const XMLNS = "xmlns"
+const xmlns = "xmlns"
 
 type XmlElement struct {
 	space, local string
@@ -151,7 +151,7 @@ func createXmlNamespaces(attrs []xml.Attr) []XmlNamespace {
 	ret = append(ret, ns)
 
 	for _, i := range attrs {
-		if i.Name.Space == "" && i.Name.Local == XMLNS {
+		if i.Name.Space == "" && i.Name.Local == xmlns {
 			ns = XmlNamespace{
 				prefix: "",
 				value:  i.Value,
@@ -160,7 +160,7 @@ func createXmlNamespaces(attrs []xml.Attr) []XmlNamespace {
 			ret = append(ret, ns)
 		}
 
-		if i.Name.Local == XMLNS {
+		if i.Name.Local == xmlns {
 			ns = XmlNamespace{
 				prefix: i.Name.Space,
 				value:  i.Value,
@@ -177,7 +177,7 @@ func createXmlAttrs(attrs []xml.Attr) []XmlAttribute {
 	ret := make([]XmlAttribute, 0, len(attrs))
 
 	for _, i := range attrs {
-		if i.Name.Space == XMLNS || i.Name.Local == XMLNS {
+		if i.Name.Space == xmlns || i.Name.Local == xmlns {
 			continue
 		}
 

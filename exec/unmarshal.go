@@ -12,13 +12,13 @@ import (
 // a struct, the result must be a NodeSet with one result. To unmarshal a
 // value to a struct field, give it a "xsel" tag name, and a XPath expression
 // for its value (e.g. `xsel:"//my-struct[@my-id = 'my-value']"`).
-
+//
 // For struct fields, Unmarshal can set fields that are ints and uints, bools,
 // strings, slices, and nested structs.
-
+//
 // For slice elements, Unmarshal can set ints and uints, bools, strings, and
 // structs.  It cannot Unmarshal multidimensional slices.
-
+//
 // Arrays, maps, and channels are not supported.
 func Unmarshal(result Result, value any, settings ...ContextApply) error {
 	return unmarshal(result, value, settings...)

@@ -32,14 +32,14 @@ func (j JsonCharData) CharDataValue() string {
 type jsonState int
 
 const (
-	DEFAULT jsonState = iota
-	READ_OBJECT_FIELD
-	READ_OBJECT_VALUE
-	EMIT_OBJECT_VALUE
-	OBJECT_VALUE_EMITTED
-	READ_ARRAY
-	READ_ARRAY_VALUE
-	ARRAY_VALUE_EMITTED
+	defaultJsonState jsonState = iota
+	readObjectFieldState
+	readObjectValueState
+	emiteObjectValueState
+	objectValueEmittedState
+	readArrayState
+	readArrayValueState
+	arrayValueEmittedState
 )
 
 type jsonParser struct {
@@ -60,7 +60,7 @@ func (j *jsonParser) replaceState(s jsonState) {
 
 func (j *jsonParser) currentState() jsonState {
 	if len(j.stateStack) == 0 {
-		return DEFAULT
+		return defaultJsonState
 	}
 
 	return j.stateStack[len(j.stateStack)-1]
@@ -91,24 +91,24 @@ func (j *jsonParser) popName() {
 }
 
 func (j *jsonParser) Pull() (node.Node, bool, error) {
-	if j.currentState() == EMIT_OBJECT_VALUE {
-		j.replaceState(OBJECT_VALUE_EMITTED)
+	if j.currentState() == emiteObjectValueState {
+		j.replaceState(objectValueEmittedState)
 		return jsonTokenValue(j.stagedToken), false, nil
 	}
 
-	if j.currentState() == OBJECT_VALUE_EMITTED {
-		j.replaceState(READ_OBJECT_FIELD)
+	if j.currentState() == objectValueEmittedState {
+		j.replaceState(readObjectFieldState)
 		j.popName()
 		return nil, true, nil
 	}
 
-	if j.currentState() == READ_ARRAY_VALUE {
-		j.replaceState(ARRAY_VALUE_EMITTED)
+	if j.currentState() == readArrayValueState {
+		j.replaceState(arrayValueEmittedState)
 		return jsonTokenValue(j.stagedToken), false, nil
 	}
 
-	if j.currentState() == ARRAY_VALUE_EMITTED {
-		j.replaceState(READ_ARRAY)
+	if j.currentState() == arrayValueEmittedState {
+		j.replaceState(readArrayState)
 		return nil, true, nil
 	}
 
@@ -118,21 +118,21 @@ func (j *jsonParser) Pull() (node.Node, bool, error) {
 		return nil, false, err
 	}
 
-	if j.currentState() == READ_OBJECT_VALUE {
+	if j.currentState() == readObjectValueState {
 		switch tok.(type) {
 		case json.Delim:
 		default:
-			j.replaceState(EMIT_OBJECT_VALUE)
+			j.replaceState(emiteObjectValueState)
 			j.stagedToken = tok
 			return JsonElement{local: j.currentName()}, false, nil
 		}
 	}
 
-	if j.currentState() == READ_ARRAY {
+	if j.currentState() == readArrayState {
 		switch tok.(type) {
 		case json.Delim:
 		default:
-			j.replaceState(READ_ARRAY_VALUE)
+			j.replaceState(readArrayValueState)
 			j.stagedToken = tok
 			return JsonElement{local: j.currentName()}, false, nil
 		}
@@ -142,8 +142,8 @@ func (j *jsonParser) Pull() (node.Node, bool, error) {
 	case json.Delim:
 		return parseJsonDelim(j, t)
 	case string:
-		if j.currentState() == READ_OBJECT_FIELD {
-			j.replaceState(READ_OBJECT_VALUE)
+		if j.currentState() == readObjectFieldState {
+			j.replaceState(readObjectValueState)
 			j.appendName(t)
 		}
 	}
@@ -171,30 +171,30 @@ func parseJsonDelim(j *jsonParser, t json.Delim) (node.Node, bool, error) {
 	switch t.String() {
 	case "{":
 		state := j.currentState()
-		j.appendState(READ_OBJECT_FIELD)
+		j.appendState(readObjectFieldState)
 
-		if state == READ_OBJECT_VALUE || state == READ_ARRAY {
+		if state == readObjectValueState || state == readArrayState {
 			return JsonElement{local: j.currentName()}, false, nil
 		}
 	case "}":
 		j.popState()
 
-		if j.currentState() == READ_OBJECT_VALUE {
-			j.replaceState(READ_OBJECT_FIELD)
+		if j.currentState() == readObjectValueState {
+			j.replaceState(readObjectFieldState)
 			return nil, true, nil
 		}
 
-		if j.currentState() == READ_ARRAY {
+		if j.currentState() == readArrayState {
 			return nil, true, nil
 		}
 	case "[":
-		j.appendState(READ_ARRAY)
+		j.appendState(readArrayState)
 	case "]":
 		j.popState()
 
-		if j.currentState() == READ_OBJECT_VALUE {
+		if j.currentState() == readObjectValueState {
 			j.popName()
-			j.replaceState(READ_OBJECT_FIELD)
+			j.replaceState(readObjectFieldState)
 		}
 	}
 

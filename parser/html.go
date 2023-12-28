@@ -159,11 +159,11 @@ func createHtmlAttrs(attrs []html.Attribute) []HtmlAttribute {
 	for _, i := range attrs {
 		name := i.Key
 
-		if name == XMLNS {
+		if name == xmlns {
 			continue
 		}
 
-		if strings.HasPrefix(name, XMLNS+":") {
+		if strings.HasPrefix(name, xmlns+":") {
 			continue
 		}
 

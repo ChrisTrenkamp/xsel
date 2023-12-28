@@ -18,10 +18,7 @@ import (
 	"bytes"
 	"fmt"
 
-	"github.com/ChrisTrenkamp/xsel/exec"
-	"github.com/ChrisTrenkamp/xsel/grammar"
-	"github.com/ChrisTrenkamp/xsel/parser"
-	"github.com/ChrisTrenkamp/xsel/store"
+	"github.com/ChrisTrenkamp/xsel"
 )
 
 func main() {
@@ -31,12 +28,12 @@ func main() {
 </root>
 `
 
-	xpath := grammar.MustBuild(`/root/a`)
-	parser := parser.ReadXml(bytes.NewBufferString(xml))
-	cursor, _ := store.CreateInMemory(parser)
-	result, _ := exec.Exec(cursor, &xpath)
+	xpath := xsel.MustBuildExpr(`/root/a`)
+	cursor, _ := xsel.ReadXml(bytes.NewBufferString(xml))
+	result, _ := xsel.Exec(cursor, &xpath)
 
-	fmt.Println(result) // This is an XML node.
+	fmt.Println(result)
+	// Output: This is an XML node.
 }
 ```
 
@@ -49,10 +46,35 @@ import (
 	"bytes"
 	"fmt"
 
-	"github.com/ChrisTrenkamp/xsel/exec"
-	"github.com/ChrisTrenkamp/xsel/grammar"
-	"github.com/ChrisTrenkamp/xsel/parser"
-	"github.com/ChrisTrenkamp/xsel/store"
+	"github.com/ChrisTrenkamp/xsel"
+)
+
+func main() {
+	xml := `
+<root xmlns="http://some.namespace.com">
+	<a xmlns="http://some.namespace.com">This is an XML node with a namespace prefix.</a>
+</root>
+`
+
+	xpath := xsel.MustBuildExpr(`/ns:root/ns:a`)
+	cursor, _ := xsel.ReadXml(bytes.NewBufferString(xml))
+	result, _ := xsel.Exec(cursor, &xpath, xsel.WithNS("ns", "http://some.namespace.com"))
+
+	fmt.Println(result)
+	// Output: This is an XML node with a namespace prefix.
+}
+```
+
+## Binding variables
+
+```go
+package main
+
+import (
+	"bytes"
+	"fmt"
+
+	"github.com/ChrisTrenkamp/xsel"
 )
 
 func main() {
@@ -64,17 +86,14 @@ func main() {
 </root>
 `
 
-	contextSettings := func(c *exec.ContextSettings) {
-		c.NamespaceDecls["ns"] = "http://some.namespace.com"
-		c.Variables[exec.Name("http://some.namespace.com", "mynum")] = exec.Number(3.14)
-	}
+	const NS = "http://some.namespace.com"
 
-	xpath := grammar.MustBuild(`//node()[. = $ns:mynum]`)
-	parser := parser.ReadXml(bytes.NewBufferString(xml))
-	cursor, _ := store.CreateInMemory(parser)
-	result, _ := exec.Exec(cursor, &xpath, contextSettings)
+	xpath := xsel.MustBuildExpr(`//node()[. = $ns:mynum]`)
+	cursor, _ := xsel.ReadXml(bytes.NewBufferString(xml))
+	result, _ := xsel.Exec(cursor, &xpath, xsel.WithNS("ns", NS), xsel.WithVariableNS(NS, "mynum", xsel.Number(3.14)))
 
-	fmt.Println(result) //3.14
+	fmt.Println(result)
+	// Output: 3.14
 }
 ```
 
@@ -87,11 +106,7 @@ import (
 	"bytes"
 	"fmt"
 
-	"github.com/ChrisTrenkamp/xsel/exec"
-	"github.com/ChrisTrenkamp/xsel/grammar"
-	"github.com/ChrisTrenkamp/xsel/node"
-	"github.com/ChrisTrenkamp/xsel/parser"
-	"github.com/ChrisTrenkamp/xsel/store"
+	"github.com/ChrisTrenkamp/xsel"
 )
 
 func main() {
@@ -102,27 +117,23 @@ func main() {
 </root>
 `
 
-	isComment := func(context exec.Context, args ...exec.Result) (exec.Result, error) {
-		nodeSet, isNodeSet := context.Result().(exec.NodeSet)
+	isComment := func(context xsel.Context, args ...xsel.Result) (xsel.Result, error) {
+		nodeSet, isNodeSet := context.Result().(xsel.NodeSet)
 
 		if !isNodeSet || len(nodeSet) == 0 {
-			return exec.Bool(false), nil
+			return xsel.Bool(false), nil
 		}
 
-		_, isComment := nodeSet[0].Node().(node.Comment)
-		return exec.Bool(isComment), nil
+		_, isComment := nodeSet[0].Node().(xsel.Comment)
+		return xsel.Bool(isComment), nil
 	}
 
-	contextSettings := func(c *exec.ContextSettings) {
-		c.FunctionLibrary[exec.Name("", "is-comment")] = isComment
-	}
+	xpath := xsel.MustBuildExpr(`//node()[is-comment()]`)
+	cursor, _ := xsel.ReadXml(bytes.NewBufferString(xml))
+	result, _ := xsel.Exec(cursor, &xpath, xsel.WithFunction("is-comment", isComment))
 
-	xpath := grammar.MustBuild(`//node()[is-comment()]`)
-	parser := parser.ReadXml(bytes.NewBufferString(xml))
-	cursor, _ := store.CreateInMemory(parser)
-	result, _ := exec.Exec(cursor, &xpath, contextSettings)
-
-	fmt.Println(result) // This is a comment.
+	fmt.Println(result)
+	// Output: This is a comment.
 }
 ```
 
@@ -135,11 +146,7 @@ import (
 	"bytes"
 	"fmt"
 
-	"github.com/ChrisTrenkamp/xsel/exec"
-	"github.com/ChrisTrenkamp/xsel/grammar"
-	"github.com/ChrisTrenkamp/xsel/node"
-	"github.com/ChrisTrenkamp/xsel/parser"
-	"github.com/ChrisTrenkamp/xsel/store"
+	"github.com/ChrisTrenkamp/xsel"
 )
 
 func main() {
@@ -186,21 +193,16 @@ func main() {
 		Customers []Customer `xsel:"NS:Customers/NS:Customer"`
 	}
 
-	contextSettings := func(c *exec.ContextSettings) {
-		c.NamespaceDecls["NS"] = "http://www.adventure-works.com"
-	}
-
-	xpath := grammar.MustBuild(`/NS:Root`)
-	parser := parser.ReadXml(bytes.NewBufferString(xml))
-	cursor, _ := store.CreateInMemory(parser)
-	result, _ := exec.Exec(cursor, &xpath, contextSettings)
+	contextSettings := xsel.WithNS("NS", "http://www.adventure-works.com")
+	xpath := xsel.MustBuildExpr(`/NS:Root`)
+	cursor, _ := xsel.ReadXml(bytes.NewBufferString(xml))
+	result, _ := xsel.Exec(cursor, &xpath, contextSettings)
 
 	customers := Customers{}
-	exec.Unmarshal(result, &customers, contextSettings) // Remember to check for errors
+	xsel.Unmarshal(result, &customers, contextSettings) // Remember to check for errors
 
 	fmt.Printf("%+v\n", customers)
-	//{Customers:[{Id:GREAL Name:Great Lakes Food Market ContactName:Howard Snyder Address:{Address:2732 Baker Blvd. City:Eugene Region:OR}}
-	// {Id:HUNGC Name:Hungry Coyote Import Store ContactName:Yoshi Latimer Address:{Address:City Center Plaza 516 Main St. City:Walla Walla Region:WA}}]}
+	// Output: {Customers:[{Id:GREAL Name:Great Lakes Food Market ContactName:Howard Snyder Address:{Address:2732 Baker Blvd. City:Eugene Region:OR}} {Id:HUNGC Name:Hungry Coyote Import Store ContactName:Yoshi Latimer Address:{Address:City Center Plaza 516 Main St. City:Walla Walla Region:WA}}]}
 }
 ```
 
@@ -240,7 +242,7 @@ The XML equivalent will be:
 `xsel` supplies a grep-like commandline utility for querying XML documents:
 
 ```
-$ go get github.com/ChrisTrenkamp/xsel
+$ go install github.com/ChrisTrenkamp/xsel/xsel@latest
 $ xsel -h
 Usage of xsel:
   -a    If the result is a NodeSet, print the string value of all the nodes instead of just the first
