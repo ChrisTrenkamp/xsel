@@ -29,86 +29,88 @@ func (j JsonCharData) CharDataValue() string {
 	return j.value
 }
 
-type jsonState int
+type stateType int
 
 const (
-	defaultJsonState jsonState = iota
-	readObjectFieldState
-	readObjectValueState
-	emiteObjectValueState
-	objectValueEmittedState
-	readArrayState
-	readArrayValueState
-	arrayValueEmittedState
+	arrayState stateType = iota
+	objectState
+	rootState
 )
 
+type jsonState struct {
+	stateType      stateType
+	onField        bool
+	emitEndElement bool
+}
+
 type jsonParser struct {
-	jsonReader  *json.Decoder
-	nameStack   []string
-	stateStack  []jsonState
-	stagedToken json.Token
+	jsonReader *json.Decoder
+	stateStack []jsonState
 }
 
-func (j *jsonParser) appendState(s jsonState) {
-	j.stateStack = append(j.stateStack, s)
+func (j *jsonParser) pushState(s stateType) {
+	j.stateStack = append(j.stateStack, jsonState{stateType: s})
 }
 
-func (j *jsonParser) replaceState(s jsonState) {
-	j.popState()
-	j.appendState(s)
-}
-
-func (j *jsonParser) currentState() jsonState {
+func (j *jsonParser) currentState() stateType {
 	if len(j.stateStack) == 0 {
-		return defaultJsonState
+		return rootState
 	}
 
-	return j.stateStack[len(j.stateStack)-1]
+	return j.stateStack[len(j.stateStack)-1].stateType
 }
 
 func (j *jsonParser) popState() {
+	j.stateStack = j.stateStack[:len(j.stateStack)-1]
+}
+
+func (j *jsonParser) setOnField(b bool) {
 	if len(j.stateStack) > 0 {
-		j.stateStack = j.stateStack[:len(j.stateStack)-1]
+		j.stateStack[len(j.stateStack)-1].onField = b
 	}
 }
 
-func (j *jsonParser) appendName(s string) {
-	j.nameStack = append(j.nameStack, s)
-}
-
-func (j *jsonParser) currentName() string {
-	if len(j.nameStack) == 0 {
-		return ""
+func (j *jsonParser) isOnField() bool {
+	if len(j.stateStack) == 0 {
+		return false
 	}
 
-	return j.nameStack[len(j.nameStack)-1]
+	return j.stateStack[len(j.stateStack)-1].onField
 }
 
-func (j *jsonParser) popName() {
-	if len(j.nameStack) > 0 {
-		j.nameStack = j.nameStack[:len(j.nameStack)-1]
+func (j *jsonParser) setEmitEndElement(b bool) {
+	if len(j.stateStack) > 0 {
+		j.stateStack[len(j.stateStack)-1].emitEndElement = b
 	}
+}
+
+func (j *jsonParser) isOnEmitEndElement() bool {
+	if len(j.stateStack) == 0 {
+		return false
+	}
+
+	return j.stateStack[len(j.stateStack)-1].emitEndElement
+}
+
+func jsonTokenValue(tok json.Token) string {
+	switch t := tok.(type) {
+	case bool:
+		return fmt.Sprintf("%t", t)
+	case float64:
+		str := strconv.FormatFloat(t, 'g', -1, 64)
+		return str
+	case json.Number:
+		return string(t)
+	case string:
+		return t
+	}
+
+	return "null"
 }
 
 func (j *jsonParser) Pull() (node.Node, bool, error) {
-	if j.currentState() == emiteObjectValueState {
-		j.replaceState(objectValueEmittedState)
-		return jsonTokenValue(j.stagedToken), false, nil
-	}
-
-	if j.currentState() == objectValueEmittedState {
-		j.replaceState(readObjectFieldState)
-		j.popName()
-		return nil, true, nil
-	}
-
-	if j.currentState() == readArrayValueState {
-		j.replaceState(arrayValueEmittedState)
-		return jsonTokenValue(j.stagedToken), false, nil
-	}
-
-	if j.currentState() == arrayValueEmittedState {
-		j.replaceState(readArrayState)
+	if j.isOnEmitEndElement() {
+		j.setEmitEndElement(false)
 		return nil, true, nil
 	}
 
@@ -118,87 +120,59 @@ func (j *jsonParser) Pull() (node.Node, bool, error) {
 		return nil, false, err
 	}
 
-	if j.currentState() == readObjectValueState {
-		switch tok.(type) {
-		case json.Delim:
-		default:
-			j.replaceState(emiteObjectValueState)
-			j.stagedToken = tok
-			return JsonElement{local: j.currentName()}, false, nil
-		}
-	}
-
-	if j.currentState() == readArrayState {
-		switch tok.(type) {
-		case json.Delim:
-		default:
-			j.replaceState(readArrayValueState)
-			j.stagedToken = tok
-			return JsonElement{local: j.currentName()}, false, nil
-		}
-	}
-
 	switch t := tok.(type) {
 	case json.Delim:
-		return parseJsonDelim(j, t)
-	case string:
-		if j.currentState() == readObjectFieldState {
-			j.replaceState(readObjectValueState)
-			j.appendName(t)
-		}
-	}
+		switch t.String() {
+		case "{":
+			if j.currentState() == objectState {
+				j.setOnField(true)
+			}
 
-	return j.Pull()
-}
+			j.pushState(objectState)
+			j.setOnField(true)
+			return JsonElement{local: "#"}, false, nil
+		case "}":
+			j.popState()
 
-func jsonTokenValue(tok json.Token) node.Node {
-	switch t := tok.(type) {
-	case bool:
-		return JsonCharData{value: fmt.Sprintf("%t", t)}
-	case float64:
-		str := strconv.FormatFloat(t, 'g', -1, 64)
-		return JsonCharData{value: str}
-	case json.Number:
-		return JsonCharData{value: string(t)}
-	case string:
-		return JsonCharData{value: t}
-	}
+			if j.isOnField() {
+				j.setEmitEndElement(true)
+			}
 
-	return JsonCharData{value: "null"}
-}
+			return nil, true, nil
+		case "[":
+			if j.currentState() == objectState {
+				j.setOnField(true)
+			}
 
-func parseJsonDelim(j *jsonParser, t json.Delim) (node.Node, bool, error) {
-	switch t.String() {
-	case "{":
-		state := j.currentState()
-		j.appendState(readObjectFieldState)
+			j.pushState(arrayState)
+			return JsonElement{local: "#"}, false, nil
+		case "]":
+			j.popState()
 
-		if state == readObjectValueState || state == readArrayState {
-			return JsonElement{local: j.currentName()}, false, nil
-		}
-	case "}":
-		j.popState()
+			if j.isOnField() {
+				j.setEmitEndElement(true)
+			}
 
-		if j.currentState() == readObjectValueState {
-			j.replaceState(readObjectFieldState)
 			return nil, true, nil
 		}
+	}
 
-		if j.currentState() == readArrayState {
-			return nil, true, nil
-		}
-	case "[":
-		j.appendState(readArrayState)
-	case "]":
-		j.popState()
+	val := jsonTokenValue(tok)
 
-		if j.currentState() == readObjectValueState {
-			j.popName()
-			j.replaceState(readObjectFieldState)
+	switch j.currentState() {
+	case rootState:
+		return JsonCharData{value: val}, false, nil
+	case objectState:
+		if j.isOnField() {
+			j.setOnField(false)
+			return JsonElement{local: val}, false, nil
+		} else {
+			j.setOnField(true)
+			j.setEmitEndElement(true)
 		}
 	}
 
-	return j.Pull()
+	return JsonCharData{value: val}, false, nil
 }
 
 // Create a Parser that reads the given JSON document.
@@ -207,7 +181,6 @@ func ReadJson(in io.Reader) Parser {
 
 	return &jsonParser{
 		jsonReader: jsonReader,
-		nameStack:  make([]string, 0),
 		stateStack: make([]jsonState, 0),
 	}
 }

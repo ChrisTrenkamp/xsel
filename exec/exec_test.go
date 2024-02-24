@@ -89,13 +89,21 @@ func printTree(cursor store.Cursor, depth int) {
 
 	switch t := cursor.Node().(type) {
 	case node.Element:
-		fmt.Println(t.Local())
+		fmt.Println("<" + t.Local() + ">")
 	case node.CharData:
 		fmt.Println(t.CharDataValue())
 	}
 
 	for _, i := range cursor.Children() {
 		printTree(i, depth+1)
+	}
+
+	if t, isEnd := cursor.Node().(node.Element); isEnd {
+		for i := 0; i < depth; i++ {
+			fmt.Print("  ")
+		}
+
+		fmt.Println("</" + t.Local() + ">")
 	}
 }
 */
@@ -1385,43 +1393,44 @@ func TestJsonNestedArray(t *testing.T) {
 	"nil": null
 }
 `
-	value := execJsonNodes(t, "/a[. = '0']", json)
 
-	if value.String() != "0" || value[0].Node().(node.Element).Local() != "a" {
+	value := execJsonNodes(t, "/#/a/#/text()[. = '0']", json)
+
+	if c := value[0].Node().(node.CharData); c.CharDataValue() != "0" {
 		t.Error("bad array value")
 	}
 
-	value = execJsonNodes(t, "/a[. = 'b']", json)
+	value = execJsonNodes(t, "/#/a/#/#/text()[. = 'b']", json)
 
-	if value.String() != "b" || value[0].Node().(node.Element).Local() != "a" {
+	if c := value[0].Node().(node.CharData); c.CharDataValue() != "b" {
 		t.Error("bad nested array value")
 	}
 
-	value = execJsonNodes(t, "/a/d[. = 2.71828]", json)
+	value = execJsonNodes(t, "/#/a/#/#/#/d[. = 2.71828]", json)
 
 	if value.String() != "2.71828" || value[0].Node().(node.Element).Local() != "d" {
 		t.Error("bad object-in-array value")
 	}
 
-	value = execJsonNodes(t, "/b/c", json)
+	value = execJsonNodes(t, "/#/b/#/c", json)
 
 	if value.String() != "3.14" || value[0].Node().(node.Element).Local() != "c" {
 		t.Error("bad nested object value")
 	}
 
-	value = execJsonNodes(t, "/b/d/e", json)
+	value = execJsonNodes(t, "/#/b/#/d/#/#/e", json)
 
 	if value.String() != "f" || value[0].Node().(node.Element).Local() != "e" {
 		t.Error("bad object-in-array-in-object value")
 	}
 
-	value = execJsonNodes(t, "/b/d[. = 'g']", json)
+	value = execJsonNodes(t, "/#/b/#/d/#/text()[. = 'g']", json)
 
-	if value.String() != "g" || value[0].Node().(node.Element).Local() != "d" {
+	if c := value[0].Node().(node.CharData); c.CharDataValue() != "g" {
 		t.Error("bad object-in-array-in-object value")
 	}
 
-	value = execJsonNodes(t, "/nil", json)
+	value = execJsonNodes(t, "/#/nil", json)
 
 	if value.String() != "null" || value[0].Node().(node.Element).Local() != "nil" {
 		t.Error("bad nil value")
@@ -1470,16 +1479,16 @@ func TestJson(t *testing.T) {
 	}
 
 	for i := 0; i < 4; i++ {
-		if pricedItems[i].Node().(node.Element).Local() != "book" {
-			t.Error("name not 'book'")
+		if pricedItems[i].Node().(node.Element).Local() != "#" {
+			t.Error("name not '#'")
 		}
 	}
 
-	if pricedItems[4].Node().(node.Element).Local() != "bicycle" {
+	if pricedItems[4].Parent().Node().(node.Element).Local() != "bicycle" {
 		t.Error("name not 'bicycle'")
 	}
 
-	nodes := execJsonNodes(t, "/store/book/author", json)
+	nodes := execJsonNodes(t, "/#/store/#/book/#/#/author", json)
 
 	if len(nodes) != 4 {
 		t.Error("result size not 4")

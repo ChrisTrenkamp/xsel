@@ -83,6 +83,27 @@ func ExampleWithFunction() {
 	// Output: This is a comment.
 }
 
+func ExampleReadJson() {
+	json := `
+{
+	"states": ["AK", ["MD", "FL"] ]
+}
+`
+
+	xpath := xsel.MustBuildExpr(`/#/states/#/text()`)
+	cursor, _ := xsel.ReadJson(bytes.NewBufferString(json))
+	result, _ := xsel.Exec(cursor, &xpath)
+
+	fmt.Println(result)
+
+	xpath = xsel.MustBuildExpr(`/#/states/#/#/text()[2]`)
+	result, _ = xsel.Exec(cursor, &xpath)
+
+	fmt.Println(result)
+	// Output: AK
+	// FL
+}
+
 func ExampleUnmarshal() {
 	xml := `
 <Root xmlns="http://www.adventure-works.com">

@@ -8,6 +8,7 @@
 * `xsel` does not implement the [id](https://www.w3.org/TR/xpath-10/#function-id) function.
 * The grammar as defined in the XPath 1.0 spec doesn't explicitly allow function calls in the middle of a path expression, such as `/path/function-call()/path`.  `xsel` allows function calls in the middle of path expressions.
 * `xsel` allows name lookups with a wildcard for the namespace, such as `/*:path`.
+* `xsel` allows the `#` character in element selections.
 
 ## Basic usage
 
@@ -213,15 +214,13 @@ func main() {
 To build a custom document, implement your own [Parser](https://pkg.go.dev/github.com/ChrisTrenkamp/xsel/parser#Parser) method, and build [Element](https://pkg.go.dev/github.com/ChrisTrenkamp/xsel/node#Element)'s, [Attribute](https://pkg.go.dev/github.com/ChrisTrenkamp/xsel/node#Attribute)'s [Character Data](https://pkg.go.dev/github.com/ChrisTrenkamp/xsel/node#CharData), [Comment](https://pkg.go.dev/github.com/ChrisTrenkamp/xsel/node#Comment)'s, [Processing Instruction](https://pkg.go.dev/github.com/ChrisTrenkamp/xsel/node#ProcInst)'s, and [Namespace](https://pkg.go.dev/github.com/ChrisTrenkamp/xsel/node#Namespace)'s.
 
 
-## Caveats for HTML documents
+## HTML documents
 
-Namespaces are completely ignored for HTML documents.  Keep all queries in the default namespace.  Write queries such as `//svg`.  Do not write queries such as `//svg:svg`.
+Use the `xsel.ReadHtml` function to read HTML documents. Namespaces are completely ignored for HTML documents.  Keep all queries in the default namespace.  Write queries such as `//svg`.  Do not write queries such as `//svg:svg`.
 
-## Caveats for JSON documents
+## JSON documents
 
-JSON documents only build elements and character data.  All element names are in the default namespace.
-
-Elements in arrays are wrapped in element nodes, with a name based on the name of the object field, and arrays nested in arrays are flattened.  For example, if you had the following JSON document:
+JSON documents only build elements and character data.  Object and array declarations will omit an element node with the name `#`.  So for example, given the following JSON file:
 
 ```
 {
@@ -229,12 +228,56 @@ Elements in arrays are wrapped in element nodes, with a name based on the name o
 }
 ```
 
-The XML equivalent will be:
+It would look like this in XML...
 
 ```
-<states>AK</states>
-<states>MD</states>
-<states>FL</states>
+<#>
+	<states>
+		<#>
+			AK
+			<#>
+				MD
+				FL
+			</#>
+		</#>
+	</states>
+</#>
+```
+
+... however, `MD` and `FL` are separate text nodes, which is different from XML parsing:
+
+
+```go
+package main
+
+import (
+	"bytes"
+	"fmt"
+
+	"github.com/ChrisTrenkamp/xsel"
+)
+
+func main() {
+	json := `
+{
+	"states": ["AK", ["MD", "FL"] ]
+}
+`
+
+	xpath := xsel.MustBuildExpr(`/#/states/#/text()`)
+	cursor, _ := xsel.ReadJson(bytes.NewBufferString(json))
+	result, _ := xsel.Exec(cursor, &xpath)
+
+	fmt.Println(result)
+
+	// Notice the [2] in the text selection.
+	xpath = xsel.MustBuildExpr(`/#/states/#/#/text()[2]`)
+	result, _ = xsel.Exec(cursor, &xpath)
+
+	fmt.Println(result)
+	// Output: AK
+	// FL
+}
 ```
 
 ## Commandline Utility
