@@ -130,7 +130,7 @@ func (j *jsonParser) Pull() (node.Node, bool, error) {
 
 			j.pushState(objectState)
 			j.setOnField(true)
-			return JsonElement{local: "#"}, false, nil
+			return JsonElement{local: "#obj"}, false, nil
 		case "}":
 			j.popState()
 
@@ -145,7 +145,7 @@ func (j *jsonParser) Pull() (node.Node, bool, error) {
 			}
 
 			j.pushState(arrayState)
-			return JsonElement{local: "#"}, false, nil
+			return JsonElement{local: "#arr"}, false, nil
 		case "]":
 			j.popState()
 

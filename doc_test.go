@@ -90,13 +90,13 @@ func ExampleReadJson() {
 }
 `
 
-	xpath := xsel.MustBuildExpr(`/#/states/#/text()`)
+	xpath := xsel.MustBuildExpr(`/#obj/states/#arr/text()`)
 	cursor, _ := xsel.ReadJson(bytes.NewBufferString(json))
 	result, _ := xsel.Exec(cursor, &xpath)
 
 	fmt.Println(result)
 
-	xpath = xsel.MustBuildExpr(`/#/states/#/#/text()[2]`)
+	xpath = xsel.MustBuildExpr(`/#obj/states/#arr/#arr/text()[2]`)
 	result, _ = xsel.Exec(cursor, &xpath)
 
 	fmt.Println(result)

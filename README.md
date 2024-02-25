@@ -220,7 +220,7 @@ Use the `xsel.ReadHtml` function to read HTML documents. Namespaces are complete
 
 ## JSON documents
 
-JSON documents only build elements and character data.  Object and array declarations will omit an element node with the name `#`.  So for example, given the following JSON file:
+JSON documents only build elements and character data.  Object declarations will omit an element node with the name `#obj`.  Likewise, array elements emit `#arr`.  So for example, given the following JSON file:
 
 ```
 {
@@ -231,17 +231,17 @@ JSON documents only build elements and character data.  Object and array declara
 It would look like this in XML...
 
 ```
-<#>
+<#obj>
 	<states>
-		<#>
+		<#arr>
 			AK
-			<#>
+			<#arr>
 				MD
 				FL
-			</#>
-		</#>
+			</#arr>
+		</#arr>
 	</states>
-</#>
+</#obj>
 ```
 
 ... however, `MD` and `FL` are separate text nodes, which is different from XML parsing:
@@ -264,14 +264,14 @@ func main() {
 }
 `
 
-	xpath := xsel.MustBuildExpr(`/#/states/#/text()`)
+	xpath := xsel.MustBuildExpr(`/#obj/states/#arr/text()`)
 	cursor, _ := xsel.ReadJson(bytes.NewBufferString(json))
 	result, _ := xsel.Exec(cursor, &xpath)
 
 	fmt.Println(result)
 
 	// Notice the [2] in the text selection.
-	xpath = xsel.MustBuildExpr(`/#/states/#/#/text()[2]`)
+	xpath = xsel.MustBuildExpr(`/#obj/states/#arr/#arr/text()[2]`)
 	result, _ = xsel.Exec(cursor, &xpath)
 
 	fmt.Println(result)
