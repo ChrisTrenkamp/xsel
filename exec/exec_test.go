@@ -795,11 +795,11 @@ func TestAbbreviatedAbsoluteLocation(t *testing.T) {
 	a := nodes[0]
 	b := nodes[1]
 
-	if getCursorString(a) != "a" {
+	if GetCursorString(a) != "a" {
 		t.Error("Node not 'a'")
 	}
 
-	if getCursorString(b) != "b" {
+	if GetCursorString(b) != "b" {
 		t.Error("Node not 'b'")
 	}
 }
@@ -827,15 +827,15 @@ func TestAbbreviatedRelativeLocation(t *testing.T) {
 	b := nodes[1]
 	c := nodes[2]
 
-	if getCursorString(a) != "a" {
+	if GetCursorString(a) != "a" {
 		t.Error("Node not 'a'")
 	}
 
-	if getCursorString(b) != "b" {
+	if GetCursorString(b) != "b" {
 		t.Error("Node not 'b'")
 	}
 
-	if getCursorString(c) != "c" {
+	if GetCursorString(c) != "c" {
 		t.Error("Node not 'c'")
 	}
 }
@@ -856,15 +856,15 @@ func TestNamespaces(t *testing.T) {
 	a := nodes[1]
 	root := nodes[2]
 
-	if getCursorString(xmlns) != "http://www.w3.org/XML/1998/namespace" {
+	if GetCursorString(xmlns) != "http://www.w3.org/XML/1998/namespace" {
 		t.Error("Node not 'http://www.w3.org/XML/1998/namespace'")
 	}
 
-	if getCursorString(a) != "http://a" {
+	if GetCursorString(a) != "http://a" {
 		t.Error("Node not 'http://a'")
 	}
 
-	if getCursorString(root) != "http://root" {
+	if GetCursorString(root) != "http://root" {
 		t.Error("Node not 'http://root'")
 	}
 }
@@ -884,11 +884,11 @@ func TestNamespaceOverride(t *testing.T) {
 	xmlns := nodes[0]
 	a := nodes[1]
 
-	if getCursorString(xmlns) != "http://www.w3.org/XML/1998/namespace" {
+	if GetCursorString(xmlns) != "http://www.w3.org/XML/1998/namespace" {
 		t.Error("Node not 'http://www.w3.org/XML/1998/namespace'")
 	}
 
-	if getCursorString(a) != "http://a" {
+	if GetCursorString(a) != "http://a" {
 		t.Error("Node not 'http://a'")
 	}
 }
@@ -935,11 +935,11 @@ func TestDefaultNamespaceOverrides(t *testing.T) {
 	xmlns := nodes[0]
 	a := nodes[1]
 
-	if getCursorString(xmlns) != "http://www.w3.org/XML/1998/namespace" {
+	if GetCursorString(xmlns) != "http://www.w3.org/XML/1998/namespace" {
 		t.Error("Node not 'http://www.w3.org/XML/1998/namespace'")
 	}
 
-	if getCursorString(a) != "http://a" {
+	if GetCursorString(a) != "http://a" {
 		t.Error("Node not 'http://a'")
 	}
 }
@@ -958,7 +958,7 @@ func TestNamespaceSelect(t *testing.T) {
 
 	root := nodes[0]
 
-	if getCursorString(root) != "http://root" {
+	if GetCursorString(root) != "http://root" {
 		t.Error("Node not 'http://root'")
 	}
 }
@@ -1500,19 +1500,19 @@ func TestJson(t *testing.T) {
 		}
 	}
 
-	if getCursorString(nodes[0]) != "Nigel Rees" {
+	if GetCursorString(nodes[0]) != "Nigel Rees" {
 		t.Error("first node value incorrect")
 	}
 
-	if getCursorString(nodes[1]) != "Evelyn Waugh" {
+	if GetCursorString(nodes[1]) != "Evelyn Waugh" {
 		t.Error("second node value incorrect")
 	}
 
-	if getCursorString(nodes[2]) != "Herman Melville" {
+	if GetCursorString(nodes[2]) != "Herman Melville" {
 		t.Error("third node value incorrect")
 	}
 
-	if getCursorString(nodes[3]) != "J. R. R. Tolkien" {
+	if GetCursorString(nodes[3]) != "J. R. R. Tolkien" {
 		t.Error("forth node value incorrect")
 	}
 }
@@ -1542,7 +1542,7 @@ func TestHtmlDocument(t *testing.T) {
 		t.Error("result not one lang attribute")
 	}
 
-	if nodes[0].Node().(node.Attribute).Local() != "lang" || getCursorString(nodes[0]) != "en" {
+	if nodes[0].Node().(node.Attribute).Local() != "lang" || GetCursorString(nodes[0]) != "en" {
 		t.Error("lang attribute not 'en'")
 	}
 

@@ -22,6 +22,88 @@ func ExampleExec() {
 	// Output: This is an XML node.
 }
 
+func ExampleExecAsString() {
+	xml := `
+<root>
+	<a>This is the first node.</a>
+	<a>This is the second node.</a>
+</root>
+`
+
+	xpath := xsel.MustBuildExpr(`/root/a`)
+	cursor, _ := xsel.ReadXml(bytes.NewBufferString(xml))
+	result, _ := xsel.ExecAsString(cursor, &xpath)
+
+	// Be careful when returning the string result of NodeSet's.
+	// Only the first node's string value will be returned.
+	// If you want the string value of all node's, use ExecAsNodeset.
+
+	fmt.Println(result)
+	// Output: This is the first node.
+}
+
+func ExampleExecAsNumber() {
+	xml := `
+<root>
+	<a>3.14</a>
+	<a>9001</a>
+</root>
+`
+
+	xpath := xsel.MustBuildExpr(`/root/a`)
+	cursor, _ := xsel.ReadXml(bytes.NewBufferString(xml))
+	result, _ := xsel.ExecAsNumber(cursor, &xpath)
+
+	// Be careful when returning the number result of NodeSet's.
+	// Only the first node's value value will be returned.
+
+	fmt.Println(result)
+	// Output: 3.14
+}
+
+func ExampleExecAsNodeset() {
+	xml := `
+<root>
+	<a>This is the first node.</a>
+	<a>This is the second node.</a>
+</root>
+`
+
+	xpath := xsel.MustBuildExpr(`/root/a`)
+	cursor, _ := xsel.ReadXml(bytes.NewBufferString(xml))
+	result, _ := xsel.ExecAsNodeset(cursor, &xpath)
+
+	for _, i := range result {
+		fmt.Println(xsel.GetCursorString(i))
+	}
+
+	// Output: This is the first node.
+	// This is the second node.
+}
+
+func ExampleExecAsNodeset_subqueries() {
+	xml := `
+<root>
+	<a><b>Some text inbetween b and c. <c>A descendant c element.</c></b></a>
+	<a><d>A d element.</d><c>A c element.</c></a>
+</root>
+`
+
+	aQuery := xsel.MustBuildExpr(`/root/a`)
+	rootCursor, _ := xsel.ReadXml(bytes.NewBufferString(xml))
+	aElements, _ := xsel.ExecAsNodeset(rootCursor, &aQuery)
+
+	cQuery := xsel.MustBuildExpr(`.//c`)
+
+	for i, a := range aElements {
+		cElements, _ := xsel.ExecAsNodeset(a, &cQuery)
+		fmt.Printf("%d: %s\n", i, cElements.String())
+	}
+
+	// Output: 0: A descendant c element.
+	// 1: A c element.
+}
+
 func ExampleWithNS() {
 	xml := `
 <root xmlns="http://some.namespace.com">

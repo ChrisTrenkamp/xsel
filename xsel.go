@@ -1,6 +1,7 @@
 package xsel
 
 import (
+	"fmt"
 	"io"
 
 	"github.com/ChrisTrenkamp/xsel/exec"
@@ -120,6 +121,47 @@ func ReadJson(in io.Reader) (Cursor, error) {
 // Exec executes an XPath query against the given Cursor and returns the result.
 func Exec(cursor Cursor, expr *Grammar, settings ...ContextApply) (Result, error) {
 	return exec.Exec(cursor, expr, settings...)
+}
+
+// Like Exec, except it returns the string result of the query.
+func ExecAsString(cursor Cursor, expr *Grammar, settings ...ContextApply) (string, error) {
+	ret, err := exec.Exec(cursor, expr, settings...)
+	if err != nil {
+		return "", err
+	}
+
+	return ret.String(), nil
+}
+
+// Like Exec, except it returns the query as a number.
+func ExecAsNumber(cursor Cursor, expr *Grammar, settings ...ContextApply) (float64, error) {
+	ret, err := exec.Exec(cursor, expr, settings...)
+	if err != nil {
+		return 0, err
+	}
+
+	return ret.Number(), nil
+}
+
+// Like Exec, except it returns the query as a NodeSet.
+func ExecAsNodeset(cursor Cursor, expr *Grammar, settings ...ContextApply) (NodeSet, error) {
+	ret, err := exec.Exec(cursor, expr, settings...)
+	if err != nil {
+		return nil, err
+	}
+
+	nodeset, ok := ret.(NodeSet)
+	if !ok {
+		return nil, fmt.Errorf("result is not NodeSet")
+	}
+
+	return nodeset, nil
+}
+
+// GetCursorString is a convenience method to return the string value of
+// an individual Node.
+func GetCursorString(c Cursor) string {
+	return exec.GetCursorString(c)
 }
 
 // Unmarshal maps a XPath result to a struct or slice.
